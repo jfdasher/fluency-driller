@@ -1,0 +1,492 @@
+# Topic seeds for the content generator — pandas corpus (Opus-authored).
+#
+# slug -> list of { topic, kind, note? }
+#   topic : terse drill-sized seed phrase, the generation focus
+#   kind  : idiom | recall  (idiom = there's an idiomatic-vs-naive fork the
+#           judge can discriminate; recall = pure "do you remember the syntax")
+#   note  : optional disambiguation for the generator — often the naive fork to
+#           beat, or the SQL concept this bridges from.
+#
+# Slug taxonomy + per-slug scope/tiers live in drill/data/topics_pandas.json.
+# Canonical version target: pandas 2.x (numpy-backed). SQL analogies are leaned
+# on hard per the design spec. Test contract for this corpus: tests import pandas
+# and assert with pandas.testing.assert_frame_equal / assert_series_equal — the
+# runner's equal() helper does NOT work on pandas objects.
+
+# ── 1 · numpy-foundations ────────────────────────────────────────────────
+numpy-foundations/vectorization:
+  - topic: "add two numpy arrays elementwise without a Python loop"
+    kind: idiom
+    note: "naive fork is a for-loop or list comprehension; want a + b"
+  - topic: "compute a boolean array of which elements exceed a threshold"
+    kind: idiom
+  - topic: "scale every element of an array by a scalar via broadcasting"
+    kind: recall
+
+numpy-foundations/boolean-masking:
+  - topic: "select the array elements greater than zero with a boolean mask"
+    kind: idiom
+  - topic: "replace negative values with zero using np.where"
+    kind: idiom
+  - topic: "zero out masked positions in place with arr[mask] = 0"
+    kind: idiom
+
+numpy-foundations/dtypes:
+  - topic: "cast an integer array to float64 with astype and report its dtype"
+    kind: recall
+  - topic: "show that inserting a NaN upcasts an int array to float"
+    kind: idiom
+    note: "NaN is a float; the array can't stay int"
+
+numpy-foundations/axis-semantics:
+  - topic: "sum a 2-D array down the columns (axis=0) vs across the rows (axis=1)"
+    kind: idiom
+    note: "the axis-direction confusion is the whole point"
+  - topic: "take a row-wise max keeping dims for broadcasting (keepdims=True)"
+    kind: recall
+
+numpy-foundations/nan-handling:
+  - topic: "compute a mean that ignores NaN with np.nanmean"
+    kind: idiom
+    note: "naive np.mean returns nan when any element is nan"
+  - topic: "build a boolean mask of NaN positions with np.isnan"
+    kind: recall
+
+numpy-foundations/random-generator:
+  - topic: "make a seeded default_rng and draw standard-normal samples"
+    kind: recall
+    note: "modern Generator API, not the legacy np.random.seed"
+  - topic: "draw random integers in a half-open range with rng.integers"
+    kind: recall
+
+numpy-foundations/ndarray-basics:
+  - topic: "create a 3x4 array of zeros and report its shape"
+    kind: recall
+  - topic: "reshape a 1-D arange into a 2-D grid"
+    kind: recall
+
+# ── 2 · construction-inspection ──────────────────────────────────────────
+construction-inspection/dataframe-construct:
+  - topic: "build a DataFrame from a dict of equal-length column lists"
+    kind: recall
+  - topic: "build a DataFrame from a list of row records (list of dicts)"
+    kind: recall
+  - topic: "construct a DataFrame with an explicit index and column order"
+    kind: recall
+
+construction-inspection/inspect:
+  - topic: "report the (rows, cols) shape and per-column dtypes of a DataFrame"
+    kind: recall
+  - topic: "summarize the numeric columns of a DataFrame with describe"
+    kind: recall
+
+construction-inspection/value-counts:
+  - topic: "count occurrences of each category in a column with value_counts"
+    kind: idiom
+    note: "naive fork is a manual dict count or groupby().size()"
+  - topic: "get category proportions with value_counts(normalize=True)"
+    kind: idiom
+  - topic: "count the distinct values in a column with nunique"
+    kind: recall
+
+construction-inspection/series-construct:
+  - topic: "build a Series from a dict so its keys become the index"
+    kind: recall
+  - topic: "build a named Series from a list of values"
+    kind: recall
+
+construction-inspection/rename-columns:
+  - topic: "rename two columns via rename(columns={...})"
+    kind: recall
+  - topic: "lowercase every column name of a DataFrame"
+    kind: idiom
+    note: "assigning df.columns vs a rename mapping"
+
+# ── 3 · dtypes-missing ───────────────────────────────────────────────────
+dtypes-missing/astype-coercion:
+  - topic: "convert a column of clean numeric strings to int with astype"
+    kind: recall
+  - topic: "coerce a messy numeric column, turning bad values into NaN with to_numeric(errors='coerce')"
+    kind: idiom
+    note: "naive astype(int) raises on the bad rows"
+
+dtypes-missing/missing-detect-fill:
+  - topic: "count missing values per column with isna().sum()"
+    kind: idiom
+  - topic: "fill missing values in a column with a constant via fillna"
+    kind: recall
+  - topic: "drop rows that have any missing value with dropna"
+    kind: recall
+  - topic: "drop columns with fewer than N non-null values using dropna(axis=1, thresh=)"
+    kind: idiom
+
+dtypes-missing/duplicates:
+  - topic: "drop duplicate rows keeping the first with drop_duplicates"
+    kind: recall
+  - topic: "flag duplicate rows on a subset of key columns with duplicated(subset=)"
+    kind: idiom
+  - topic: "keep the last occurrence of each duplicate with keep='last'"
+    kind: recall
+
+dtypes-missing/to-datetime:
+  - topic: "parse a column of date strings with a known format via to_datetime(format=)"
+    kind: recall
+  - topic: "parse mixed/bad dates coercing failures to NaT (errors='coerce')"
+    kind: idiom
+
+dtypes-missing/ffill-bfill-interp:
+  - topic: "forward-fill missing values within a column using ffill"
+    kind: idiom
+    note: "SQL LAST_VALUE IGNORE NULLS analogue"
+  - topic: "linearly interpolate gaps in a numeric series with interpolate"
+    kind: recall
+
+dtypes-missing/nullable-dtypes:
+  - topic: "use the nullable Int64 dtype so integers survive missing values"
+    kind: idiom
+    note: "a plain int column upcasts to float once a NaN appears"
+  - topic: "represent missing entries with pd.NA in a nullable column"
+    kind: recall
+
+dtypes-missing/categoricals:
+  - topic: "convert a low-cardinality string column to category dtype to save memory"
+    kind: idiom
+  - topic: "define an ordered categorical so sorting and comparison respect the order"
+    kind: idiom
+
+# ── 4 · index ────────────────────────────────────────────────────────────
+index/index-basics:
+  - topic: "test whether a column can serve as a unique key with is_unique"
+    kind: idiom
+    note: "naive len(set(col)) == len(col); this is the SQL primary-key check"
+  - topic: "give a DataFrame's row index a name"
+    kind: recall
+
+index/set-reset-index:
+  - topic: "promote a column to the row index with set_index"
+    kind: idiom
+    note: "naive fork assigns .index then drops the column by hand"
+  - topic: "flatten the index back into a regular column with reset_index"
+    kind: recall
+  - topic: "build a two-level MultiIndex with set_index([a, b])"
+    kind: recall
+
+index/reindex-align:
+  - topic: "add two Series and rely on automatic index alignment (by label, not position)"
+    kind: idiom
+    note: "naive a.values + b.values misaligns; SQL never auto-aligns rows"
+  - topic: "conform a Series to a new index with reindex, filling absent labels with NaN"
+    kind: idiom
+
+index/sort-index:
+  - topic: "sort a DataFrame by its row index with sort_index"
+    kind: recall
+  - topic: "sort a MultiIndex so label-slicing stops raising (lexsort depth)"
+    kind: idiom
+    note: "unsorted MultiIndex slicing raises; sort_index fixes it"
+
+index/multiindex-construct:
+  - topic: "build a MultiIndex from the cartesian product of two label lists (from_product)"
+    kind: recall
+  - topic: "build a MultiIndex from explicit tuples with level names"
+    kind: recall
+
+index/multiindex-select:
+  - topic: "select a cross-section at one index level with xs"
+    kind: idiom
+  - topic: "slice a sorted MultiIndex with pd.IndexSlice"
+    kind: idiom
+
+index/index-set-ops:
+  - topic: "find the labels common to two indexes with intersection"
+    kind: recall
+  - topic: "find the labels in one index but not another with difference"
+    kind: recall
+
+# ── 5 · selection ────────────────────────────────────────────────────────
+selection/loc-vs-iloc:
+  - topic: "select a label range with .loc (endpoint inclusive) vs positions with .iloc (endpoint exclusive)"
+    kind: idiom
+    note: "the inclusive-vs-exclusive slice trap is the point"
+  - topic: "select specific rows and columns by label with .loc[rows, cols]"
+    kind: recall
+
+selection/boolean-mask:
+  - topic: "filter rows where a column exceeds a threshold with a boolean mask"
+    kind: idiom
+  - topic: "filter on two conditions combined with & and | (each parenthesized)"
+    kind: idiom
+    note: "forgetting the parentheses is the classic precedence bug"
+
+selection/isin-between:
+  - topic: "keep rows whose category is in a set of allowed values with isin"
+    kind: idiom
+    note: "naive fork chains == with | for each value"
+  - topic: "drop rows whose value falls inside a range using ~between"
+    kind: idiom
+
+selection/chained-assignment:
+  - topic: "assign to a filtered subset with .loc[mask, col] = value"
+    kind: idiom
+    note: "chained df[mask][col] = value triggers SettingWithCopyWarning and no-ops"
+  - topic: "work on a copy so the original frame is untouched (copy first)"
+    kind: idiom
+
+selection/query-eval:
+  - topic: "filter rows with a readable query() expression referencing an @variable"
+    kind: idiom
+  - topic: "reference a column whose name has spaces using backticks in query"
+    kind: recall
+
+selection/at-iat-scalar:
+  - topic: "read a single cell by label with .at"
+    kind: recall
+
+# ── 6 · transform-compute ────────────────────────────────────────────────
+transform-compute/assign-columns:
+  - topic: "add a derived column inside a chain with .assign"
+    kind: idiom
+    note: "naive fork builds an intermediate frame then col = ..."
+  - topic: "overwrite a column with a transformed version of itself"
+    kind: recall
+
+transform-compute/vectorized-ops:
+  - topic: "compute a new column as a vectorized combination of two columns"
+    kind: idiom
+    note: "naive fork uses apply(axis=1) or iterrows"
+  - topic: "flag rows with a vectorized boolean comparison across columns"
+    kind: idiom
+
+transform-compute/str-accessor:
+  - topic: "pull a substring pattern out of a text column with .str.extract"
+    kind: idiom
+    note: "naive fork is apply(lambda) with re"
+  - topic: "keep rows whose text column contains a pattern with .str.contains"
+    kind: idiom
+  - topic: "split a text column on a delimiter with .str.split"
+    kind: recall
+
+transform-compute/where-mask-select:
+  - topic: "replace values that fail a condition using Series.where"
+    kind: idiom
+  - topic: "assign one of several labels by condition with np.select"
+    kind: idiom
+    note: "naive fork nests np.where or apply for multi-way conditions"
+
+transform-compute/map-replace:
+  - topic: "map codes to labels with Series.map(mapping_dict)"
+    kind: idiom
+    note: "naive fork is apply(lambda x: d[x])"
+  - topic: "replace sentinel values with NaN using replace"
+    kind: recall
+
+transform-compute/dt-accessor:
+  - topic: "extract the year and month from a datetime column with the .dt accessor"
+    kind: idiom
+  - topic: "floor a timestamp column to the day with .dt.floor"
+    kind: recall
+
+transform-compute/apply-when:
+  - topic: "apply a row-wise function only where the logic truly can't be vectorized"
+    kind: idiom
+    note: "teaches apply(axis=1) as last resort and itertuples over iterrows"
+
+# ── 7 · combining ────────────────────────────────────────────────────────
+combining/merge-basics:
+  - topic: "inner-join two DataFrames on a key column with merge"
+    kind: idiom
+    note: "SQL INNER JOIN"
+  - topic: "left-join to enrich rows while keeping every left row (how='left')"
+    kind: idiom
+
+combining/merge-pitfalls:
+  - topic: "assert a one-to-many relationship with merge(validate='1:m')"
+    kind: idiom
+    note: "this is the FK-cardinality check a database gives you for free"
+  - topic: "diagnose which keys matched with merge(indicator=True)"
+    kind: idiom
+  - topic: "disambiguate overlapping non-key columns with suffixes"
+    kind: recall
+
+combining/concat:
+  - topic: "stack two DataFrames row-wise with concat(ignore_index=True)"
+    kind: idiom
+    note: "SQL UNION ALL"
+  - topic: "glue two frames side-by-side aligning on the index with concat(axis=1)"
+    kind: idiom
+
+combining/map-lookup-vs-merge:
+  - topic: "add a column by mapping a key through a lookup Series rather than merging"
+    kind: idiom
+
+combining/join-on-index:
+  - topic: "join two DataFrames on their shared index with DataFrame.join"
+    kind: recall
+
+combining/combine-first-update:
+  - topic: "fill missing values in one frame from a second with combine_first"
+    kind: recall
+
+# ── 8 · groupby-aggregate-window ─────────────────────────────────────────
+groupby-aggregate-window/groupby-basics:
+  - topic: "compute the mean of a column per group with groupby"
+    kind: recall
+    note: "SQL GROUP BY"
+  - topic: "count rows per group with groupby().size()"
+    kind: recall
+
+groupby-aggregate-window/agg-named:
+  - topic: "produce several named per-group aggregates in one agg call (named aggregation)"
+    kind: idiom
+    note: "naive fork runs multiple separate groupbys and joins them"
+  - topic: "aggregate different columns with different functions in a single agg"
+    kind: idiom
+
+groupby-aggregate-window/transform-broadcast:
+  - topic: "add a column of each row's group mean using groupby().transform"
+    kind: idiom
+    note: "SQL AVG() OVER (PARTITION BY key); naive fork groupbys then merges back"
+  - topic: "center each value by subtracting its group mean with transform"
+    kind: idiom
+
+groupby-aggregate-window/shift-diff-pct:
+  - topic: "get the previous row's value within each group with groupby().shift"
+    kind: idiom
+    note: "SQL LAG() OVER (PARTITION BY)"
+  - topic: "compute row-to-row differences down a column with diff"
+    kind: recall
+
+groupby-aggregate-window/sort-values:
+  - topic: "sort a DataFrame by a column in descending order with sort_values"
+    kind: recall
+  - topic: "sort by two columns with mixed ascending/descending order"
+    kind: recall
+
+groupby-aggregate-window/multi-key-observed:
+  - topic: "group by two keys and aggregate a value"
+    kind: recall
+  - topic: "group by a categorical key without materializing empty combinations (observed=True)"
+    kind: idiom
+    note: "default observed=False explodes across all category combinations"
+
+groupby-aggregate-window/pivottable-crosstab:
+  - topic: "summarize a mean value across two dimensions with pivot_table"
+    kind: idiom
+  - topic: "cross-tabulate counts of two categoricals with crosstab"
+    kind: idiom
+
+groupby-aggregate-window/groupby-filter-apply:
+  - topic: "keep only groups whose size exceeds a threshold with groupby().filter"
+    kind: idiom
+  - topic: "take the first row of each group with groupby().first"
+    kind: recall
+
+groupby-aggregate-window/rank:
+  - topic: "rank rows within each group with groupby()[col].rank(method='dense')"
+    kind: idiom
+    note: "SQL DENSE_RANK() OVER (PARTITION BY)"
+  - topic: "take the top-N rows per group by a value"
+    kind: idiom
+
+groupby-aggregate-window/rolling-expanding:
+  - topic: "compute a trailing 3-period moving average with rolling(window).mean()"
+    kind: idiom
+    note: "SQL windowed frame ROWS BETWEEN 2 PRECEDING AND CURRENT ROW"
+  - topic: "compute a running cumulative total with expanding().sum()"
+    kind: recall
+
+groupby-aggregate-window/cumulative:
+  - topic: "compute a per-group running total with groupby().cumsum"
+    kind: idiom
+    note: "SQL SUM() OVER (PARTITION BY key ROWS UNBOUNDED PRECEDING)"
+
+# ── 9 · reshaping ────────────────────────────────────────────────────────
+reshaping/melt:
+  - topic: "reshape wide measure columns into long form with melt (id_vars, value_vars)"
+    kind: idiom
+    note: "unpivot; the inverse of a pivot"
+  - topic: "melt only a subset of measure columns while keeping the id columns"
+    kind: idiom
+
+reshaping/pivot-vs-pivottable:
+  - topic: "pivot a tidy long frame to wide with pivot (no aggregation)"
+    kind: idiom
+    note: "pivot raises on duplicate index/column pairs; pivot_table would aggregate them"
+
+reshaping/stack-unstack:
+  - topic: "move a column level down into the row index with stack"
+    kind: idiom
+  - topic: "spread an index level out into columns with unstack"
+    kind: idiom
+
+reshaping/explode:
+  - topic: "expand a column of lists into one row per element with explode"
+    kind: recall
+
+reshaping/get-dummies:
+  - topic: "one-hot encode a categorical column with get_dummies"
+    kind: recall
+
+# ── 10 · binning ─────────────────────────────────────────────────────────
+binning/cut:
+  - topic: "bin a continuous column into labeled ranges with cut"
+    kind: idiom
+    note: "cut returns an ordered categorical"
+  - topic: "bin values into custom edges with right-open intervals (right=False)"
+    kind: recall
+
+binning/qcut:
+  - topic: "split a column into quartiles of equal count with qcut"
+    kind: idiom
+
+binning/unbin-map:
+  - topic: "map each bin to a representative value such as its interval midpoint"
+    kind: idiom
+  - topic: "recover the bin intervals from a binned column's .cat.categories"
+    kind: recall
+
+# ── 11 · test-data-synthesis ─────────────────────────────────────────────
+test-data-synthesis/rng-columns:
+  - topic: "build a DataFrame of seeded random normals and integers with default_rng"
+    kind: recall
+
+test-data-synthesis/date-ranges:
+  - topic: "create a daily date_range and use it as a DataFrame index"
+    kind: recall
+  - topic: "generate month-start periods with period_range"
+    kind: recall
+
+test-data-synthesis/sample-shuffle:
+  - topic: "draw a reproducible random sample of rows with sample(frac=, random_state=)"
+    kind: recall
+  - topic: "shuffle a DataFrame's rows reproducibly and reset the index"
+    kind: recall
+
+test-data-synthesis/cartesian-grid:
+  - topic: "build every combination of two factor lists with MultiIndex.from_product"
+    kind: idiom
+  - topic: "form a cross join of two small frames with merge(how='cross')"
+    kind: idiom
+
+test-data-synthesis/repeat-tile-fixtures:
+  - topic: "build a grouped fixture by repeating each group label with np.repeat"
+    kind: idiom
+  - topic: "tile a short pattern across many rows with np.tile"
+    kind: recall
+
+# ── 12 · io-lite ─────────────────────────────────────────────────────────
+io-lite/read-csv-options:
+  - topic: "read a CSV from a StringIO parsing a date column and setting the index (parse_dates, index_col)"
+    kind: recall
+  - topic: "read only selected columns with explicit dtypes (usecols, dtype)"
+    kind: recall
+  - topic: "treat sentinel strings as missing on read with na_values"
+    kind: recall
+
+io-lite/read-sql-lite:
+  - topic: "read a query into a DataFrame from an in-memory sqlite connection with read_sql (index_col)"
+    kind: recall
+
+io-lite/roundtrip-awareness:
+  - topic: "round-trip a typed DataFrame through parquet and confirm the dtypes survive"
+    kind: recall

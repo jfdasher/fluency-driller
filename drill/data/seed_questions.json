@@ -1,0 +1,381 @@
+[
+  {
+    "external_id": "sorting/multi-key-stable-mixed",
+    "topic": "iteration/sorting",
+    "grader": "python",
+    "modality": "code",
+    "prompt": "Sort dict d (str -> str of int) ascending by int value, and descending lexicographic by key as a tiebreak. Return a list of [key, value] pairs.",
+    "stub": "def solve(d):\n    ...",
+    "entry_point": "solve",
+    "canonical_answer": "def solve(d):\n    items = sorted(d.items(), key=lambda kv: kv[0], reverse=True)\n    return [list(kv) for kv in sorted(items, key=lambda kv: int(kv[1]))]",
+    "hints": [
+      "A stable sort lets you sort in passes: apply the least-significant key first.",
+      "Sort descending by key, then stably sort ascending by int(value).",
+      "sorted(..., key=lambda kv: kv[0], reverse=True) then sorted(..., key=lambda kv: int(kv[1]))."
+    ],
+    "test_cases": [
+      {
+        "name": "test_case_0",
+        "source": "def test_case_0():\n    assert equal(solve(**{'d': {'a': '2', 'b': '1', 'c': '2'}}), [['b', '1'], ['c', '2'], ['a', '2']])"
+      },
+      {
+        "name": "test_case_1",
+        "source": "def test_case_1():\n    assert equal(solve(**{'d': {'x': '3', 'y': '3', 'z': '1'}}), [['z', '1'], ['y', '3'], ['x', '3']])"
+      },
+      {
+        "name": "test_case_2",
+        "source": "def test_case_2():\n    assert equal(solve(**{'d': {'only': '5'}}), [['only', '5']])"
+      }
+    ]
+  },
+  {
+    "external_id": "sorting/by-length-then-alpha",
+    "topic": "iteration/sorting",
+    "grader": "python",
+    "modality": "code",
+    "prompt": "Sort a list of words by length, breaking ties alphabetically. Return the sorted list.",
+    "stub": "def solve(words):\n    ...",
+    "entry_point": "solve",
+    "canonical_answer": "def solve(words):\n    return sorted(words, key=lambda w: (len(w), w))",
+    "hints": [
+      "A tuple key sorts by its first element, then the second.",
+      "Build a tuple of (length, word) as the key.",
+      "return sorted(words, key=lambda w: (len(w), w))"
+    ],
+    "test_cases": [
+      {
+        "name": "test_case_0",
+        "source": "def test_case_0():\n    assert equal(solve(**{'words': ['bb', 'a', 'cc', 'aa']}), ['a', 'aa', 'bb', 'cc'])"
+      },
+      {
+        "name": "test_case_1",
+        "source": "def test_case_1():\n    assert equal(solve(**{'words': ['pear', 'fig', 'kiwi']}), ['fig', 'kiwi', 'pear'])"
+      }
+    ]
+  },
+  {
+    "external_id": "sorting/keys-by-value-desc",
+    "topic": "iteration/sorting",
+    "grader": "python",
+    "modality": "code",
+    "prompt": "Given a dict of name -> score, return the names sorted by score, highest first.",
+    "stub": "def solve(scores):\n    ...",
+    "entry_point": "solve",
+    "canonical_answer": "def solve(scores):\n    return sorted(scores, key=scores.get, reverse=True)",
+    "hints": [
+      "Iterating a dict yields its keys; you can sort those keys by a computed value.",
+      "Use the dict's .get as the key function with reverse=True.",
+      "return sorted(scores, key=scores.get, reverse=True)"
+    ],
+    "test_cases": [
+      {
+        "name": "test_case_0",
+        "source": "def test_case_0():\n    assert equal(solve(**{'scores': {'ann': 3, 'bob': 9, 'cy': 5}}), ['bob', 'cy', 'ann'])"
+      },
+      {
+        "name": "test_case_1",
+        "source": "def test_case_1():\n    assert equal(solve(**{'scores': {'x': 1, 'y': 2}}), ['y', 'x'])"
+      }
+    ]
+  },
+  {
+    "external_id": "sorting/by-abs-value",
+    "topic": "iteration/sorting",
+    "grader": "python",
+    "modality": "code",
+    "prompt": "Sort a list of integers by absolute value, smallest magnitude first. Return the sorted list.",
+    "stub": "def solve(xs):\n    ...",
+    "entry_point": "solve",
+    "canonical_answer": "def solve(xs):\n    return sorted(xs, key=abs)",
+    "hints": [
+      "The key function can be any callable, including a builtin.",
+      "abs is a builtin that returns the magnitude of a number.",
+      "return sorted(nums, key=abs)"
+    ],
+    "test_cases": [
+      {
+        "name": "test_case_0",
+        "source": "def test_case_0():\n    assert equal(solve(**{'xs': [-3, 1, -2, 2]}), [1, -2, 2, -3])"
+      },
+      {
+        "name": "test_case_1",
+        "source": "def test_case_1():\n    assert equal(solve(**{'xs': [5, -5, 0]}), [0, 5, -5])"
+      }
+    ]
+  },
+  {
+    "external_id": "comprehensions/flatten",
+    "topic": "comprehensions/basic",
+    "grader": "python",
+    "modality": "code",
+    "prompt": "Flatten a list of lists into a single list, preserving order.",
+    "stub": "def solve(matrix):\n    ...",
+    "entry_point": "solve",
+    "canonical_answer": "def solve(matrix):\n    return [x for row in matrix for x in row]",
+    "hints": [
+      "Nested for-clauses in a comprehension read left-to-right, outer first.",
+      "Write 'for row in matrix' then 'for x in row' in one comprehension.",
+      "return [item for sublist in matrix for item in sublist]"
+    ],
+    "test_cases": [
+      {
+        "name": "test_case_0",
+        "source": "def test_case_0():\n    assert equal(solve(**{'matrix': [[1, 2], [3], [4, 5]]}), [1, 2, 3, 4, 5])"
+      },
+      {
+        "name": "test_case_1",
+        "source": "def test_case_1():\n    assert equal(solve(**{'matrix': [[], [9]]}), [9])"
+      }
+    ]
+  },
+  {
+    "external_id": "comprehensions/invert-dict",
+    "topic": "comprehensions/basic",
+    "grader": "python",
+    "modality": "code",
+    "prompt": "Invert a dict, swapping keys and values. Assume values are unique and hashable.",
+    "stub": "def solve(d):\n    ...",
+    "entry_point": "solve",
+    "canonical_answer": "def solve(d):\n    return {v: k for k, v in d.items()}",
+    "hints": [
+      "A dict comprehension can rebind each key/value pair.",
+      "Swap k and v when building the new dict.",
+      "return {val: key for key, val in d.items()}"
+    ],
+    "test_cases": [
+      {
+        "name": "test_case_0",
+        "source": "def test_case_0():\n    assert equal(solve(**{'d': {'a': 1, 'b': 2}}), {'1': 'a', '2': 'b'})"
+      },
+      {
+        "name": "test_case_1",
+        "source": "def test_case_1():\n    assert equal(solve(**{'d': {'x': 9}}), {'9': 'x'})"
+      }
+    ]
+  },
+  {
+    "external_id": "comprehensions/squares-of-evens",
+    "topic": "comprehensions/basic",
+    "grader": "python",
+    "modality": "code",
+    "prompt": "Return the squares of the even numbers in a list, in order.",
+    "stub": "def solve(xs):\n    ...",
+    "entry_point": "solve",
+    "canonical_answer": "def solve(xs):\n    return [x * x for x in xs if x % 2 == 0]",
+    "hints": [
+      "A comprehension can both map and filter in one pass.",
+      "Add an 'if' clause to filter evens, then square each one.",
+      "return [n * n for n in xs if n % 2 == 0]"
+    ],
+    "test_cases": [
+      {
+        "name": "test_case_0",
+        "source": "def test_case_0():\n    assert equal(solve(**{'xs': [1, 2, 3, 4]}), [4, 16])"
+      },
+      {
+        "name": "test_case_1",
+        "source": "def test_case_1():\n    assert equal(solve(**{'xs': [5, 7]}), [])"
+      }
+    ]
+  },
+  {
+    "external_id": "comprehensions/enumerate-labels",
+    "topic": "comprehensions/basic",
+    "grader": "python",
+    "modality": "code",
+    "prompt": "Given a list of values, return a list of 'index:value' strings using the position of each item.",
+    "stub": "def solve(values):\n    ...",
+    "entry_point": "solve",
+    "canonical_answer": "def solve(values):\n    return [f\"{i}:{v}\" for i, v in enumerate(values)]",
+    "hints": [
+      "enumerate gives you (index, value) pairs without a manual counter.",
+      "Unpack each (idx, val) pair in the comprehension.",
+      "return [f\"{idx}:{val}\" for idx, val in enumerate(values)]"
+    ],
+    "test_cases": [
+      {
+        "name": "test_case_0",
+        "source": "def test_case_0():\n    assert equal(solve(**{'values': ['a', 'b']}), ['0:a', '1:b'])"
+      },
+      {
+        "name": "test_case_1",
+        "source": "def test_case_1():\n    assert equal(solve(**{'values': [10]}), ['0:10'])"
+      }
+    ]
+  },
+  {
+    "external_id": "string-methods/split-strip-fields",
+    "topic": "types/str-methods",
+    "grader": "python",
+    "modality": "code",
+    "prompt": "Split a comma-separated line into fields, stripping surrounding whitespace from each.",
+    "stub": "def solve(line):\n    ...",
+    "entry_point": "solve",
+    "canonical_answer": "def solve(line):\n    return [field.strip() for field in line.split(\",\")]",
+    "hints": [
+      "str.split returns the raw pieces; clean each one.",
+      "Apply .strip() to every piece from .split(',').",
+      "return [piece.strip() for piece in line.split(',')]"
+    ],
+    "test_cases": [
+      {
+        "name": "test_case_0",
+        "source": "def test_case_0():\n    assert equal(solve(**{'line': 'a, b ,c'}), ['a', 'b', 'c'])"
+      },
+      {
+        "name": "test_case_1",
+        "source": "def test_case_1():\n    assert equal(solve(**{'line': ' one ,two'}), ['one', 'two'])"
+      }
+    ]
+  },
+  {
+    "external_id": "string-methods/is-palindrome",
+    "topic": "types/str-methods",
+    "grader": "python",
+    "modality": "code",
+    "prompt": "Return True if a string is a palindrome ignoring case and spaces, else False.",
+    "stub": "def solve(s):\n    ...",
+    "entry_point": "solve",
+    "canonical_answer": "def solve(s):\n    t = \"\".join(s.lower().split())\n    return t == t[::-1]",
+    "hints": [
+      "Normalize first (lowercase, remove spaces), then compare to the reverse.",
+      "A slice with step -1 reverses a string: t[::-1].",
+      "t = ''.join(s.lower().split()); return t == t[::-1]."
+    ],
+    "test_cases": [
+      {
+        "name": "test_case_0",
+        "source": "def test_case_0():\n    assert equal(solve(**{'s': 'Race car'}), True)"
+      },
+      {
+        "name": "test_case_1",
+        "source": "def test_case_1():\n    assert equal(solve(**{'s': 'hello'}), False)"
+      }
+    ]
+  },
+  {
+    "external_id": "string-methods/join-with-comma",
+    "topic": "types/str-methods",
+    "grader": "python",
+    "modality": "code",
+    "prompt": "Join a list of words into a single string separated by ', '.",
+    "stub": "def solve(words):\n    ...",
+    "entry_point": "solve",
+    "canonical_answer": "def solve(words):\n    return \", \".join(words)",
+    "hints": [
+      "The separator string owns the join method.",
+      "Call .join() on the separator, passing the list.",
+      "return ', '.join(items)"
+    ],
+    "test_cases": [
+      {
+        "name": "test_case_0",
+        "source": "def test_case_0():\n    assert equal(solve(**{'words': ['a', 'b', 'c']}), 'a, b, c')"
+      },
+      {
+        "name": "test_case_1",
+        "source": "def test_case_1():\n    assert equal(solve(**{'words': ['solo']}), 'solo')"
+      }
+    ]
+  },
+  {
+    "external_id": "string-methods/startswith-filter",
+    "topic": "types/str-methods",
+    "grader": "python",
+    "modality": "code",
+    "prompt": "Return the names that start with the given prefix, preserving order.",
+    "stub": "def solve(names, prefix):\n    ...",
+    "entry_point": "solve",
+    "canonical_answer": "def solve(names, prefix):\n    return [n for n in names if n.startswith(prefix)]",
+    "hints": [
+      "str.startswith returns a bool you can use as a comprehension filter.",
+      "Filter the names list with an 'if name.startswith(prefix)' clause.",
+      "return [name for name in names if name.startswith(prefix)]"
+    ],
+    "test_cases": [
+      {
+        "name": "test_case_0",
+        "source": "def test_case_0():\n    assert equal(solve(**{'names': ['amy', 'al', 'bob'], 'prefix': 'a'}), ['amy', 'al'])"
+      },
+      {
+        "name": "test_case_1",
+        "source": "def test_case_1():\n    assert equal(solve(**{'names': ['x', 'y'], 'prefix': 'z'}), [])"
+      }
+    ]
+  },
+  {
+    "external_id": "dict-idioms/char-frequency",
+    "topic": "types/dict",
+    "grader": "python",
+    "modality": "code",
+    "prompt": "Count how many times each character appears in a string. Return a dict of char -> count.",
+    "stub": "def solve(s):\n    ...",
+    "entry_point": "solve",
+    "canonical_answer": "def solve(s):\n    counts = {}\n    for ch in s:\n        counts[ch] = counts.get(ch, 0) + 1\n    return counts",
+    "hints": [
+      "dict.get(key, default) lets you read-or-initialize in one step.",
+      "For each character, increment its count with .get(ch, 0) + 1.",
+      "result = {}\nfor char in s:\n    result[char] = result.get(char, 0) + 1\nreturn result"
+    ],
+    "test_cases": [
+      {
+        "name": "test_case_0",
+        "source": "def test_case_0():\n    assert equal(solve(**{'s': 'aab'}), {'a': 2, 'b': 1})"
+      },
+      {
+        "name": "test_case_1",
+        "source": "def test_case_1():\n    assert equal(solve(**{'s': ''}), {})"
+      }
+    ]
+  },
+  {
+    "external_id": "dict-idioms/group-by-first-letter",
+    "topic": "types/dict",
+    "grader": "python",
+    "modality": "code",
+    "prompt": "Group words by their first letter. Return a dict of letter -> list of words, preserving input order.",
+    "stub": "def solve(words):\n    ...",
+    "entry_point": "solve",
+    "canonical_answer": "def solve(words):\n    groups = {}\n    for w in words:\n        groups.setdefault(w[0], []).append(w)\n    return groups",
+    "hints": [
+      "dict.setdefault returns the existing list or installs a fresh one.",
+      "Call setdefault(first_letter, []).append(word) for each word.",
+      "buckets = {}\nfor word in words:\n    buckets.setdefault(word[0], []).append(word)\nreturn buckets"
+    ],
+    "test_cases": [
+      {
+        "name": "test_case_0",
+        "source": "def test_case_0():\n    assert equal(solve(**{'words': ['apple', 'ant', 'bee']}), {'a': ['apple', 'ant'], 'b': ['bee']})"
+      },
+      {
+        "name": "test_case_1",
+        "source": "def test_case_1():\n    assert equal(solve(**{'words': ['cat']}), {'c': ['cat']})"
+      }
+    ]
+  },
+  {
+    "external_id": "dict-idioms/merge-second-wins",
+    "topic": "types/dict",
+    "grader": "python",
+    "modality": "code",
+    "prompt": "Merge two dicts into a new one. On key collisions, the second dict's value wins. Do not mutate the inputs.",
+    "stub": "def solve(a, b):\n    ...",
+    "entry_point": "solve",
+    "canonical_answer": "def solve(a, b):\n    return {**a, **b}",
+    "hints": [
+      "Dict unpacking builds a new dict; later keys overwrite earlier ones.",
+      "Unpack both dicts into a single literal: {**first, **second}.",
+      "return {**first, **second}"
+    ],
+    "test_cases": [
+      {
+        "name": "test_case_0",
+        "source": "def test_case_0():\n    assert equal(solve(**{'a': {'x': 1, 'y': 2}, 'b': {'y': 9, 'z': 3}}), {'x': 1, 'y': 9, 'z': 3})"
+      },
+      {
+        "name": "test_case_1",
+        "source": "def test_case_1():\n    assert equal(solve(**{'a': {}, 'b': {'k': 1}}), {'k': 1})"
+      }
+    ]
+  }
+]

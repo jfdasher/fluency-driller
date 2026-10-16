@@ -1,0 +1,1792 @@
+{
+  "meta": {
+    "python_version": "3.13.12",
+    "generated_at": "2026-06-12T19:36:07.041524+00:00"
+  },
+  "keywords": [
+    "False",
+    "None",
+    "True",
+    "and",
+    "as",
+    "assert",
+    "async",
+    "await",
+    "break",
+    "class",
+    "continue",
+    "def",
+    "del",
+    "elif",
+    "else",
+    "except",
+    "finally",
+    "for",
+    "from",
+    "global",
+    "if",
+    "import",
+    "in",
+    "is",
+    "lambda",
+    "nonlocal",
+    "not",
+    "or",
+    "pass",
+    "raise",
+    "return",
+    "try",
+    "while",
+    "with",
+    "yield"
+  ],
+  "soft_keywords": [
+    "_",
+    "case",
+    "match",
+    "type"
+  ],
+  "builtins": {
+    "functions": [
+      {
+        "name": "abs",
+        "doc": "Return the absolute value of the argument."
+      },
+      {
+        "name": "aiter",
+        "doc": "Return an AsyncIterator for an AsyncIterable object."
+      },
+      {
+        "name": "all",
+        "doc": "Return True if bool(x) is True for all values x in the iterable."
+      },
+      {
+        "name": "anext",
+        "doc": "Return the next item from the async iterator."
+      },
+      {
+        "name": "any",
+        "doc": "Return True if bool(x) is True for any x in the iterable."
+      },
+      {
+        "name": "ascii",
+        "doc": "Return an ASCII-only representation of an object."
+      },
+      {
+        "name": "bin",
+        "doc": "Return the binary representation of an integer."
+      },
+      {
+        "name": "breakpoint",
+        "doc": "Call sys.breakpointhook(*args, **kws).  sys.breakpointhook() must accept"
+      },
+      {
+        "name": "callable",
+        "doc": "Return whether the object is callable (i.e., some kind of function)."
+      },
+      {
+        "name": "chr",
+        "doc": "Return a Unicode string of one character with ordinal i; 0 <= i <= 0x10ffff."
+      },
+      {
+        "name": "compile",
+        "doc": "Compile source into a code object that can be executed by exec() or eval()."
+      },
+      {
+        "name": "copyright",
+        "doc": "interactive prompt objects for printing the license text, a list of"
+      },
+      {
+        "name": "credits",
+        "doc": "interactive prompt objects for printing the license text, a list of"
+      },
+      {
+        "name": "delattr",
+        "doc": "Deletes the named attribute from the given object."
+      },
+      {
+        "name": "dir",
+        "doc": "dir([object]) -> list of strings"
+      },
+      {
+        "name": "divmod",
+        "doc": "Return the tuple (x//y, x%y).  Invariant: div*y + mod == x."
+      },
+      {
+        "name": "eval",
+        "doc": "Evaluate the given source in the context of globals and locals."
+      },
+      {
+        "name": "exec",
+        "doc": "Execute the given source in the context of globals and locals."
+      },
+      {
+        "name": "exit",
+        "doc": ""
+      },
+      {
+        "name": "format",
+        "doc": "Return type(value).__format__(value, format_spec)"
+      },
+      {
+        "name": "getattr",
+        "doc": "getattr(object, name[, default]) -> value"
+      },
+      {
+        "name": "globals",
+        "doc": "Return the dictionary containing the current scope's global variables."
+      },
+      {
+        "name": "hasattr",
+        "doc": "Return whether the object has an attribute with the given name."
+      },
+      {
+        "name": "hash",
+        "doc": "Return the hash value for the given object."
+      },
+      {
+        "name": "help",
+        "doc": "Define the builtin 'help'."
+      },
+      {
+        "name": "hex",
+        "doc": "Return the hexadecimal representation of an integer."
+      },
+      {
+        "name": "id",
+        "doc": "Return the identity of an object."
+      },
+      {
+        "name": "input",
+        "doc": "Read a string from standard input.  The trailing newline is stripped."
+      },
+      {
+        "name": "isinstance",
+        "doc": "Return whether an object is an instance of a class or of a subclass thereof."
+      },
+      {
+        "name": "issubclass",
+        "doc": "Return whether 'cls' is derived from another class or is the same class."
+      },
+      {
+        "name": "iter",
+        "doc": "iter(iterable) -> iterator"
+      },
+      {
+        "name": "len",
+        "doc": "Return the number of items in a container."
+      },
+      {
+        "name": "license",
+        "doc": "interactive prompt objects for printing the license text, a list of"
+      },
+      {
+        "name": "locals",
+        "doc": "Return a dictionary containing the current scope's local variables."
+      },
+      {
+        "name": "max",
+        "doc": "max(iterable, *[, default=obj, key=func]) -> value"
+      },
+      {
+        "name": "min",
+        "doc": "min(iterable, *[, default=obj, key=func]) -> value"
+      },
+      {
+        "name": "next",
+        "doc": "next(iterator[, default])"
+      },
+      {
+        "name": "oct",
+        "doc": "Return the octal representation of an integer."
+      },
+      {
+        "name": "open",
+        "doc": "Open file and return a stream.  Raise OSError upon failure."
+      },
+      {
+        "name": "ord",
+        "doc": "Return the ordinal value of a character."
+      },
+      {
+        "name": "pow",
+        "doc": "Equivalent to base**exp with 2 arguments or base**exp % mod with 3 arguments"
+      },
+      {
+        "name": "print",
+        "doc": "Prints the values to a stream, or to sys.stdout by default."
+      },
+      {
+        "name": "quit",
+        "doc": ""
+      },
+      {
+        "name": "repr",
+        "doc": "Return the canonical string representation of the object."
+      },
+      {
+        "name": "round",
+        "doc": "Round a number to a given precision in decimal digits."
+      },
+      {
+        "name": "setattr",
+        "doc": "Sets the named attribute on the given object to the specified value."
+      },
+      {
+        "name": "sorted",
+        "doc": "Return a new list containing all items from the iterable in ascending order."
+      },
+      {
+        "name": "sum",
+        "doc": "Return the sum of a 'start' value (default: 0) plus an iterable of numbers"
+      },
+      {
+        "name": "vars",
+        "doc": "vars([object]) -> dictionary"
+      }
+    ],
+    "types": [
+      {
+        "name": "bool",
+        "doc": "Returns True when the argument is true, False otherwise."
+      },
+      {
+        "name": "bytearray",
+        "doc": "bytearray(iterable_of_ints) -> bytearray"
+      },
+      {
+        "name": "bytes",
+        "doc": "bytes(iterable_of_ints) -> bytes"
+      },
+      {
+        "name": "classmethod",
+        "doc": "Convert a function to be a class method."
+      },
+      {
+        "name": "complex",
+        "doc": "Create a complex number from a string or numbers."
+      },
+      {
+        "name": "dict",
+        "doc": "dict() -> new empty dictionary"
+      },
+      {
+        "name": "enumerate",
+        "doc": "Return an enumerate object."
+      },
+      {
+        "name": "filter",
+        "doc": "Return an iterator yielding those items of iterable for which function(item)"
+      },
+      {
+        "name": "float",
+        "doc": "Convert a string or number to a floating-point number, if possible."
+      },
+      {
+        "name": "frozenset",
+        "doc": "Build an immutable unordered collection of unique elements."
+      },
+      {
+        "name": "int",
+        "doc": "int([x]) -> integer"
+      },
+      {
+        "name": "list",
+        "doc": "Built-in mutable sequence."
+      },
+      {
+        "name": "map",
+        "doc": "Make an iterator that computes the function using arguments from"
+      },
+      {
+        "name": "memoryview",
+        "doc": "Create a new memoryview object which references the given object."
+      },
+      {
+        "name": "object",
+        "doc": "The base class of the class hierarchy."
+      },
+      {
+        "name": "property",
+        "doc": "Property attribute."
+      },
+      {
+        "name": "range",
+        "doc": "range(stop) -> range object"
+      },
+      {
+        "name": "reversed",
+        "doc": "Return a reverse iterator over the values of the given sequence."
+      },
+      {
+        "name": "set",
+        "doc": "Build an unordered collection of unique elements."
+      },
+      {
+        "name": "slice",
+        "doc": "slice(stop)"
+      },
+      {
+        "name": "staticmethod",
+        "doc": "Convert a function to be a static method."
+      },
+      {
+        "name": "str",
+        "doc": "str(object='') -> str"
+      },
+      {
+        "name": "super",
+        "doc": "super() -> same as super(__class__, <first argument>)"
+      },
+      {
+        "name": "tuple",
+        "doc": "Built-in immutable sequence."
+      },
+      {
+        "name": "type",
+        "doc": "type(object) -> the object's type"
+      },
+      {
+        "name": "zip",
+        "doc": "The zip object yields n-length tuples, where n is the number of iterables"
+      }
+    ],
+    "exceptions": [
+      {
+        "name": "ArithmeticError",
+        "doc": "Base class for arithmetic errors."
+      },
+      {
+        "name": "AssertionError",
+        "doc": "Assertion failed."
+      },
+      {
+        "name": "AttributeError",
+        "doc": "Attribute not found."
+      },
+      {
+        "name": "BaseException",
+        "doc": "Common base class for all exceptions"
+      },
+      {
+        "name": "BaseExceptionGroup",
+        "doc": "A combination of multiple unrelated exceptions."
+      },
+      {
+        "name": "BlockingIOError",
+        "doc": "I/O operation would block."
+      },
+      {
+        "name": "BrokenPipeError",
+        "doc": "Broken pipe."
+      },
+      {
+        "name": "BufferError",
+        "doc": "Buffer error."
+      },
+      {
+        "name": "BytesWarning",
+        "doc": "Base class for warnings about bytes and buffer related problems, mostly"
+      },
+      {
+        "name": "ChildProcessError",
+        "doc": "Child process error."
+      },
+      {
+        "name": "ConnectionAbortedError",
+        "doc": "Connection aborted."
+      },
+      {
+        "name": "ConnectionError",
+        "doc": "Connection error."
+      },
+      {
+        "name": "ConnectionRefusedError",
+        "doc": "Connection refused."
+      },
+      {
+        "name": "ConnectionResetError",
+        "doc": "Connection reset."
+      },
+      {
+        "name": "DeprecationWarning",
+        "doc": "Base class for warnings about deprecated features."
+      },
+      {
+        "name": "EOFError",
+        "doc": "Read beyond end of file."
+      },
+      {
+        "name": "EncodingWarning",
+        "doc": "Base class for warnings about encodings."
+      },
+      {
+        "name": "EnvironmentError",
+        "doc": "Base class for I/O related errors."
+      },
+      {
+        "name": "Exception",
+        "doc": "Common base class for all non-exit exceptions."
+      },
+      {
+        "name": "ExceptionGroup",
+        "doc": "A combination of multiple unrelated exceptions."
+      },
+      {
+        "name": "FileExistsError",
+        "doc": "File already exists."
+      },
+      {
+        "name": "FileNotFoundError",
+        "doc": "File not found."
+      },
+      {
+        "name": "FloatingPointError",
+        "doc": "Floating-point operation failed."
+      },
+      {
+        "name": "FutureWarning",
+        "doc": "Base class for warnings about constructs that will change semantically"
+      },
+      {
+        "name": "GeneratorExit",
+        "doc": "Request that a generator exit."
+      },
+      {
+        "name": "IOError",
+        "doc": "Base class for I/O related errors."
+      },
+      {
+        "name": "ImportError",
+        "doc": "Import can't find module, or can't find name in module."
+      },
+      {
+        "name": "ImportWarning",
+        "doc": "Base class for warnings about probable mistakes in module imports"
+      },
+      {
+        "name": "IndentationError",
+        "doc": "Improper indentation."
+      },
+      {
+        "name": "IndexError",
+        "doc": "Sequence index out of range."
+      },
+      {
+        "name": "InterruptedError",
+        "doc": "Interrupted by signal."
+      },
+      {
+        "name": "IsADirectoryError",
+        "doc": "Operation doesn't work on directories."
+      },
+      {
+        "name": "KeyError",
+        "doc": "Mapping key not found."
+      },
+      {
+        "name": "KeyboardInterrupt",
+        "doc": "Program interrupted by user."
+      },
+      {
+        "name": "LookupError",
+        "doc": "Base class for lookup errors."
+      },
+      {
+        "name": "MemoryError",
+        "doc": "Out of memory."
+      },
+      {
+        "name": "ModuleNotFoundError",
+        "doc": "Module not found."
+      },
+      {
+        "name": "NameError",
+        "doc": "Name not found globally."
+      },
+      {
+        "name": "NotADirectoryError",
+        "doc": "Operation only works on directories."
+      },
+      {
+        "name": "NotImplementedError",
+        "doc": "Method or function hasn't been implemented yet."
+      },
+      {
+        "name": "OSError",
+        "doc": "Base class for I/O related errors."
+      },
+      {
+        "name": "OverflowError",
+        "doc": "Result too large to be represented."
+      },
+      {
+        "name": "PendingDeprecationWarning",
+        "doc": "Base class for warnings about features which will be deprecated"
+      },
+      {
+        "name": "PermissionError",
+        "doc": "Not enough permissions."
+      },
+      {
+        "name": "ProcessLookupError",
+        "doc": "Process not found."
+      },
+      {
+        "name": "PythonFinalizationError",
+        "doc": "Operation blocked during Python finalization."
+      },
+      {
+        "name": "RecursionError",
+        "doc": "Recursion limit exceeded."
+      },
+      {
+        "name": "ReferenceError",
+        "doc": "Weak ref proxy used after referent went away."
+      },
+      {
+        "name": "ResourceWarning",
+        "doc": "Base class for warnings about resource usage."
+      },
+      {
+        "name": "RuntimeError",
+        "doc": "Unspecified run-time error."
+      },
+      {
+        "name": "RuntimeWarning",
+        "doc": "Base class for warnings about dubious runtime behavior."
+      },
+      {
+        "name": "StopAsyncIteration",
+        "doc": "Signal the end from iterator.__anext__()."
+      },
+      {
+        "name": "StopIteration",
+        "doc": "Signal the end from iterator.__next__()."
+      },
+      {
+        "name": "SyntaxError",
+        "doc": "Invalid syntax."
+      },
+      {
+        "name": "SyntaxWarning",
+        "doc": "Base class for warnings about dubious syntax."
+      },
+      {
+        "name": "SystemError",
+        "doc": "Internal error in the Python interpreter."
+      },
+      {
+        "name": "SystemExit",
+        "doc": "Request to exit from the interpreter."
+      },
+      {
+        "name": "TabError",
+        "doc": "Improper mixture of spaces and tabs."
+      },
+      {
+        "name": "TimeoutError",
+        "doc": "Timeout expired."
+      },
+      {
+        "name": "TypeError",
+        "doc": "Inappropriate argument type."
+      },
+      {
+        "name": "UnboundLocalError",
+        "doc": "Local name referenced but not bound to a value."
+      },
+      {
+        "name": "UnicodeDecodeError",
+        "doc": "Unicode decoding error."
+      },
+      {
+        "name": "UnicodeEncodeError",
+        "doc": "Unicode encoding error."
+      },
+      {
+        "name": "UnicodeError",
+        "doc": "Unicode related error."
+      },
+      {
+        "name": "UnicodeTranslateError",
+        "doc": "Unicode translation error."
+      },
+      {
+        "name": "UnicodeWarning",
+        "doc": "Base class for warnings about Unicode related problems, mostly"
+      },
+      {
+        "name": "UserWarning",
+        "doc": "Base class for warnings generated by user code."
+      },
+      {
+        "name": "ValueError",
+        "doc": "Inappropriate argument value (of correct type)."
+      },
+      {
+        "name": "Warning",
+        "doc": "Base class for warning categories."
+      },
+      {
+        "name": "ZeroDivisionError",
+        "doc": "Second argument to a division or modulo operation was zero."
+      }
+    ],
+    "constants": [
+      {
+        "name": "Ellipsis",
+        "doc": "The type of the Ellipsis singleton."
+      },
+      {
+        "name": "False",
+        "doc": "Returns True when the argument is true, False otherwise."
+      },
+      {
+        "name": "None",
+        "doc": "The type of the None singleton."
+      },
+      {
+        "name": "NotImplemented",
+        "doc": "The type of the NotImplemented singleton."
+      },
+      {
+        "name": "True",
+        "doc": "Returns True when the argument is true, False otherwise."
+      }
+    ]
+  },
+  "operators": [
+    {
+      "name": "abs",
+      "doc": "Same as abs(a).",
+      "symbol": "abs()"
+    },
+    {
+      "name": "add",
+      "doc": "Same as a + b.",
+      "symbol": "+"
+    },
+    {
+      "name": "and_",
+      "doc": "Same as a & b.",
+      "symbol": "&"
+    },
+    {
+      "name": "attrgetter",
+      "doc": "Return a callable object that fetches the given attribute(s) from its operand."
+    },
+    {
+      "name": "call",
+      "doc": "Same as obj(*args, **kwargs)."
+    },
+    {
+      "name": "concat",
+      "doc": "Same as a + b, for a and b sequences."
+    },
+    {
+      "name": "contains",
+      "doc": "Same as b in a (note reversed operands).",
+      "symbol": "in"
+    },
+    {
+      "name": "countOf",
+      "doc": "Return the number of items in a which are, or which equal, b."
+    },
+    {
+      "name": "delitem",
+      "doc": "Same as del a[b]."
+    },
+    {
+      "name": "eq",
+      "doc": "Same as a == b.",
+      "symbol": "=="
+    },
+    {
+      "name": "floordiv",
+      "doc": "Same as a // b.",
+      "symbol": "//"
+    },
+    {
+      "name": "ge",
+      "doc": "Same as a >= b.",
+      "symbol": ">="
+    },
+    {
+      "name": "getitem",
+      "doc": "Same as a[b].",
+      "symbol": "[]"
+    },
+    {
+      "name": "gt",
+      "doc": "Same as a > b.",
+      "symbol": ">"
+    },
+    {
+      "name": "iadd",
+      "doc": "Same as a += b."
+    },
+    {
+      "name": "iand",
+      "doc": "Same as a &= b."
+    },
+    {
+      "name": "iconcat",
+      "doc": "Same as a += b, for a and b sequences."
+    },
+    {
+      "name": "ifloordiv",
+      "doc": "Same as a //= b."
+    },
+    {
+      "name": "ilshift",
+      "doc": "Same as a <<= b."
+    },
+    {
+      "name": "imatmul",
+      "doc": "Same as a @= b."
+    },
+    {
+      "name": "imod",
+      "doc": "Same as a %= b."
+    },
+    {
+      "name": "imul",
+      "doc": "Same as a *= b."
+    },
+    {
+      "name": "index",
+      "doc": "Same as a.__index__()"
+    },
+    {
+      "name": "indexOf",
+      "doc": "Return the first index of b in a."
+    },
+    {
+      "name": "inv",
+      "doc": "Same as ~a."
+    },
+    {
+      "name": "invert",
+      "doc": "Same as ~a.",
+      "symbol": "~"
+    },
+    {
+      "name": "ior",
+      "doc": "Same as a |= b."
+    },
+    {
+      "name": "ipow",
+      "doc": "Same as a **= b."
+    },
+    {
+      "name": "irshift",
+      "doc": "Same as a >>= b."
+    },
+    {
+      "name": "is_",
+      "doc": "Same as a is b."
+    },
+    {
+      "name": "is_not",
+      "doc": "Same as a is not b."
+    },
+    {
+      "name": "isub",
+      "doc": "Same as a -= b."
+    },
+    {
+      "name": "itemgetter",
+      "doc": "Return a callable object that fetches the given item(s) from its operand."
+    },
+    {
+      "name": "itruediv",
+      "doc": "Same as a /= b."
+    },
+    {
+      "name": "ixor",
+      "doc": "Same as a ^= b."
+    },
+    {
+      "name": "le",
+      "doc": "Same as a <= b.",
+      "symbol": "<="
+    },
+    {
+      "name": "length_hint",
+      "doc": "Return an estimate of the number of items in obj."
+    },
+    {
+      "name": "lshift",
+      "doc": "Same as a << b.",
+      "symbol": "<<"
+    },
+    {
+      "name": "lt",
+      "doc": "Same as a < b.",
+      "symbol": "<"
+    },
+    {
+      "name": "matmul",
+      "doc": "Same as a @ b.",
+      "symbol": "@"
+    },
+    {
+      "name": "methodcaller",
+      "doc": "Return a callable object that calls the given method on its operand."
+    },
+    {
+      "name": "mod",
+      "doc": "Same as a % b.",
+      "symbol": "%"
+    },
+    {
+      "name": "mul",
+      "doc": "Same as a * b.",
+      "symbol": "*"
+    },
+    {
+      "name": "ne",
+      "doc": "Same as a != b.",
+      "symbol": "!="
+    },
+    {
+      "name": "neg",
+      "doc": "Same as -a.",
+      "symbol": "-x"
+    },
+    {
+      "name": "not_",
+      "doc": "Same as not a.",
+      "symbol": "not"
+    },
+    {
+      "name": "or_",
+      "doc": "Same as a | b.",
+      "symbol": "|"
+    },
+    {
+      "name": "pos",
+      "doc": "Same as +a.",
+      "symbol": "+x"
+    },
+    {
+      "name": "pow",
+      "doc": "Same as a ** b.",
+      "symbol": "**"
+    },
+    {
+      "name": "rshift",
+      "doc": "Same as a >> b.",
+      "symbol": ">>"
+    },
+    {
+      "name": "setitem",
+      "doc": "Same as a[b] = c."
+    },
+    {
+      "name": "sub",
+      "doc": "Same as a - b.",
+      "symbol": "-"
+    },
+    {
+      "name": "truediv",
+      "doc": "Same as a / b.",
+      "symbol": "/"
+    },
+    {
+      "name": "truth",
+      "doc": "Return True if a is true, False otherwise."
+    },
+    {
+      "name": "xor",
+      "doc": "Same as a ^ b.",
+      "symbol": "^"
+    }
+  ],
+  "type_methods": {
+    "str": {
+      "doc": "str(object='') -> str\nstr(bytes_or_buffer[, encoding[, errors]]) -> str\n\nCreate a new string object from the given object. If encoding or\nerrors is specified, then the object must expose a data buffer\nthat will be decoded using the given encoding and error handler.\nOtherwise, returns the result of object.__str__() (if defined)\nor repr(object).\nencoding defaults to 'utf-8'.\nerrors defaults to 'strict'.",
+      "methods": [
+        {
+          "name": "capitalize",
+          "doc": "Return a capitalized version of the string."
+        },
+        {
+          "name": "casefold",
+          "doc": "Return a version of the string suitable for caseless comparisons."
+        },
+        {
+          "name": "center",
+          "doc": "Return a centered string of length width."
+        },
+        {
+          "name": "count",
+          "doc": "Return the number of non-overlapping occurrences of substring sub in string S[start:end]."
+        },
+        {
+          "name": "encode",
+          "doc": "Encode the string using the codec registered for encoding."
+        },
+        {
+          "name": "endswith",
+          "doc": "Return True if the string ends with the specified suffix, False otherwise."
+        },
+        {
+          "name": "expandtabs",
+          "doc": "Return a copy where all tab characters are expanded using spaces."
+        },
+        {
+          "name": "find",
+          "doc": "Return the lowest index in S where substring sub is found, such that sub is contained within S[start:end]."
+        },
+        {
+          "name": "format",
+          "doc": "Return a formatted version of the string, using substitutions from args and kwargs."
+        },
+        {
+          "name": "format_map",
+          "doc": "Return a formatted version of the string, using substitutions from mapping."
+        },
+        {
+          "name": "index",
+          "doc": "Return the lowest index in S where substring sub is found, such that sub is contained within S[start:end]."
+        },
+        {
+          "name": "isalnum",
+          "doc": "Return True if the string is an alpha-numeric string, False otherwise."
+        },
+        {
+          "name": "isalpha",
+          "doc": "Return True if the string is an alphabetic string, False otherwise."
+        },
+        {
+          "name": "isascii",
+          "doc": "Return True if all characters in the string are ASCII, False otherwise."
+        },
+        {
+          "name": "isdecimal",
+          "doc": "Return True if the string is a decimal string, False otherwise."
+        },
+        {
+          "name": "isdigit",
+          "doc": "Return True if the string is a digit string, False otherwise."
+        },
+        {
+          "name": "isidentifier",
+          "doc": "Return True if the string is a valid Python identifier, False otherwise."
+        },
+        {
+          "name": "islower",
+          "doc": "Return True if the string is a lowercase string, False otherwise."
+        },
+        {
+          "name": "isnumeric",
+          "doc": "Return True if the string is a numeric string, False otherwise."
+        },
+        {
+          "name": "isprintable",
+          "doc": "Return True if all characters in the string are printable, False otherwise."
+        },
+        {
+          "name": "isspace",
+          "doc": "Return True if the string is a whitespace string, False otherwise."
+        },
+        {
+          "name": "istitle",
+          "doc": "Return True if the string is a title-cased string, False otherwise."
+        },
+        {
+          "name": "isupper",
+          "doc": "Return True if the string is an uppercase string, False otherwise."
+        },
+        {
+          "name": "join",
+          "doc": "Concatenate any number of strings."
+        },
+        {
+          "name": "ljust",
+          "doc": "Return a left-justified string of length width."
+        },
+        {
+          "name": "lower",
+          "doc": "Return a copy of the string converted to lowercase."
+        },
+        {
+          "name": "lstrip",
+          "doc": "Return a copy of the string with leading whitespace removed."
+        },
+        {
+          "name": "maketrans",
+          "doc": "Return a translation table usable for str.translate()."
+        },
+        {
+          "name": "partition",
+          "doc": "Partition the string into three parts using the given separator."
+        },
+        {
+          "name": "removeprefix",
+          "doc": "Return a str with the given prefix string removed if present."
+        },
+        {
+          "name": "removesuffix",
+          "doc": "Return a str with the given suffix string removed if present."
+        },
+        {
+          "name": "replace",
+          "doc": "Return a copy with all occurrences of substring old replaced by new."
+        },
+        {
+          "name": "rfind",
+          "doc": "Return the highest index in S where substring sub is found, such that sub is contained within S[start:end]."
+        },
+        {
+          "name": "rindex",
+          "doc": "Return the highest index in S where substring sub is found, such that sub is contained within S[start:end]."
+        },
+        {
+          "name": "rjust",
+          "doc": "Return a right-justified string of length width."
+        },
+        {
+          "name": "rpartition",
+          "doc": "Partition the string into three parts using the given separator."
+        },
+        {
+          "name": "rsplit",
+          "doc": "Return a list of the substrings in the string, using sep as the separator string."
+        },
+        {
+          "name": "rstrip",
+          "doc": "Return a copy of the string with trailing whitespace removed."
+        },
+        {
+          "name": "split",
+          "doc": "Return a list of the substrings in the string, using sep as the separator string."
+        },
+        {
+          "name": "splitlines",
+          "doc": "Return a list of the lines in the string, breaking at line boundaries."
+        },
+        {
+          "name": "startswith",
+          "doc": "Return True if the string starts with the specified prefix, False otherwise."
+        },
+        {
+          "name": "strip",
+          "doc": "Return a copy of the string with leading and trailing whitespace removed."
+        },
+        {
+          "name": "swapcase",
+          "doc": "Convert uppercase characters to lowercase and lowercase characters to uppercase."
+        },
+        {
+          "name": "title",
+          "doc": "Return a version of the string where each word is titlecased."
+        },
+        {
+          "name": "translate",
+          "doc": "Replace each character in the string using the given translation table."
+        },
+        {
+          "name": "upper",
+          "doc": "Return a copy of the string converted to uppercase."
+        },
+        {
+          "name": "zfill",
+          "doc": "Pad a numeric string with zeros on the left, to fill a field of the given width."
+        }
+      ]
+    },
+    "list": {
+      "doc": "Built-in mutable sequence.\n\nIf no argument is given, the constructor creates a new empty list.\nThe argument must be an iterable if specified.",
+      "methods": [
+        {
+          "name": "append",
+          "doc": "Append object to the end of the list."
+        },
+        {
+          "name": "clear",
+          "doc": "Remove all items from list."
+        },
+        {
+          "name": "copy",
+          "doc": "Return a shallow copy of the list."
+        },
+        {
+          "name": "count",
+          "doc": "Return number of occurrences of value."
+        },
+        {
+          "name": "extend",
+          "doc": "Extend list by appending elements from the iterable."
+        },
+        {
+          "name": "index",
+          "doc": "Return first index of value."
+        },
+        {
+          "name": "insert",
+          "doc": "Insert object before index."
+        },
+        {
+          "name": "pop",
+          "doc": "Remove and return item at index (default last)."
+        },
+        {
+          "name": "remove",
+          "doc": "Remove first occurrence of value."
+        },
+        {
+          "name": "reverse",
+          "doc": "Reverse *IN PLACE*."
+        },
+        {
+          "name": "sort",
+          "doc": "Sort the list in ascending order and return None."
+        }
+      ]
+    },
+    "dict": {
+      "doc": "dict() -> new empty dictionary\ndict(mapping) -> new dictionary initialized from a mapping object's\n    (key, value) pairs\ndict(iterable) -> new dictionary initialized as if via:\n    d = {}\n    for k, v in iterable:\n        d[k] = v\ndict(**kwargs) -> new dictionary initialized with the name=value pairs\n    in the keyword argument list.  For example:  dict(one=1, two=2)",
+      "methods": [
+        {
+          "name": "clear",
+          "doc": "Remove all items from the dict."
+        },
+        {
+          "name": "copy",
+          "doc": "Return a shallow copy of the dict."
+        },
+        {
+          "name": "fromkeys",
+          "doc": "Create a new dictionary with keys from iterable and values set to value."
+        },
+        {
+          "name": "get",
+          "doc": "Return the value for key if key is in the dictionary, else default."
+        },
+        {
+          "name": "items",
+          "doc": "Return a set-like object providing a view on the dict's items."
+        },
+        {
+          "name": "keys",
+          "doc": "Return a set-like object providing a view on the dict's keys."
+        },
+        {
+          "name": "pop",
+          "doc": "D.pop(k[,d]) -> v, remove specified key and return the corresponding value."
+        },
+        {
+          "name": "popitem",
+          "doc": "Remove and return a (key, value) pair as a 2-tuple."
+        },
+        {
+          "name": "setdefault",
+          "doc": "Insert key with a value of default if key is not in the dictionary."
+        },
+        {
+          "name": "update",
+          "doc": "D.update([E, ]**F) -> None.  Update D from mapping/iterable E and F."
+        },
+        {
+          "name": "values",
+          "doc": "Return an object providing a view on the dict's values."
+        }
+      ]
+    },
+    "tuple": {
+      "doc": "Built-in immutable sequence.\n\nIf no argument is given, the constructor returns an empty tuple.\nIf iterable is specified the tuple is initialized from iterable's items.\n\nIf the argument is a tuple, the return value is the same object.",
+      "methods": [
+        {
+          "name": "count",
+          "doc": "Return number of occurrences of value."
+        },
+        {
+          "name": "index",
+          "doc": "Return first index of value."
+        }
+      ]
+    },
+    "set": {
+      "doc": "Build an unordered collection of unique elements.",
+      "methods": [
+        {
+          "name": "add",
+          "doc": "Add an element to a set."
+        },
+        {
+          "name": "clear",
+          "doc": "Remove all elements from this set."
+        },
+        {
+          "name": "copy",
+          "doc": "Return a shallow copy of a set."
+        },
+        {
+          "name": "difference",
+          "doc": "Return a new set with elements in the set that are not in the others."
+        },
+        {
+          "name": "difference_update",
+          "doc": "Update the set, removing elements found in others."
+        },
+        {
+          "name": "discard",
+          "doc": "Remove an element from a set if it is a member."
+        },
+        {
+          "name": "intersection",
+          "doc": "Return a new set with elements common to the set and all others."
+        },
+        {
+          "name": "intersection_update",
+          "doc": "Update the set, keeping only elements found in it and all others."
+        },
+        {
+          "name": "isdisjoint",
+          "doc": "Return True if two sets have a null intersection."
+        },
+        {
+          "name": "issubset",
+          "doc": "Report whether another set contains this set."
+        },
+        {
+          "name": "issuperset",
+          "doc": "Report whether this set contains another set."
+        },
+        {
+          "name": "pop",
+          "doc": "Remove and return an arbitrary set element."
+        },
+        {
+          "name": "remove",
+          "doc": "Remove an element from a set; it must be a member."
+        },
+        {
+          "name": "symmetric_difference",
+          "doc": "Return a new set with elements in either the set or other but not both."
+        },
+        {
+          "name": "symmetric_difference_update",
+          "doc": "Update the set, keeping only elements found in either set, but not in both."
+        },
+        {
+          "name": "union",
+          "doc": "Return a new set with elements from the set and all others."
+        },
+        {
+          "name": "update",
+          "doc": "Update the set, adding elements from all others."
+        }
+      ]
+    },
+    "frozenset": {
+      "doc": "Build an immutable unordered collection of unique elements.",
+      "methods": [
+        {
+          "name": "copy",
+          "doc": "Return a shallow copy of a set."
+        },
+        {
+          "name": "difference",
+          "doc": "Return a new set with elements in the set that are not in the others."
+        },
+        {
+          "name": "intersection",
+          "doc": "Return a new set with elements common to the set and all others."
+        },
+        {
+          "name": "isdisjoint",
+          "doc": "Return True if two sets have a null intersection."
+        },
+        {
+          "name": "issubset",
+          "doc": "Report whether another set contains this set."
+        },
+        {
+          "name": "issuperset",
+          "doc": "Report whether this set contains another set."
+        },
+        {
+          "name": "symmetric_difference",
+          "doc": "Return a new set with elements in either the set or other but not both."
+        },
+        {
+          "name": "union",
+          "doc": "Return a new set with elements from the set and all others."
+        }
+      ]
+    },
+    "bytes": {
+      "doc": "bytes(iterable_of_ints) -> bytes\nbytes(string, encoding[, errors]) -> bytes\nbytes(bytes_or_buffer) -> immutable copy of bytes_or_buffer\nbytes(int) -> bytes object of size given by the parameter initialized with null bytes\nbytes() -> empty bytes object\n\nConstruct an immutable array of bytes from:\n  - an iterable yielding integers in range(256)\n  - a text string encoded using the specified encoding\n  - any object implementing the buffer API.\n  - an integer",
+      "methods": [
+        {
+          "name": "capitalize",
+          "doc": "B.capitalize() -> copy of B"
+        },
+        {
+          "name": "center",
+          "doc": "Return a centered string of length width."
+        },
+        {
+          "name": "count",
+          "doc": "Return the number of non-overlapping occurrences of subsection 'sub' in bytes B[start:end]."
+        },
+        {
+          "name": "decode",
+          "doc": "Decode the bytes using the codec registered for encoding."
+        },
+        {
+          "name": "endswith",
+          "doc": "Return True if the bytes ends with the specified suffix, False otherwise."
+        },
+        {
+          "name": "expandtabs",
+          "doc": "Return a copy where all tab characters are expanded using spaces."
+        },
+        {
+          "name": "find",
+          "doc": "Return the lowest index in B where subsection 'sub' is found, such that 'sub' is contained within B[start,end]."
+        },
+        {
+          "name": "fromhex",
+          "doc": "Create a bytes object from a string of hexadecimal numbers."
+        },
+        {
+          "name": "hex",
+          "doc": "Create a string of hexadecimal numbers from a bytes object."
+        },
+        {
+          "name": "index",
+          "doc": "Return the lowest index in B where subsection 'sub' is found, such that 'sub' is contained within B[start,end]."
+        },
+        {
+          "name": "isalnum",
+          "doc": "B.isalnum() -> bool"
+        },
+        {
+          "name": "isalpha",
+          "doc": "B.isalpha() -> bool"
+        },
+        {
+          "name": "isascii",
+          "doc": "B.isascii() -> bool"
+        },
+        {
+          "name": "isdigit",
+          "doc": "B.isdigit() -> bool"
+        },
+        {
+          "name": "islower",
+          "doc": "B.islower() -> bool"
+        },
+        {
+          "name": "isspace",
+          "doc": "B.isspace() -> bool"
+        },
+        {
+          "name": "istitle",
+          "doc": "B.istitle() -> bool"
+        },
+        {
+          "name": "isupper",
+          "doc": "B.isupper() -> bool"
+        },
+        {
+          "name": "join",
+          "doc": "Concatenate any number of bytes objects."
+        },
+        {
+          "name": "ljust",
+          "doc": "Return a left-justified string of length width."
+        },
+        {
+          "name": "lower",
+          "doc": "B.lower() -> copy of B"
+        },
+        {
+          "name": "lstrip",
+          "doc": "Strip leading bytes contained in the argument."
+        },
+        {
+          "name": "maketrans",
+          "doc": "Return a translation table usable for the bytes or bytearray translate method."
+        },
+        {
+          "name": "partition",
+          "doc": "Partition the bytes into three parts using the given separator."
+        },
+        {
+          "name": "removeprefix",
+          "doc": "Return a bytes object with the given prefix string removed if present."
+        },
+        {
+          "name": "removesuffix",
+          "doc": "Return a bytes object with the given suffix string removed if present."
+        },
+        {
+          "name": "replace",
+          "doc": "Return a copy with all occurrences of substring old replaced by new."
+        },
+        {
+          "name": "rfind",
+          "doc": "Return the highest index in B where subsection 'sub' is found, such that 'sub' is contained within B[start,end]."
+        },
+        {
+          "name": "rindex",
+          "doc": "Return the highest index in B where subsection 'sub' is found, such that 'sub' is contained within B[start,end]."
+        },
+        {
+          "name": "rjust",
+          "doc": "Return a right-justified string of length width."
+        },
+        {
+          "name": "rpartition",
+          "doc": "Partition the bytes into three parts using the given separator."
+        },
+        {
+          "name": "rsplit",
+          "doc": "Return a list of the sections in the bytes, using sep as the delimiter."
+        },
+        {
+          "name": "rstrip",
+          "doc": "Strip trailing bytes contained in the argument."
+        },
+        {
+          "name": "split",
+          "doc": "Return a list of the sections in the bytes, using sep as the delimiter."
+        },
+        {
+          "name": "splitlines",
+          "doc": "Return a list of the lines in the bytes, breaking at line boundaries."
+        },
+        {
+          "name": "startswith",
+          "doc": "Return True if the bytes starts with the specified prefix, False otherwise."
+        },
+        {
+          "name": "strip",
+          "doc": "Strip leading and trailing bytes contained in the argument."
+        },
+        {
+          "name": "swapcase",
+          "doc": "B.swapcase() -> copy of B"
+        },
+        {
+          "name": "title",
+          "doc": "B.title() -> copy of B"
+        },
+        {
+          "name": "translate",
+          "doc": "Return a copy with each character mapped by the given translation table."
+        },
+        {
+          "name": "upper",
+          "doc": "B.upper() -> copy of B"
+        },
+        {
+          "name": "zfill",
+          "doc": "Pad a numeric string with zeros on the left, to fill a field of the given width."
+        }
+      ]
+    },
+    "bytearray": {
+      "doc": "bytearray(iterable_of_ints) -> bytearray\nbytearray(string, encoding[, errors]) -> bytearray\nbytearray(bytes_or_buffer) -> mutable copy of bytes_or_buffer\nbytearray(int) -> bytes array of size given by the parameter initialized with null bytes\nbytearray() -> empty bytes array\n\nConstruct a mutable bytearray object from:\n  - an iterable yielding integers in range(256)\n  - a text string encoded using the specified encoding\n  - a bytes or a buffer object\n  - any object implementing the buffer API.\n  - an integer",
+      "methods": [
+        {
+          "name": "append",
+          "doc": "Append a single item to the end of the bytearray."
+        },
+        {
+          "name": "capitalize",
+          "doc": "B.capitalize() -> copy of B"
+        },
+        {
+          "name": "center",
+          "doc": "Return a centered string of length width."
+        },
+        {
+          "name": "clear",
+          "doc": "Remove all items from the bytearray."
+        },
+        {
+          "name": "copy",
+          "doc": "Return a copy of B."
+        },
+        {
+          "name": "count",
+          "doc": "Return the number of non-overlapping occurrences of subsection 'sub' in bytes B[start:end]."
+        },
+        {
+          "name": "decode",
+          "doc": "Decode the bytearray using the codec registered for encoding."
+        },
+        {
+          "name": "endswith",
+          "doc": "Return True if the bytearray ends with the specified suffix, False otherwise."
+        },
+        {
+          "name": "expandtabs",
+          "doc": "Return a copy where all tab characters are expanded using spaces."
+        },
+        {
+          "name": "extend",
+          "doc": "Append all the items from the iterator or sequence to the end of the bytearray."
+        },
+        {
+          "name": "find",
+          "doc": "Return the lowest index in B where subsection 'sub' is found, such that 'sub' is contained within B[start:end]."
+        },
+        {
+          "name": "fromhex",
+          "doc": "Create a bytearray object from a string of hexadecimal numbers."
+        },
+        {
+          "name": "hex",
+          "doc": "Create a string of hexadecimal numbers from a bytearray object."
+        },
+        {
+          "name": "index",
+          "doc": "Return the lowest index in B where subsection 'sub' is found, such that 'sub' is contained within B[start:end]."
+        },
+        {
+          "name": "insert",
+          "doc": "Insert a single item into the bytearray before the given index."
+        },
+        {
+          "name": "isalnum",
+          "doc": "B.isalnum() -> bool"
+        },
+        {
+          "name": "isalpha",
+          "doc": "B.isalpha() -> bool"
+        },
+        {
+          "name": "isascii",
+          "doc": "B.isascii() -> bool"
+        },
+        {
+          "name": "isdigit",
+          "doc": "B.isdigit() -> bool"
+        },
+        {
+          "name": "islower",
+          "doc": "B.islower() -> bool"
+        },
+        {
+          "name": "isspace",
+          "doc": "B.isspace() -> bool"
+        },
+        {
+          "name": "istitle",
+          "doc": "B.istitle() -> bool"
+        },
+        {
+          "name": "isupper",
+          "doc": "B.isupper() -> bool"
+        },
+        {
+          "name": "join",
+          "doc": "Concatenate any number of bytes/bytearray objects."
+        },
+        {
+          "name": "ljust",
+          "doc": "Return a left-justified string of length width."
+        },
+        {
+          "name": "lower",
+          "doc": "B.lower() -> copy of B"
+        },
+        {
+          "name": "lstrip",
+          "doc": "Strip leading bytes contained in the argument."
+        },
+        {
+          "name": "maketrans",
+          "doc": "Return a translation table usable for the bytes or bytearray translate method."
+        },
+        {
+          "name": "partition",
+          "doc": "Partition the bytearray into three parts using the given separator."
+        },
+        {
+          "name": "pop",
+          "doc": "Remove and return a single item from B."
+        },
+        {
+          "name": "remove",
+          "doc": "Remove the first occurrence of a value in the bytearray."
+        },
+        {
+          "name": "removeprefix",
+          "doc": "Return a bytearray with the given prefix string removed if present."
+        },
+        {
+          "name": "removesuffix",
+          "doc": "Return a bytearray with the given suffix string removed if present."
+        },
+        {
+          "name": "replace",
+          "doc": "Return a copy with all occurrences of substring old replaced by new."
+        },
+        {
+          "name": "reverse",
+          "doc": "Reverse the order of the values in B in place."
+        },
+        {
+          "name": "rfind",
+          "doc": "Return the highest index in B where subsection 'sub' is found, such that 'sub' is contained within B[start:end]."
+        },
+        {
+          "name": "rindex",
+          "doc": "Return the highest index in B where subsection 'sub' is found, such that 'sub' is contained within B[start:end]."
+        },
+        {
+          "name": "rjust",
+          "doc": "Return a right-justified string of length width."
+        },
+        {
+          "name": "rpartition",
+          "doc": "Partition the bytearray into three parts using the given separator."
+        },
+        {
+          "name": "rsplit",
+          "doc": "Return a list of the sections in the bytearray, using sep as the delimiter."
+        },
+        {
+          "name": "rstrip",
+          "doc": "Strip trailing bytes contained in the argument."
+        },
+        {
+          "name": "split",
+          "doc": "Return a list of the sections in the bytearray, using sep as the delimiter."
+        },
+        {
+          "name": "splitlines",
+          "doc": "Return a list of the lines in the bytearray, breaking at line boundaries."
+        },
+        {
+          "name": "startswith",
+          "doc": "Return True if the bytearray starts with the specified prefix, False otherwise."
+        },
+        {
+          "name": "strip",
+          "doc": "Strip leading and trailing bytes contained in the argument."
+        },
+        {
+          "name": "swapcase",
+          "doc": "B.swapcase() -> copy of B"
+        },
+        {
+          "name": "title",
+          "doc": "B.title() -> copy of B"
+        },
+        {
+          "name": "translate",
+          "doc": "Return a copy with each character mapped by the given translation table."
+        },
+        {
+          "name": "upper",
+          "doc": "B.upper() -> copy of B"
+        },
+        {
+          "name": "zfill",
+          "doc": "Pad a numeric string with zeros on the left, to fill a field of the given width."
+        }
+      ]
+    },
+    "int": {
+      "doc": "int([x]) -> integer\nint(x, base=10) -> integer\n\nConvert a number or string to an integer, or return 0 if no arguments\nare given.  If x is a number, return x.__int__().  For floating-point\nnumbers, this truncates towards zero.\n\nIf x is not a number or if base is given, then x must be a string,\nbytes, or bytearray instance representing an integer literal in the\ngiven base.  The literal can be preceded by '+' or '-' and be surrounded\nby whitespace.  The base defaults to 10.  Valid bases are 0 and 2-36.\nBase 0 means to interpret the base from the string as an integer literal.\n>>> int('0b100', base=0)\n4",
+      "methods": [
+        {
+          "name": "as_integer_ratio",
+          "doc": "Return a pair of integers, whose ratio is equal to the original int."
+        },
+        {
+          "name": "bit_count",
+          "doc": "Number of ones in the binary representation of the absolute value of self."
+        },
+        {
+          "name": "bit_length",
+          "doc": "Number of bits necessary to represent self in binary."
+        },
+        {
+          "name": "conjugate",
+          "doc": "Returns self, the complex conjugate of any int."
+        },
+        {
+          "name": "from_bytes",
+          "doc": "Return the integer represented by the given array of bytes."
+        },
+        {
+          "name": "is_integer",
+          "doc": "Returns True. Exists for duck type compatibility with float.is_integer."
+        },
+        {
+          "name": "to_bytes",
+          "doc": "Return an array of bytes representing an integer."
+        }
+      ]
+    },
+    "float": {
+      "doc": "Convert a string or number to a floating-point number, if possible.",
+      "methods": [
+        {
+          "name": "as_integer_ratio",
+          "doc": "Return a pair of integers, whose ratio is exactly equal to the original float."
+        },
+        {
+          "name": "conjugate",
+          "doc": "Return self, the complex conjugate of any float."
+        },
+        {
+          "name": "fromhex",
+          "doc": "Create a floating-point number from a hexadecimal string."
+        },
+        {
+          "name": "hex",
+          "doc": "Return a hexadecimal representation of a floating-point number."
+        },
+        {
+          "name": "is_integer",
+          "doc": "Return True if the float is an integer."
+        }
+      ]
+    },
+    "bool": {
+      "doc": "Returns True when the argument is true, False otherwise.\nThe builtins True and False are the only two instances of the class bool.\nThe class bool is a subclass of the class int, and cannot be subclassed.",
+      "methods": [
+        {
+          "name": "as_integer_ratio",
+          "doc": "Return a pair of integers, whose ratio is equal to the original int."
+        },
+        {
+          "name": "bit_count",
+          "doc": "Number of ones in the binary representation of the absolute value of self."
+        },
+        {
+          "name": "bit_length",
+          "doc": "Number of bits necessary to represent self in binary."
+        },
+        {
+          "name": "conjugate",
+          "doc": "Returns self, the complex conjugate of any int."
+        },
+        {
+          "name": "from_bytes",
+          "doc": "Return the integer represented by the given array of bytes."
+        },
+        {
+          "name": "is_integer",
+          "doc": "Returns True. Exists for duck type compatibility with float.is_integer."
+        },
+        {
+          "name": "to_bytes",
+          "doc": "Return an array of bytes representing an integer."
+        }
+      ]
+    }
+  }
+}

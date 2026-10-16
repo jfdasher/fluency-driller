@@ -1,0 +1,9 @@
+from collections import namedtuple
+
+Point = ...
+
+def make_point(x, y):
+    ...
+
+def distance_from_origin(p):
+    ...

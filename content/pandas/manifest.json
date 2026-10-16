@@ -1,0 +1,2101 @@
+{
+  "corpus": "pandas",
+  "questions": [
+    {
+      "external_id": "binning/cut/bin-age-into-labeled-ranges",
+      "topic": "binning/cut",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given df with an 'age' column of integers, return a new DataFrame with an additional 'age_group' column that bins 'age' into the labeled ranges shown below using `pd.cut` with bins [0, 18, 35, 60, 100] and labels ['youth', 'young_adult', 'middle_aged', 'senior'] (include the left edge only on the rightmost bin, i.e. use the default right=True).\n\n         age\n       +-----+\n  0    |   5 |\n  1    |  22 |\n  2    |  45 |\n  3    |  70 |\n  4    |  18 |\n\nExpected result:\n\n         age   age_group\n       +-----+-----------+\n  0    |   5 |     youth |\n  1    |  22 | young_adult|\n  2    |  45 | middle_aged|\n  3    |  70 |    senior |\n  4    |  18 |     youth |",
+      "stub": "import pandas as pd\n\ndef bin_age(df):\n    ...",
+      "entry_point": "bin_age",
+      "canonical_answer": "import pandas as pd\n\ndef bin_age(df):\n    out = df.copy()\n    out['age_group'] = pd.cut(\n        df['age'],\n        bins=[0, 18, 35, 60, 100],\n        labels=['youth', 'young_adult', 'middle_aged', 'senior']\n    )\n    return out",
+      "hints": [
+        "Use `pd.cut(df['age'], bins=[0, 18, 35, 60, 100], labels=[...])` to create a Categorical series of labeled intervals.",
+        "Assign the result of `pd.cut` to a new column on a copy of the DataFrame — remember that 18 falls in the (0, 18] bucket ('youth') because right=True by default.",
+        "The returned column is a `CategoricalDtype`; construct `expected['age_group']` with `pd.Categorical(..., categories=['youth','young_adult','middle_aged','senior'], ordered=True)` so dtypes match in the test."
+      ],
+      "test_cases": [
+        {
+          "name": "test_bin_age_boundary_35",
+          "source": "def test_bin_age_boundary_35():\n    import pandas as pd\n\n    df = pd.DataFrame({'age': [35, 36]})\n    result = fn(df)\n    # 35 falls in (18, 35] => 'young_adult'; 36 falls in (35, 60] => 'middle_aged'\n    assert str(result.loc[0, 'age_group']) == 'young_adult'\n    assert str(result.loc[1, 'age_group']) == 'middle_aged'"
+        },
+        {
+          "name": "test_bin_age_exact",
+          "source": "def test_bin_age_exact():\n    import pandas as pd\n    from pandas.testing import assert_frame_equal\n\n    df = pd.DataFrame({'age': [5, 22, 45, 70, 18]})\n\n    expected = pd.DataFrame({\n        'age': [5, 22, 45, 70, 18],\n        'age_group': pd.Categorical(\n            ['youth', 'young_adult', 'middle_aged', 'senior', 'youth'],\n            categories=['youth', 'young_adult', 'middle_aged', 'senior'],\n            ordered=True\n        )\n    })\n\n    assert_frame_equal(fn(df), expected)"
+        },
+        {
+          "name": "test_bin_age_no_mutation",
+          "source": "def test_bin_age_no_mutation():\n    import pandas as pd\n\n    df = pd.DataFrame({'age': [5, 22, 45, 70, 18]})\n    original_cols = list(df.columns)\n    fn(df)\n    assert list(df.columns) == original_cols, 'Input df should not be mutated'"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "binning/cut/bin-scores-right-open",
+      "topic": "binning/cut",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given a DataFrame with a 'score' column, add a 'grade' column by binning 'score' into the right-open intervals [0,60), [60,70), [70,80), [80,90), [90,100] with labels ['F','D','C','B','A'] using `pd.cut` (right=False, include_lowest=True).\n\n     score\n   +-------+\n 0 |    55 |\n 1 |    60 |\n 2 |    75 |\n 3 |    85 |\n 4 |    95 |\n 5 |     0 |\n\nReturn a new DataFrame with both 'score' and 'grade' columns.",
+      "stub": "import pandas as pd\n\ndef bin_scores(df):\n    ...",
+      "entry_point": "bin_scores",
+      "canonical_answer": "import pandas as pd\n\ndef bin_scores(df):\n    out = df.copy()\n    out['grade'] = pd.cut(\n        df['score'],\n        bins=[0, 60, 70, 80, 90, 100],\n        labels=['F', 'D', 'C', 'B', 'A'],\n        right=False,\n        include_lowest=True\n    )\n    return out",
+      "hints": [
+        "Use `pd.cut` with a list of bin edges and a matching `labels` list.",
+        "Pass `right=False` so intervals are left-closed/right-open (e.g. [60,70)), and `include_lowest=True` so the leftmost edge 0 is included.",
+        "`pd.cut(df['score'], bins=[0,60,70,80,90,100], labels=['F','D','C','B','A'], right=False, include_lowest=True)` gives the Categorical 'grade' column."
+      ],
+      "test_cases": [
+        {
+          "name": "test_boundary_at_60_is_D",
+          "source": "def test_boundary_at_60_is_D():\n    import pandas as pd\n    df = pd.DataFrame({'score': [59, 60]})\n    result = fn(df)\n    assert str(result.loc[0, 'grade']) == 'F'\n    assert str(result.loc[1, 'grade']) == 'D'"
+        },
+        {
+          "name": "test_exact_bin_scores",
+          "source": "def test_exact_bin_scores():\n    import pandas as pd\n    from pandas.testing import assert_frame_equal\n    df = pd.DataFrame({'score': [55, 60, 75, 85, 95, 0]})\n    expected = pd.DataFrame({\n        'score': [55, 60, 75, 85, 95, 0],\n        'grade': pd.Categorical(\n            ['F', 'D', 'C', 'B', 'A', 'F'],\n            categories=['F', 'D', 'C', 'B', 'A'],\n            ordered=True\n        )\n    })\n    assert_frame_equal(fn(df), expected)"
+        },
+        {
+          "name": "test_no_mutation",
+          "source": "def test_no_mutation():\n    import pandas as pd\n    df = pd.DataFrame({'score': [55, 60, 75, 85, 95, 0]})\n    _ = fn(df)\n    assert 'grade' not in df.columns"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "combining/concat/concat-axis1-align-index",
+      "topic": "combining/concat",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given two DataFrames `left` and `right` that share some index labels, glue them side-by-side (axis=1) using `pd.concat` so that rows align on the shared index and unmatched rows are filled with NaN.\n\n`left`:\n\n        val_a\n      +------+\n  a   |  1   |\n  b   |  2   |\n  c   |  3   |\n\n`right`:\n\n        val_b\n      +------+\n  b   | 20   |\n  c   | 30   |\n  d   | 40   |\n\nReturn the combined DataFrame (index labels a, b, c, d; columns val_a, val_b).",
+      "stub": "import pandas as pd\n\ndef concat_side_by_side(left, right):\n    ...",
+      "entry_point": "concat_side_by_side",
+      "canonical_answer": "import pandas as pd\n\ndef concat_side_by_side(left, right):\n    return pd.concat([left, right], axis=1)",
+      "hints": [
+        "Use `pd.concat` with a list of the two frames.",
+        "Pass `axis=1` to stack frames horizontally instead of vertically.",
+        "Index alignment is automatic; unmatched labels get NaN — no extra arguments needed."
+      ],
+      "test_cases": [
+        {
+          "name": "test_exact_values_and_dtypes",
+          "source": "def test_exact_values_and_dtypes():\n    import pandas as pd\n    import numpy as np\n    from pandas.testing import assert_frame_equal\n    left = pd.DataFrame({'val_a': [1, 2, 3]}, index=['a', 'b', 'c'])\n    right = pd.DataFrame({'val_b': [20, 30, 40]}, index=['b', 'c', 'd'])\n    result = fn(left, right)\n    expected = pd.DataFrame(\n        {'val_a': [1.0, 2.0, 3.0, np.nan], 'val_b': [np.nan, 20.0, 30.0, 40.0]},\n        index=['a', 'b', 'c', 'd']\n    )\n    assert_frame_equal(result, expected)"
+        },
+        {
+          "name": "test_fully_overlapping_index",
+          "source": "def test_fully_overlapping_index():\n    import pandas as pd\n    from pandas.testing import assert_frame_equal\n    left = pd.DataFrame({'x': [10, 20]}, index=[0, 1])\n    right = pd.DataFrame({'y': [100, 200]}, index=[0, 1])\n    result = fn(left, right)\n    expected = pd.DataFrame({'x': [10, 20], 'y': [100, 200]}, index=[0, 1])\n    assert_frame_equal(result, expected)"
+        },
+        {
+          "name": "test_no_mutation_of_inputs",
+          "source": "def test_no_mutation_of_inputs():\n    import pandas as pd\n    left = pd.DataFrame({'val_a': [1, 2, 3]}, index=['a', 'b', 'c'])\n    right = pd.DataFrame({'val_b': [20, 30, 40]}, index=['b', 'c', 'd'])\n    left_cols_before = list(left.columns)\n    right_cols_before = list(right.columns)\n    fn(left, right)\n    assert list(left.columns) == left_cols_before\n    assert list(right.columns) == right_cols_before"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "combining/concat/concat-ignore-index",
+      "topic": "combining/concat",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given two DataFrames `top` and `bottom` with the same columns, stack them row-wise (top above bottom) and reset the index so it runs 0, 1, 2, … continuously. Return the resulting DataFrame.\n\n`top`:\n\n       name  score\n     +------+-----+\n  0  | Alice|  85 |\n  1  |  Bob |  90 |\n\n`bottom`:\n\n       name  score\n     +------+-----+\n  0  | Carol|  78 |\n  1  | Dave |  92 |\n\nExpected result:\n\n       name  score\n     +------+-----+\n  0  | Alice|  85 |\n  1  |  Bob |  90 |\n  2  | Carol|  78 |\n  3  | Dave |  92 |",
+      "stub": "import pandas as pd\n\ndef stack_frames(top, bottom):\n    ...",
+      "entry_point": "stack_frames",
+      "canonical_answer": "import pandas as pd\n\ndef stack_frames(top, bottom):\n    return pd.concat([top, bottom], ignore_index=True)",
+      "hints": [
+        "Use `pd.concat` to combine a list of DataFrames vertically.",
+        "Pass `ignore_index=True` to `pd.concat` so the resulting index is reset to 0, 1, 2, …",
+        "`pd.concat([top, bottom], ignore_index=True)` stacks the two frames row-wise and resets the index."
+      ],
+      "test_cases": [
+        {
+          "name": "test_empty_frames",
+          "source": "def test_empty_frames():\n    import pandas as pd\n    from pandas.testing import assert_frame_equal\n    top = pd.DataFrame({'name': pd.Series([], dtype='object'), 'score': pd.Series([], dtype='int64')})\n    bottom = pd.DataFrame({'name': pd.Series([], dtype='object'), 'score': pd.Series([], dtype='int64')})\n    result = fn(top, bottom)\n    expected = pd.DataFrame({'name': pd.Series([], dtype='object'), 'score': pd.Series([], dtype='int64')})\n    assert_frame_equal(result, expected)\n    assert list(result.index) == []"
+        },
+        {
+          "name": "test_exact_values_and_index",
+          "source": "def test_exact_values_and_index():\n    import pandas as pd\n    from pandas.testing import assert_frame_equal\n    top = pd.DataFrame({'name': ['Alice', 'Bob'], 'score': [85, 90]})\n    bottom = pd.DataFrame({'name': ['Carol', 'Dave'], 'score': [78, 92]})\n    expected = pd.DataFrame({\n        'name': ['Alice', 'Bob', 'Carol', 'Dave'],\n        'score': [85, 90, 78, 92]\n    })\n    assert_frame_equal(fn(top, bottom), expected)"
+        },
+        {
+          "name": "test_no_mutation_of_inputs",
+          "source": "def test_no_mutation_of_inputs():\n    import pandas as pd\n    top = pd.DataFrame({'name': ['Alice', 'Bob'], 'score': [85, 90]})\n    bottom = pd.DataFrame({'name': ['Carol', 'Dave'], 'score': [78, 92]})\n    top_copy = top.copy()\n    bottom_copy = bottom.copy()\n    fn(top, bottom)\n    from pandas.testing import assert_frame_equal\n    assert_frame_equal(top, top_copy)\n    assert_frame_equal(bottom, bottom_copy)"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "combining/merge-basics/inner-join-on-key",
+      "topic": "combining/merge-basics",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given two DataFrames `left` and `right`, return a new DataFrame that is the inner join of `left` and `right` on the `'id'` column using `pd.merge`.\n\n`left`:\n\n        id   name\n      +----+------+\n  0   |  1 | Alice|\n  1   |  2 |  Bob |\n  2   |  3 | Carol|\n\n`right`:\n\n        id  score\n      +----+------+\n  0   |  2 |   88 |\n  1   |  3 |   95 |\n  2   |  4 |   70 |\n\nOnly rows where `id` appears in **both** frames are kept.",
+      "stub": "import pandas as pd\n\ndef inner_join_on_id(left, right):\n    ...",
+      "entry_point": "inner_join_on_id",
+      "canonical_answer": "import pandas as pd\n\ndef inner_join_on_id(left, right):\n    return pd.merge(left, right, on='id', how='inner')",
+      "hints": [
+        "Use `pd.merge()` — it accepts two DataFrames and a `on` keyword specifying the key column.",
+        "Pass `how='inner'` (which is actually the default) to keep only rows whose `id` value exists in both frames.",
+        "The full call is `pd.merge(left, right, on='id', how='inner')`; the result has columns `id`, `name`, and `score` with two rows (id=2 and id=3)."
+      ],
+      "test_cases": [
+        {
+          "name": "test_inner_join_exact",
+          "source": "def test_inner_join_exact():\n    import pandas as pd\n    from pandas.testing import assert_frame_equal\n    left = pd.DataFrame({'id': [1, 2, 3], 'name': ['Alice', 'Bob', 'Carol']})\n    right = pd.DataFrame({'id': [2, 3, 4], 'score': [88, 95, 70]})\n    expected = pd.DataFrame({'id': [2, 3], 'name': ['Bob', 'Carol'], 'score': [88, 95]})\n    result = fn(left, right)\n    assert_frame_equal(result.reset_index(drop=True), expected.reset_index(drop=True))"
+        },
+        {
+          "name": "test_inner_join_no_common_ids",
+          "source": "def test_inner_join_no_common_ids():\n    import pandas as pd\n    left = pd.DataFrame({'id': [1, 2], 'name': ['Alice', 'Bob']})\n    right = pd.DataFrame({'id': [3, 4], 'score': [70, 80]})\n    result = fn(left, right)\n    assert len(result) == 0\n    assert 'id' in result.columns\n    assert 'name' in result.columns\n    assert 'score' in result.columns"
+        },
+        {
+          "name": "test_inner_join_no_mutation",
+          "source": "def test_inner_join_no_mutation():\n    import pandas as pd\n    left = pd.DataFrame({'id': [1, 2, 3], 'name': ['Alice', 'Bob', 'Carol']})\n    right = pd.DataFrame({'id': [2, 3, 4], 'score': [88, 95, 70]})\n    left_cols_before = list(left.columns)\n    right_cols_before = list(right.columns)\n    fn(left, right)\n    assert list(left.columns) == left_cols_before\n    assert list(right.columns) == right_cols_before"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "combining/merge-basics/left-join-enrich-rows",
+      "topic": "combining/merge-basics",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given `orders` and `customers`, left-join `orders` to `customers` on `customer_id` to enrich each order row with `customer_name`, keeping every order row even if no matching customer exists.\n\n`orders`:\n\n     order_id  customer_id  amount\n   +----------+------------+-------+\n 0 |        1 |        101 |  25.0 |\n 1 |        2 |        102 |  80.0 |\n 2 |        3 |        999 |  15.0 |\n\n`customers`:\n\n     customer_id  customer_name\n   +------------+--------------+\n 0 |        101 |       Alice  |\n 1 |        102 |       Bob    |\n\nReturn a new DataFrame with columns `order_id`, `customer_id`, `amount`, `customer_name` (in that order); unmatched rows get `NaN` for `customer_name`.",
+      "stub": "import pandas as pd\n\ndef enrich_orders(orders, customers):\n    ...",
+      "entry_point": "enrich_orders",
+      "canonical_answer": "import pandas as pd\n\ndef enrich_orders(orders, customers):\n    result = orders.merge(customers, on='customer_id', how='left')\n    return result[['order_id', 'customer_id', 'amount', 'customer_name']]",
+      "hints": [
+        "Use `pd.DataFrame.merge()` with `on='customer_id'`.",
+        "Pass `how='left'` to keep every row from the left (orders) DataFrame regardless of a match.",
+        "After merging, select and reorder columns: `result[['order_id', 'customer_id', 'amount', 'customer_name']]`."
+      ],
+      "test_cases": [
+        {
+          "name": "test_exact_left_join_result",
+          "source": "def test_exact_left_join_result():\n    import pandas as pd\n    import numpy as np\n    from pandas.testing import assert_frame_equal\n    orders = pd.DataFrame({'order_id': [1, 2, 3], 'customer_id': [101, 102, 999], 'amount': [25.0, 80.0, 15.0]})\n    customers = pd.DataFrame({'customer_id': [101, 102], 'customer_name': ['Alice', 'Bob']})\n    expected = pd.DataFrame({\n        'order_id': pd.array([1, 2, 3], dtype='int64'),\n        'customer_id': pd.array([101, 102, 999], dtype='int64'),\n        'amount': pd.array([25.0, 80.0, 15.0], dtype='float64'),\n        'customer_name': pd.array(['Alice', 'Bob', np.nan], dtype='object')\n    })\n    assert_frame_equal(fn(orders, customers).reset_index(drop=True), expected)"
+        },
+        {
+          "name": "test_input_not_mutated",
+          "source": "def test_input_not_mutated():\n    import pandas as pd\n    orders = pd.DataFrame({'order_id': [1, 2], 'customer_id': [101, 102], 'amount': [25.0, 80.0]})\n    customers = pd.DataFrame({'customer_id': [101, 102], 'customer_name': ['Alice', 'Bob']})\n    orders_cols_before = list(orders.columns)\n    customers_cols_before = list(customers.columns)\n    fn(orders, customers)\n    assert list(orders.columns) == orders_cols_before, 'orders must not be mutated'\n    assert list(customers.columns) == customers_cols_before, 'customers must not be mutated'"
+        },
+        {
+          "name": "test_unmatched_row_has_nan_customer_name",
+          "source": "def test_unmatched_row_has_nan_customer_name():\n    import pandas as pd\n    import numpy as np\n    orders = pd.DataFrame({'order_id': [3], 'customer_id': [999], 'amount': [15.0]})\n    customers = pd.DataFrame({'customer_id': [101], 'customer_name': ['Alice']})\n    result = fn(orders, customers)\n    assert result.shape[0] == 1, 'Unmatched order row must be kept'\n    assert pd.isna(result.iloc[0]['customer_name']), 'customer_name should be NaN for unmatched row'"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "combining/merge-pitfalls/merge-indicator-both-only",
+      "topic": "combining/merge-pitfalls",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given two DataFrames `left` and `right`, merge them on `'id'` with `how='outer'` and `indicator=True`, then return a **Series** of the `'id'` values (sorted ascending, reset index dropped) that appeared in **both** tables — i.e. where `_merge == 'both'`.\n\n```\nleft                right\n   id  val_l           id  val_r\n+----+------+       +----+------+\n|  1 |  'a' |       |  1 |  'x' |\n|  2 |  'b' |       |  3 |  'y' |\n|  3 |  'c' |       |  5 |  'z' |\n```\n\nReturn a `Series` of dtype int64 containing the `id` values that matched in both tables (here: `[1, 3]`).",
+      "stub": "import pandas as pd\n\ndef ids_in_both(left: pd.DataFrame, right: pd.DataFrame) -> pd.Series:\n    ...",
+      "entry_point": "ids_in_both",
+      "canonical_answer": "import pandas as pd\n\ndef ids_in_both(left: pd.DataFrame, right: pd.DataFrame) -> pd.Series:\n    merged = pd.merge(left, right, on='id', how='outer', indicator=True)\n    both = merged.loc[merged['_merge'] == 'both', 'id']\n    return both.sort_values().reset_index(drop=True)",
+      "hints": [
+        "Use `pd.merge(..., how='outer', indicator=True)` to get a `_merge` column with values `'left_only'`, `'right_only'`, or `'both'`.",
+        "After merging, filter rows where `_merge == 'both'` and select the `'id'` column, then sort and reset the index.",
+        "Chain: `merged.loc[merged['_merge'] == 'both', 'id'].sort_values().reset_index(drop=True)`."
+      ],
+      "test_cases": [
+        {
+          "name": "test_ids_in_both_exact",
+          "source": "def test_ids_in_both_exact():\n    import pandas as pd\n    from pandas.testing import assert_series_equal\n    left = pd.DataFrame({'id': [1, 2, 3], 'val_l': ['a', 'b', 'c']})\n    right = pd.DataFrame({'id': [1, 3, 5], 'val_r': ['x', 'y', 'z']})\n    result = fn(left, right)\n    expected = pd.Series([1, 3], name='id', dtype='int64')\n    assert_series_equal(result, expected)"
+        },
+        {
+          "name": "test_ids_in_both_no_mutation",
+          "source": "def test_ids_in_both_no_mutation():\n    import pandas as pd\n    left = pd.DataFrame({'id': [1, 2, 3], 'val_l': ['a', 'b', 'c']})\n    right = pd.DataFrame({'id': [1, 3, 5], 'val_r': ['x', 'y', 'z']})\n    left_cols_before = list(left.columns)\n    right_cols_before = list(right.columns)\n    fn(left, right)\n    assert list(left.columns) == left_cols_before\n    assert list(right.columns) == right_cols_before"
+        },
+        {
+          "name": "test_ids_in_both_no_overlap",
+          "source": "def test_ids_in_both_no_overlap():\n    import pandas as pd\n    from pandas.testing import assert_series_equal\n    left = pd.DataFrame({'id': [1, 2], 'val_l': ['a', 'b']})\n    right = pd.DataFrame({'id': [3, 4], 'val_r': ['x', 'y']})\n    result = fn(left, right)\n    expected = pd.Series([], name='id', dtype='int64')\n    assert_series_equal(result, expected)"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "combining/merge-pitfalls/merge-overlapping-columns-suffixes",
+      "topic": "combining/merge-pitfalls",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Two DataFrames share a non-key column name `score`. Merge them on `id` and rename the overlapping columns to `score_left` and `score_right` (left frame first).\n\nLeft frame (`left`):\n\n     id  score\n   +----+------+\n 0 |  1 |   80 |\n 1 |  2 |   90 |\n\nRight frame (`right`):\n\n     id  score\n   +----+------+\n 0 |  1 |   75 |\n 1 |  2 |   85 |\n\nReturn a new DataFrame with columns `id`, `score_left`, `score_right` (int64 throughout).",
+      "stub": "import pandas as pd\n\ndef merge_with_suffixes(left, right):\n    ...",
+      "entry_point": "merge_with_suffixes",
+      "canonical_answer": "import pandas as pd\n\ndef merge_with_suffixes(left, right):\n    return pd.merge(left, right, on='id', suffixes=('_left', '_right'))",
+      "hints": [
+        "pd.merge() has a `suffixes` parameter that controls what is appended to overlapping column names.",
+        "Pass `suffixes=('_left', '_right')` to pd.merge() alongside `on='id'` to resolve the name clash.",
+        "The call is: pd.merge(left, right, on='id', suffixes=('_left', '_right')) — suffixes is a 2-tuple applied to (left, right) overlapping columns."
+      ],
+      "test_cases": [
+        {
+          "name": "test_exact_merge_with_suffixes",
+          "source": "def test_exact_merge_with_suffixes():\n    import pandas as pd\n    from pandas.testing import assert_frame_equal\n    left = pd.DataFrame({'id': [1, 2], 'score': [80, 90]})\n    right = pd.DataFrame({'id': [1, 2], 'score': [75, 85]})\n    expected = pd.DataFrame({\n        'id': pd.array([1, 2], dtype='int64'),\n        'score_left': pd.array([80, 90], dtype='int64'),\n        'score_right': pd.array([75, 85], dtype='int64'),\n    })\n    result = fn(left, right)\n    assert_frame_equal(result, expected, check_like=False)"
+        },
+        {
+          "name": "test_input_not_mutated",
+          "source": "def test_input_not_mutated():\n    import pandas as pd\n    left = pd.DataFrame({'id': [1, 2], 'score': [80, 90]})\n    right = pd.DataFrame({'id': [1, 2], 'score': [75, 85]})\n    left_cols_before = list(left.columns)\n    right_cols_before = list(right.columns)\n    fn(left, right)\n    assert list(left.columns) == left_cols_before\n    assert list(right.columns) == right_cols_before"
+        },
+        {
+          "name": "test_result_columns_correct",
+          "source": "def test_result_columns_correct():\n    import pandas as pd\n    left = pd.DataFrame({'id': [10, 20], 'score': [5, 6]})\n    right = pd.DataFrame({'id': [10, 20], 'score': [7, 8]})\n    result = fn(left, right)\n    assert list(result.columns) == ['id', 'score_left', 'score_right']\n    assert 'score' not in result.columns"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "combining/merge-pitfalls/merge-validate-one-to-many",
+      "topic": "combining/merge-pitfalls",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given a left DataFrame `left` and a right DataFrame `right`, merge them on `'dept_id'` with a left join and assert a one-to-many relationship (each `dept_id` in `left` appears at most once) using `validate='1:m'`. Return the merged DataFrame.\n\n`left`:\n\n   dept_id  dept_name\n+--------+----------+\n0 |      1 | Engineering |\n1 |      2 | Marketing   |\n\n`right`:\n\n   dept_id  employee\n+--------+---------+\n0 |      1 | Alice   |\n1 |      1 | Bob     |\n2 |      2 | Carol   |\n\nReturn the result of the validated merge.",
+      "stub": "def merge_one_to_many(left, right):\n    ...",
+      "entry_point": "merge_one_to_many",
+      "canonical_answer": "import pandas as pd\n\ndef merge_one_to_many(left, right):\n    return pd.merge(left, right, on='dept_id', how='left', validate='1:m')",
+      "hints": [
+        "Use `pd.merge()` with `how='left'` and the `on` parameter set to `'dept_id'`.",
+        "Pass `validate='1:m'` to `pd.merge()` to enforce that the left key is unique; it raises `MergeError` if not.",
+        "The full call is `pd.merge(left, right, on='dept_id', how='left', validate='1:m')`."
+      ],
+      "test_cases": [
+        {
+          "name": "test_merge_validate_1m_exact",
+          "source": "def test_merge_validate_1m_exact():\n    import pandas as pd\n    from pandas.testing import assert_frame_equal\n    left = pd.DataFrame({'dept_id': [1, 2], 'dept_name': ['Engineering', 'Marketing']})\n    right = pd.DataFrame({'dept_id': [1, 1, 2], 'employee': ['Alice', 'Bob', 'Carol']})\n    expected = pd.DataFrame({\n        'dept_id': pd.array([1, 1, 2], dtype='int64'),\n        'dept_name': ['Engineering', 'Engineering', 'Marketing'],\n        'employee': ['Alice', 'Bob', 'Carol']\n    })\n    result = fn(left, right)\n    assert_frame_equal(result.reset_index(drop=True), expected.reset_index(drop=True))"
+        },
+        {
+          "name": "test_merge_validate_1m_no_mutation",
+          "source": "def test_merge_validate_1m_no_mutation():\n    import pandas as pd\n    left = pd.DataFrame({'dept_id': [1, 2], 'dept_name': ['Engineering', 'Marketing']})\n    right = pd.DataFrame({'dept_id': [1, 1, 2], 'employee': ['Alice', 'Bob', 'Carol']})\n    left_cols_before = list(left.columns)\n    right_cols_before = list(right.columns)\n    fn(left, right)\n    assert list(left.columns) == left_cols_before\n    assert list(right.columns) == right_cols_before"
+        },
+        {
+          "name": "test_merge_validate_1m_raises_on_duplicate_left_key",
+          "source": "def test_merge_validate_1m_raises_on_duplicate_left_key():\n    import pandas as pd\n    left = pd.DataFrame({'dept_id': [1, 1], 'dept_name': ['Engineering', 'Engineering2']})\n    right = pd.DataFrame({'dept_id': [1, 2], 'employee': ['Alice', 'Bob']})\n    try:\n        fn(left, right)\n        assert False, 'Expected MergeError was not raised'\n    except pd.errors.MergeError:\n        pass"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "construction-inspection/dataframe-construct/build-dataframe-from-dict-of-lists",
+      "topic": "construction-inspection/dataframe-construct",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given three equal-length Python lists, build and return a DataFrame with columns `name`, `age`, and `score` (in that order), using the lists as column data.\n\nThe input lists and expected output:\n\n  names  = ['Alice', 'Bob', 'Charlie']\n  ages   = [25, 30, 35]\n  scores = [88.5, 92.0, 79.3]\n\n  name     age  score\n+--------+----+------+\n| Alice  | 25 | 88.5 |\n| Bob    | 30 | 92.0 |\n| Charlie| 35 | 79.3 |\n\nReturn a new DataFrame constructed from those three lists.",
+      "stub": "import pandas as pd\n\ndef build_dataframe(names, ages, scores):\n    ...",
+      "entry_point": "build_dataframe",
+      "canonical_answer": "import pandas as pd\n\ndef build_dataframe(names, ages, scores):\n    return pd.DataFrame({'name': names, 'age': ages, 'score': scores})",
+      "hints": [
+        "You can pass a plain Python dict to the pd.DataFrame constructor, where each key becomes a column name and its value (a list) provides the column data.",
+        "Construct the dict with keys in the desired column order: {'name': names, 'age': ages, 'score': scores}, then wrap it with pd.DataFrame(...).",
+        "The one-liner is: return pd.DataFrame({'name': names, 'age': ages, 'score': scores})"
+      ],
+      "test_cases": [
+        {
+          "name": "test_column_order",
+          "source": "def test_column_order():\n    import pandas as pd\n    names  = ['X']\n    ages   = [1]\n    scores = [0.0]\n    result = fn(names, ages, scores)\n    assert list(result.columns) == ['name', 'age', 'score']"
+        },
+        {
+          "name": "test_empty_lists",
+          "source": "def test_empty_lists():\n    import pandas as pd\n    from pandas.testing import assert_frame_equal\n    result = fn([], [], [])\n    expected = pd.DataFrame({'name': pd.Series([], dtype=object),\n                             'age':  pd.Series([], dtype=object),\n                             'score': pd.Series([], dtype=object)})\n    assert result.shape == (0, 3)\n    assert list(result.columns) == ['name', 'age', 'score']"
+        },
+        {
+          "name": "test_exact_values_and_dtypes",
+          "source": "def test_exact_values_and_dtypes():\n    import pandas as pd\n    from pandas.testing import assert_frame_equal\n    names  = ['Alice', 'Bob', 'Charlie']\n    ages   = [25, 30, 35]\n    scores = [88.5, 92.0, 79.3]\n    result = fn(names, ages, scores)\n    expected = pd.DataFrame(\n        {'name': pd.Series(['Alice', 'Bob', 'Charlie'], dtype=object),\n         'age':  pd.Series([25, 30, 35], dtype='int64'),\n         'score': pd.Series([88.5, 92.0, 79.3], dtype='float64')}\n    )\n    assert_frame_equal(result, expected)"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "construction-inspection/dataframe-construct/build-dataframe-from-list-of-dicts",
+      "topic": "construction-inspection/dataframe-construct",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given a list of row records (list of dicts), construct and return a DataFrame where each dict becomes one row.\n\nInput records:\n  [ {\"name\": \"Alice\", \"age\": 30, \"score\": 88.5},\n    {\"name\": \"Bob\",   \"age\": 25, \"score\": 92.0},\n    {\"name\": \"Carol\", \"age\": 35, \"score\": 76.3} ]\n\nExpected result (default RangeIndex 0-2, columns in insertion order):\n\n       name  age  score\n     +------+----+------+\n  0  | Alice|  30| 88.5 |\n  1  | Bob  |  25| 92.0 |\n  2  | Carol|  35| 76.3 |",
+      "stub": "def build_dataframe_from_list_of_dicts(records):\n    ...",
+      "entry_point": "build_dataframe_from_list_of_dicts",
+      "canonical_answer": "import pandas as pd\n\ndef build_dataframe_from_list_of_dicts(records):\n    return pd.DataFrame(records)",
+      "hints": [
+        "Think about what pandas constructor accepts a list of dicts directly.",
+        "pd.DataFrame() can accept many input shapes — a list of dicts is one of the most common.",
+        "Call pd.DataFrame(records) where records is the list of dicts; each dict's keys become column names."
+      ],
+      "test_cases": [
+        {
+          "name": "test_empty_list_returns_empty_dataframe",
+          "source": "def test_empty_list_returns_empty_dataframe():\n    import pandas as pd\n    from pandas.testing import assert_frame_equal\n    result = fn([])\n    expected = pd.DataFrame()\n    assert_frame_equal(result, expected)"
+        },
+        {
+          "name": "test_exact_equality",
+          "source": "def test_exact_equality():\n    import pandas as pd\n    from pandas.testing import assert_frame_equal\n    records = [\n        {\"name\": \"Alice\", \"age\": 30, \"score\": 88.5},\n        {\"name\": \"Bob\",   \"age\": 25, \"score\": 92.0},\n        {\"name\": \"Carol\", \"age\": 35, \"score\": 76.3},\n    ]\n    expected = pd.DataFrame({\n        \"name\":  [\"Alice\", \"Bob\", \"Carol\"],\n        \"age\":   pd.array([30, 25, 35], dtype=\"int64\"),\n        \"score\": [88.5, 92.0, 76.3],\n    })\n    result = fn(records)\n    assert_frame_equal(result, expected, check_like=False)"
+        },
+        {
+          "name": "test_input_not_mutated",
+          "source": "def test_input_not_mutated():\n    records = [\n        {\"x\": 1, \"y\": 2},\n        {\"x\": 3, \"y\": 4},\n    ]\n    original = [dict(r) for r in records]\n    fn(records)\n    assert records == original, \"Input list of dicts was mutated\""
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "construction-inspection/dataframe-construct/build-dataframe-with-explicit-index-and-columns",
+      "topic": "construction-inspection/dataframe-construct",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given the data dictionary below, construct a DataFrame whose **rows** appear in the order `['c', 'a', 'b']` and whose **columns** appear in the order `['score', 'name']`.\n\nData dictionary:\n\n    data = {\n        'name':  {'a': 'Alice', 'b': 'Bob',   'c': 'Carol'},\n        'score': {'a': 90,      'b': 85,       'c': 95}\n    }\n\nExpected result:\n\n           score   name\n         +-------+-------+\n    c    |   95  | Carol |\n    a    |   90  | Alice |\n    b    |   85  | Bob   |\n\nWrite `build_df(data)` that returns this DataFrame (index name should be `None`).",
+      "stub": "import pandas as pd\n\ndef build_df(data):\n    ...",
+      "entry_point": "build_df",
+      "canonical_answer": "import pandas as pd\n\ndef build_df(data):\n    return pd.DataFrame(data, index=['c', 'a', 'b'], columns=['score', 'name'])",
+      "hints": [
+        "Pass both `index=` and `columns=` keyword arguments to `pd.DataFrame()`.",
+        "The `index` parameter controls row order; pass `['c', 'a', 'b']` to reorder the rows away from insertion order.",
+        "Call `pd.DataFrame(data, index=['c', 'a', 'b'], columns=['score', 'name'])` — pandas selects and reorders both axes simultaneously."
+      ],
+      "test_cases": [
+        {
+          "name": "test_column_and_index_order",
+          "source": "def test_column_and_index_order():\n    import pandas as pd\n    data = {\n        'name':  {'a': 'Alice', 'b': 'Bob',   'c': 'Carol'},\n        'score': {'a': 90,      'b': 85,       'c': 95}\n    }\n    result = fn(data)\n    assert list(result.columns) == ['score', 'name']\n    assert list(result.index) == ['c', 'a', 'b']"
+        },
+        {
+          "name": "test_exact_values_index_and_column_order",
+          "source": "def test_exact_values_index_and_column_order():\n    import pandas as pd\n    from pandas.testing import assert_frame_equal\n    data = {\n        'name':  {'a': 'Alice', 'b': 'Bob',   'c': 'Carol'},\n        'score': {'a': 90,      'b': 85,       'c': 95}\n    }\n    expected = pd.DataFrame(\n        {'score': [95, 90, 85], 'name': ['Carol', 'Alice', 'Bob']},\n        index=pd.Index(['c', 'a', 'b'])\n    )\n    assert_frame_equal(fn(data), expected)"
+        },
+        {
+          "name": "test_input_dict_not_mutated",
+          "source": "def test_input_dict_not_mutated():\n    import pandas as pd\n    data = {\n        'name':  {'a': 'Alice', 'b': 'Bob',   'c': 'Carol'},\n        'score': {'a': 90,      'b': 85,       'c': 95}\n    }\n    original_keys = set(data.keys())\n    fn(data)\n    assert set(data.keys()) == original_keys\n    assert list(data['name'].keys()) == ['a', 'b', 'c']"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "construction-inspection/inspect/describe-numeric-columns",
+      "topic": "construction-inspection/inspect",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given `df`, return the descriptive statistics summary produced by calling `.describe()` on it (all numeric columns, default behaviour).\n\n```\n       score  attempts\n     +-------+---------+\n  0  |  85.0 |       3 |\n  1  |  92.0 |       1 |\n  2  |  78.0 |       4 |\n  3  |  95.0 |       2 |\n```\n\nReturn the DataFrame that `.describe()` produces (8 summary rows: count, mean, std, min, 25%, 50%, 75%, max).",
+      "stub": "import pandas as pd\n\ndef describe_numeric(df):\n    ...",
+      "entry_point": "describe_numeric",
+      "canonical_answer": "import pandas as pd\n\ndef describe_numeric(df):\n    return df.describe()",
+      "hints": [
+        "Pandas DataFrames have a built-in method that computes summary statistics for numeric columns.",
+        "The method name is `.describe()` and by default it targets numeric columns only.",
+        "Call `df.describe()` and return its result directly — no additional arguments needed."
+      ],
+      "test_cases": [
+        {
+          "name": "test_describe_numeric_exact",
+          "source": "def test_describe_numeric_exact():\n    import pandas as pd\n    from pandas.testing import assert_frame_equal\n    df = pd.DataFrame({'score': [85.0, 92.0, 78.0, 95.0], 'attempts': [3, 1, 4, 2]})\n    expected = df.describe()\n    assert_frame_equal(fn(df), expected)"
+        },
+        {
+          "name": "test_describe_numeric_no_mutation",
+          "source": "def test_describe_numeric_no_mutation():\n    import pandas as pd\n    df = pd.DataFrame({'score': [85.0, 92.0, 78.0, 95.0], 'attempts': [3, 1, 4, 2]})\n    original_shape = df.shape\n    original_columns = list(df.columns)\n    fn(df)\n    assert df.shape == original_shape\n    assert list(df.columns) == original_columns"
+        },
+        {
+          "name": "test_describe_numeric_row_index",
+          "source": "def test_describe_numeric_row_index():\n    import pandas as pd\n    df = pd.DataFrame({'score': [85.0, 92.0, 78.0, 95.0], 'attempts': [3, 1, 4, 2]})\n    result = fn(df)\n    assert list(result.index) == ['count', 'mean', 'std', 'min', '25%', '50%', '75%', 'max']"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "construction-inspection/inspect/shape-and-dtypes-summary",
+      "topic": "construction-inspection/inspect",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given the DataFrame `df` shown below, return a dict with exactly two keys:\n- `\"shape\"`: the tuple `(nrows, ncols)` from `df.shape`\n- `\"dtypes\"`: a `dict` mapping each column name to its dtype object (from `df.dtypes`)\n\n```\n        age    score   name\n      +------+-------+--------+\n  0   |   25 |  88.5 | 'Alice'\n  1   |   30 |  92.0 | 'Bob'\n  2   |   22 |  79.3 | 'Carol'\n```\n\n`age` is int64, `score` is float64, `name` is object.",
+      "stub": "def shape_and_dtypes(df):\n    ...",
+      "entry_point": "shape_and_dtypes",
+      "canonical_answer": "def shape_and_dtypes(df):\n    return {\n        \"shape\": df.shape,\n        \"dtypes\": dict(df.dtypes)\n    }",
+      "hints": [
+        "Every DataFrame exposes `.shape` as a tuple and `.dtypes` as a Series mapping column names to dtype objects.",
+        "Convert `.dtypes` to a plain dict with `dict(df.dtypes)` so the return value is a simple Python dict.",
+        "Return `{\"shape\": df.shape, \"dtypes\": dict(df.dtypes)}` — no mutation or copying needed."
+      ],
+      "test_cases": [
+        {
+          "name": "test_exact_shape_and_dtypes",
+          "source": "def test_exact_shape_and_dtypes():\n    import pandas as pd\n    import numpy as np\n    df = pd.DataFrame({\n        'age': pd.array([25, 30, 22], dtype='int64'),\n        'score': pd.array([88.5, 92.0, 79.3], dtype='float64'),\n        'name': ['Alice', 'Bob', 'Carol']\n    })\n    result = fn(df)\n    assert result['shape'] == (3, 3)\n    expected_dtypes = dict(df.dtypes)\n    assert result['dtypes'] == expected_dtypes\n    assert result['dtypes']['age'] == np.dtype('int64')\n    assert result['dtypes']['score'] == np.dtype('float64')\n    assert result['dtypes']['name'] == np.dtype('O')"
+        },
+        {
+          "name": "test_no_mutation",
+          "source": "def test_no_mutation():\n    import pandas as pd\n    df = pd.DataFrame({\n        'age': pd.array([25, 30, 22], dtype='int64'),\n        'score': pd.array([88.5, 92.0, 79.3], dtype='float64'),\n        'name': ['Alice', 'Bob', 'Carol']\n    })\n    original_columns = list(df.columns)\n    original_shape = df.shape\n    fn(df)\n    assert list(df.columns) == original_columns\n    assert df.shape == original_shape"
+        },
+        {
+          "name": "test_single_column_frame",
+          "source": "def test_single_column_frame():\n    import pandas as pd\n    import numpy as np\n    df = pd.DataFrame({'x': pd.array([1, 2], dtype='int64')})\n    result = fn(df)\n    assert result['shape'] == (2, 1)\n    assert result['dtypes'] == {'x': np.dtype('int64')}"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "construction-inspection/value-counts/nunique-column-count",
+      "topic": "construction-inspection/value-counts",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given the DataFrame `df` below, return the number of distinct values in the `'city'` column as a plain Python `int`.\n\n```\n   city\n0  Paris\n1  London\n2  Paris\n3  Berlin\n4  London\n5  Paris\n```",
+      "stub": "def count_distinct_cities(df):\n    ...",
+      "entry_point": "count_distinct_cities",
+      "canonical_answer": "def count_distinct_cities(df):\n    return int(df['city'].nunique())",
+      "hints": [
+        "You need to find how many unique values appear in a single column — consider a Series method that counts unique elements.",
+        "The Series method `nunique()` returns the number of distinct non-NaN values; remember to cast the result to `int`.",
+        "`df['city'].nunique()` gives the count directly; wrap it with `int()` to satisfy the return-type requirement."
+      ],
+      "test_cases": [
+        {
+          "name": "test_all_same_value",
+          "source": "def test_all_same_value():\n    import pandas as pd\n    df = pd.DataFrame({'city': ['Tokyo', 'Tokyo', 'Tokyo']})\n    assert fn(df) == 1"
+        },
+        {
+          "name": "test_exact_distinct_count",
+          "source": "def test_exact_distinct_count():\n    import pandas as pd\n    df = pd.DataFrame({'city': ['Paris', 'London', 'Paris', 'Berlin', 'London', 'Paris']})\n    result = fn(df)\n    assert result == 3\n    assert type(result) is int"
+        },
+        {
+          "name": "test_no_mutation",
+          "source": "def test_no_mutation():\n    import pandas as pd\n    df = pd.DataFrame({'city': ['Paris', 'London', 'Paris', 'Berlin', 'London', 'Paris']})\n    original_values = df['city'].tolist()\n    fn(df)\n    assert df['city'].tolist() == original_values"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "construction-inspection/value-counts/value-counts-category-column",
+      "topic": "construction-inspection/value-counts",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given a DataFrame `df` with a column `'color'`, return a Series with the count of each unique value in `'color'`, sorted by count descending (ties broken by the value alphabetically ascending).\n\n```\n   color\n0    red\n1   blue\n2    red\n3  green\n4   blue\n5    red\n```\n\nExpected result (a Series named `'color'`):\n\n```\ncolor\nred      3\nblue     2\ngreen    1\nName: count, dtype: int64\n```",
+      "stub": "import pandas as pd\n\ndef count_colors(df):\n    ...",
+      "entry_point": "count_colors",
+      "canonical_answer": "import pandas as pd\n\ndef count_colors(df):\n    return df['color'].value_counts().sort_index().sort_values(ascending=False, kind='stable')",
+      "hints": [
+        "Use the `value_counts()` method on a Series to get occurrence counts sorted descending by default.",
+        "To break ties alphabetically, first sort by the index (the category values), then do a stable sort by count descending so equal counts stay in alphabetical order.",
+        "Chain: `df['color'].value_counts().sort_index().sort_values(ascending=False, kind='stable')`"
+      ],
+      "test_cases": [
+        {
+          "name": "test_exact_value_counts",
+          "source": "def test_exact_value_counts():\n    import pandas as pd\n    from pandas.testing import assert_series_equal\n    df = pd.DataFrame({'color': ['red', 'blue', 'red', 'green', 'blue', 'red']})\n    expected = pd.Series(\n        [3, 2, 1],\n        index=pd.Index(['red', 'blue', 'green'], name='color'),\n        name='count',\n        dtype='int64'\n    )\n    assert_series_equal(fn(df), expected)"
+        },
+        {
+          "name": "test_no_mutation",
+          "source": "def test_no_mutation():\n    import pandas as pd\n    df = pd.DataFrame({'color': ['red', 'blue', 'red', 'green', 'blue', 'red']})\n    original_columns = list(df.columns)\n    original_values = df['color'].tolist()\n    fn(df)\n    assert list(df.columns) == original_columns\n    assert df['color'].tolist() == original_values"
+        },
+        {
+          "name": "test_single_category",
+          "source": "def test_single_category():\n    import pandas as pd\n    from pandas.testing import assert_series_equal\n    df = pd.DataFrame({'color': ['blue', 'blue', 'blue']})\n    expected = pd.Series(\n        [3],\n        index=pd.Index(['blue'], name='color'),\n        name='count',\n        dtype='int64'\n    )\n    assert_series_equal(fn(df), expected)"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "construction-inspection/value-counts/value-counts-normalize-proportions",
+      "topic": "construction-inspection/value-counts",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given a Series `s` of string labels, return a new Series of the relative frequency (proportion) of each value, sorted descending by proportion, with float64 dtype.\n\nExample input `s`:\n\n  0    cat\n  1    dog\n  2    cat\n  3    cat\n  4    dog\n  dtype: object\n\nExpected output (a Series):\n\n  cat    0.6\n  dog    0.4\n  dtype: float64\n\nUse `value_counts(normalize=True)` to compute proportions.",
+      "stub": "import pandas as pd\n\ndef proportions(s: pd.Series) -> pd.Series:\n    ...",
+      "entry_point": "proportions",
+      "canonical_answer": "import pandas as pd\n\ndef proportions(s: pd.Series) -> pd.Series:\n    result = s.value_counts(normalize=True)\n    result.name = None\n    return result",
+      "hints": [
+        "Call `.value_counts()` on the Series — it has a keyword argument that switches from counts to fractions.",
+        "The keyword argument is `normalize=True`; when set, each count is divided by the total length of the Series.",
+        "Return `s.value_counts(normalize=True)` directly — this gives a float64 Series sorted descending with label names as the index."
+      ],
+      "test_cases": [
+        {
+          "name": "test_exact_proportions",
+          "source": "def test_exact_proportions():\n    import pandas as pd\n    from pandas.testing import assert_series_equal\n    s = pd.Series(['cat', 'dog', 'cat', 'cat', 'dog'])\n    expected = pd.Series({'cat': 0.6, 'dog': 0.4}, dtype='float64')\n    expected.index.name = None\n    expected.name = None\n    result = fn(s)\n    assert_series_equal(result, expected)"
+        },
+        {
+          "name": "test_no_mutation",
+          "source": "def test_no_mutation():\n    import pandas as pd\n    s = pd.Series(['x', 'y', 'x'])\n    original_values = s.tolist()\n    fn(s)\n    assert s.tolist() == original_values"
+        },
+        {
+          "name": "test_proportions_sum_to_one",
+          "source": "def test_proportions_sum_to_one():\n    import pandas as pd\n    s = pd.Series(['a', 'b', 'a', 'c', 'b', 'a'])\n    result = fn(s)\n    assert abs(result.sum() - 1.0) < 1e-9"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "dtypes-missing/astype-coercion/astype-str-to-int",
+      "topic": "dtypes-missing/astype-coercion",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given df with a column `'val'` containing clean numeric strings, return a new DataFrame where `'val'` is cast to `int64` using `astype`.\n\n```\n     val\n   +-----+\n 0 | '3' |\n 1 | '7' |\n 2 | '1' |\n   +-----+\n        ^\n        string (object dtype)\n```\n\nThe returned frame must have `'val'` as `int64` and leave the input unchanged.",
+      "stub": "import pandas as pd\n\ndef cast_val_to_int(df):\n    ...",
+      "entry_point": "cast_val_to_int",
+      "canonical_answer": "import pandas as pd\n\ndef cast_val_to_int(df):\n    out = df.copy()\n    out['val'] = df['val'].astype('int64')\n    return out",
+      "hints": [
+        "Make a copy of the DataFrame first so you don't mutate the input, then operate on the copy's column.",
+        "Series.astype accepts a dtype string like `'int64'` or the numpy type `np.int64`.",
+        "Assign back to the column: `out['val'] = df['val'].astype('int64')` then return `out`."
+      ],
+      "test_cases": [
+        {
+          "name": "test_exact_equality",
+          "source": "def test_exact_equality():\n    import pandas as pd\n    from pandas.testing import assert_frame_equal\n    df = pd.DataFrame({'val': ['3', '7', '1']})\n    expected = pd.DataFrame({'val': pd.array([3, 7, 1], dtype='int64')})\n    assert_frame_equal(fn(df), expected)"
+        },
+        {
+          "name": "test_input_not_mutated",
+          "source": "def test_input_not_mutated():\n    import pandas as pd\n    df = pd.DataFrame({'val': ['3', '7', '1']})\n    original_dtype = df['val'].dtype\n    fn(df)\n    assert df['val'].dtype == original_dtype, 'input df was mutated'"
+        },
+        {
+          "name": "test_single_row",
+          "source": "def test_single_row():\n    import pandas as pd\n    from pandas.testing import assert_frame_equal\n    df = pd.DataFrame({'val': ['42']})\n    result = fn(df)\n    expected = pd.DataFrame({'val': pd.array([42], dtype='int64')})\n    assert_frame_equal(result, expected)"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "dtypes-missing/astype-coercion/to-numeric-coerce-bad-values",
+      "topic": "dtypes-missing/astype-coercion",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given df with a column `value` that contains a mix of numeric strings and non-numeric garbage, return a new DataFrame with `value` replaced by its numeric equivalent, turning unparseable entries into NaN.\n\n          value\n        +-------+\n  0     |  '3'  |\n  1     | 'abc' |\n  2     |  '7'  |\n  3     |  '?'  |\n  4     | '1.5' |\n\nReturn a new DataFrame; do not mutate the input.",
+      "stub": "import pandas as pd\n\ndef coerce_numeric_column(df):\n    ...",
+      "entry_point": "coerce_numeric_column",
+      "canonical_answer": "import pandas as pd\n\ndef coerce_numeric_column(df):\n    out = df.copy()\n    out['value'] = pd.to_numeric(df['value'], errors='coerce')\n    return out",
+      "hints": [
+        "Look at pd.to_numeric and its errors parameter.",
+        "pd.to_numeric(series, errors='coerce') converts bad values to NaN instead of raising.",
+        "Assign the result back to the 'value' column of a copy: out['value'] = pd.to_numeric(df['value'], errors='coerce')."
+      ],
+      "test_cases": [
+        {
+          "name": "test_all_valid_strings",
+          "source": "def test_all_valid_strings():\n    import pandas as pd\n    import numpy as np\n    from pandas.testing import assert_frame_equal\n    df = pd.DataFrame({'value': ['10', '20', '30']})\n    result = fn(df)\n    expected = pd.DataFrame({'value': pd.to_numeric(pd.Series(['10', '20', '30']), errors='coerce')})\n    assert_frame_equal(result, expected, check_dtype=False)\n    assert result['value'].tolist() == [10, 20, 30]"
+        },
+        {
+          "name": "test_exact_values_and_dtype",
+          "source": "def test_exact_values_and_dtype():\n    import pandas as pd\n    import numpy as np\n    from pandas.testing import assert_frame_equal\n    df = pd.DataFrame({'value': ['3', 'abc', '7', '?', '1.5']})\n    expected = pd.DataFrame({'value': pd.array([3.0, np.nan, 7.0, np.nan, 1.5], dtype='float64')})\n    assert_frame_equal(fn(df), expected)"
+        },
+        {
+          "name": "test_no_mutation_of_input",
+          "source": "def test_no_mutation_of_input():\n    import pandas as pd\n    df = pd.DataFrame({'value': ['3', 'abc', '7', '?', '1.5']})\n    original_values = df['value'].tolist()\n    fn(df)\n    assert df['value'].tolist() == original_values, 'input df was mutated'"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "dtypes-missing/duplicates/drop-duplicates-keep-first",
+      "topic": "dtypes-missing/duplicates",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given df, return a new DataFrame with duplicate rows removed, keeping only the first occurrence of each duplicated row (default keep='first').\n\n```\n   name  score\n0  Alice     90\n1    Bob     85\n2  Alice     90\n3  Carol     78\n4    Bob     85\n5  Carol     78\n```\n\nExpected result:\n\n```\n   name  score\n0  Alice     90\n1    Bob     85\n3  Carol     78\n```",
+      "stub": "def drop_duplicates_keep_first(df):\n    ...",
+      "entry_point": "drop_duplicates_keep_first",
+      "canonical_answer": "import pandas as pd\n\ndef drop_duplicates_keep_first(df):\n    return df.drop_duplicates(keep='first')",
+      "hints": [
+        "Pandas DataFrames have a method specifically for removing duplicate rows.",
+        "The method is called `drop_duplicates()` and accepts a `keep` parameter to control which occurrence to retain.",
+        "Call `df.drop_duplicates(keep='first')` to remove duplicate rows while keeping the first occurrence."
+      ],
+      "test_cases": [
+        {
+          "name": "test_exact_equality",
+          "source": "def test_exact_equality():\n    import pandas as pd\n    from pandas.testing import assert_frame_equal\n    df = pd.DataFrame({\n        'name': ['Alice', 'Bob', 'Alice', 'Carol', 'Bob', 'Carol'],\n        'score': [90, 85, 90, 78, 85, 78]\n    })\n    expected = pd.DataFrame({\n        'name': ['Alice', 'Bob', 'Carol'],\n        'score': [90, 85, 78]\n    }, index=[0, 1, 3])\n    assert_frame_equal(fn(df), expected)"
+        },
+        {
+          "name": "test_no_duplicates_unchanged",
+          "source": "def test_no_duplicates_unchanged():\n    import pandas as pd\n    from pandas.testing import assert_frame_equal\n    df = pd.DataFrame({\n        'name': ['Alice', 'Bob', 'Carol'],\n        'score': [90, 85, 78]\n    })\n    expected = df.copy()\n    assert_frame_equal(fn(df), expected)"
+        },
+        {
+          "name": "test_no_mutation",
+          "source": "def test_no_mutation():\n    import pandas as pd\n    df = pd.DataFrame({\n        'name': ['Alice', 'Bob', 'Alice', 'Carol', 'Bob', 'Carol'],\n        'score': [90, 85, 90, 78, 85, 78]\n    })\n    original_len = len(df)\n    fn(df)\n    assert len(df) == original_len, 'Input DataFrame was mutated'"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "dtypes-missing/duplicates/drop-duplicates-keep-last",
+      "topic": "dtypes-missing/duplicates",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given df, return a new DataFrame that keeps only the **last** occurrence of each duplicate row based on the `'city'` column, preserving original index values.\n\n```\n        city   temp\n      +------+------+\n  0   |  NYC |   70 |\n  1   |  LAX |   85 |\n  2   |  NYC |   72 |\n  3   |  LAX |   88 |\n  4   |  CHI |   60 |\n```\n\nExpected result (last occurrences, original index retained):\n\n```\n        city   temp\n      +------+------+\n  2   |  NYC |   72 |\n  3   |  LAX |   88 |\n  4   |  CHI |   60 |\n```",
+      "stub": "import pandas as pd\n\ndef drop_duplicates_keep_last(df):\n    ...",
+      "entry_point": "drop_duplicates_keep_last",
+      "canonical_answer": "import pandas as pd\n\ndef drop_duplicates_keep_last(df):\n    return df.drop_duplicates(subset='city', keep='last')",
+      "hints": [
+        "Use the `.drop_duplicates()` method on the DataFrame.",
+        "Pass `subset='city'` to consider only the city column when detecting duplicates.",
+        "Set `keep='last'` to retain the final occurrence of each duplicated city value."
+      ],
+      "test_cases": [
+        {
+          "name": "test_exact_keep_last",
+          "source": "def test_exact_keep_last():\n    import pandas as pd\n    from pandas.testing import assert_frame_equal\n    df = pd.DataFrame({\n        'city': ['NYC', 'LAX', 'NYC', 'LAX', 'CHI'],\n        'temp': [70, 85, 72, 88, 60]\n    })\n    expected = pd.DataFrame(\n        {'city': ['NYC', 'LAX', 'CHI'], 'temp': [72, 88, 60]},\n        index=[2, 3, 4]\n    )\n    assert_frame_equal(fn(df), expected)"
+        },
+        {
+          "name": "test_no_duplicates_unchanged",
+          "source": "def test_no_duplicates_unchanged():\n    import pandas as pd\n    from pandas.testing import assert_frame_equal\n    df = pd.DataFrame({\n        'city': ['NYC', 'LAX', 'CHI'],\n        'temp': [70, 85, 60]\n    })\n    expected = df.copy()\n    assert_frame_equal(fn(df), expected)"
+        },
+        {
+          "name": "test_no_mutation",
+          "source": "def test_no_mutation():\n    import pandas as pd\n    df = pd.DataFrame({\n        'city': ['NYC', 'LAX', 'NYC', 'LAX', 'CHI'],\n        'temp': [70, 85, 72, 88, 60]\n    })\n    original_len = len(df)\n    fn(df)\n    assert len(df) == original_len, 'Input DataFrame was mutated'"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "dtypes-missing/duplicates/flag-duplicate-rows-subset",
+      "topic": "dtypes-missing/duplicates",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given `df`, return a boolean Series (named `is_dup`) that is `True` for every row that is a duplicate based on the `'name'` and `'dept'` columns (keep the first occurrence as `False`).\n\n```\n   name     dept   salary\n0  Alice    Eng    90000\n1  Bob      Mkt    70000\n2  Alice    Eng    95000\n3  Carol    Eng    80000\n4  Bob      Mkt    72000\n5  Alice    HR     88000\n```\n\nExpected result (a Series named `is_dup`):\n\n```\n0    False\n1    False\n2     True\n3    False\n4     True\n5    False\nName: is_dup, dtype: bool\n```",
+      "stub": "import pandas as pd\n\ndef flag_duplicate_rows_subset(df):\n    ...",
+      "entry_point": "flag_duplicate_rows_subset",
+      "canonical_answer": "import pandas as pd\n\ndef flag_duplicate_rows_subset(df):\n    result = df.duplicated(subset=['name', 'dept'], keep='first')\n    result.name = 'is_dup'\n    return result",
+      "hints": [
+        "Use `df.duplicated()` with the `subset` parameter to limit duplicate detection to specific columns.",
+        "Pass `keep='first'` so that the first occurrence of each combination is marked `False` and subsequent duplicates are marked `True`.",
+        "The call is `df.duplicated(subset=['name', 'dept'], keep='first')`, then set `.name = 'is_dup'` on the resulting Series."
+      ],
+      "test_cases": [
+        {
+          "name": "test_flag_duplicate_rows_subset_all_unique",
+          "source": "def test_flag_duplicate_rows_subset_all_unique():\n    import pandas as pd\n    from pandas.testing import assert_series_equal\n    df = pd.DataFrame({\n        'name':   ['Alice', 'Bob', 'Carol'],\n        'dept':   ['Eng',   'Mkt', 'HR'],\n        'salary': [90000,   70000, 80000]\n    })\n    expected = pd.Series([False, False, False], name='is_dup', dtype=bool)\n    assert_series_equal(fn(df), expected)"
+        },
+        {
+          "name": "test_flag_duplicate_rows_subset_exact",
+          "source": "def test_flag_duplicate_rows_subset_exact():\n    import pandas as pd\n    from pandas.testing import assert_series_equal\n    df = pd.DataFrame({\n        'name':   ['Alice', 'Bob', 'Alice', 'Carol', 'Bob',   'Alice'],\n        'dept':   ['Eng',   'Mkt', 'Eng',   'Eng',   'Mkt',   'HR'],\n        'salary': [90000,   70000, 95000,   80000,   72000,   88000]\n    })\n    expected = pd.Series([False, False, True, False, True, False], name='is_dup', dtype=bool)\n    assert_series_equal(fn(df), expected)"
+        },
+        {
+          "name": "test_flag_duplicate_rows_subset_no_mutation",
+          "source": "def test_flag_duplicate_rows_subset_no_mutation():\n    import pandas as pd\n    df = pd.DataFrame({\n        'name':   ['Alice', 'Bob', 'Alice'],\n        'dept':   ['Eng',   'Mkt', 'Eng'],\n        'salary': [90000,   70000, 95000]\n    })\n    original_columns = list(df.columns)\n    original_values = df.copy()\n    _ = fn(df)\n    assert list(df.columns) == original_columns\n    import pandas.testing as pdt\n    pdt.assert_frame_equal(df, original_values)"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "dtypes-missing/missing-detect-fill/count-missing-per-column",
+      "topic": "dtypes-missing/missing-detect-fill",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given df, return a Series containing the count of missing values in each column.\n\n```\n        age   score   name\n      +-----+-------+------+\n  0   | NaN |   8.5 | 'Alice'\n  1   |  25 |   NaN | 'Bob'\n  2   |  30 |   7.0 |  NaN\n  3   | NaN |   NaN | 'Dana'\n```\n\nThe result should be a Series indexed by column name with the count of NaN values per column.",
+      "stub": "import pandas as pd\n\ndef count_missing(df):\n    ...",
+      "entry_point": "count_missing",
+      "canonical_answer": "import pandas as pd\n\ndef count_missing(df):\n    return df.isna().sum()",
+      "hints": [
+        "Use a boolean mask that marks missing values, then aggregate.",
+        "pandas has a built-in method `.isna()` that returns a boolean DataFrame of the same shape.",
+        "Chain `.isna()` with `.sum()` — summing a boolean DataFrame column-wise counts the True values per column."
+      ],
+      "test_cases": [
+        {
+          "name": "test_count_missing_all_present",
+          "source": "def test_count_missing_all_present():\n    import pandas as pd\n    from pandas.testing import assert_series_equal\n    df = pd.DataFrame({'x': [1, 2, 3], 'y': [4, 5, 6]})\n    expected = pd.Series({'x': 0, 'y': 0}, dtype='int64')\n    result = fn(df)\n    assert_series_equal(result, expected)"
+        },
+        {
+          "name": "test_count_missing_exact",
+          "source": "def test_count_missing_exact():\n    import pandas as pd\n    from pandas.testing import assert_series_equal\n    import numpy as np\n    df = pd.DataFrame({\n        'age': [np.nan, 25.0, 30.0, np.nan],\n        'score': [8.5, np.nan, 7.0, np.nan],\n        'name': ['Alice', 'Bob', None, 'Dana']\n    })\n    expected = pd.Series({'age': 2, 'score': 2, 'name': 1}, dtype='int64')\n    result = fn(df)\n    assert_series_equal(result, expected)"
+        },
+        {
+          "name": "test_count_missing_no_mutation",
+          "source": "def test_count_missing_no_mutation():\n    import pandas as pd\n    import numpy as np\n    df = pd.DataFrame({\n        'age': [np.nan, 25.0, 30.0, np.nan],\n        'score': [8.5, np.nan, 7.0, np.nan],\n        'name': ['Alice', 'Bob', None, 'Dana']\n    })\n    original_values = df.copy()\n    fn(df)\n    from pandas.testing import assert_frame_equal\n    assert_frame_equal(df, original_values)"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "dtypes-missing/missing-detect-fill/dropna-any-row",
+      "topic": "dtypes-missing/missing-detect-fill",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given df, return a new DataFrame containing only the rows that have **no** missing values (drop any row with at least one NaN).\n\n```\n     a     b     c\n  +-----+-----+-----+\n0 | 1.0 | 2.0 | 3.0 |\n1 | NaN | 5.0 | 6.0 |\n2 | 7.0 | NaN | 9.0 |\n3 |10.0 |11.0 |12.0 |\n```\n\nRows 1 and 2 each contain a NaN, so the result keeps only rows 0 and 3.",
+      "stub": "import pandas as pd\n\ndef drop_rows_with_any_na(df):\n    ...",
+      "entry_point": "drop_rows_with_any_na",
+      "canonical_answer": "import pandas as pd\n\ndef drop_rows_with_any_na(df):\n    return df.dropna()",
+      "hints": [
+        "pandas DataFrames have a method specifically for dropping missing values — look for `dropna`.",
+        "`df.dropna()` by default drops rows (`axis=0`) where **any** value is NaN; that default is exactly what you need here.",
+        "Call `df.dropna()` (no extra arguments needed) and return the result; it returns a new DataFrame and does not mutate the original."
+      ],
+      "test_cases": [
+        {
+          "name": "test_all_complete_rows_preserved",
+          "source": "def test_all_complete_rows_preserved():\n    import pandas as pd\n    from pandas.testing import assert_frame_equal\n    df = pd.DataFrame({'x': [1.0, 2.0, 3.0], 'y': [4.0, 5.0, 6.0]})\n    result = fn(df)\n    assert_frame_equal(result, df)"
+        },
+        {
+          "name": "test_exact_equality",
+          "source": "def test_exact_equality():\n    import pandas as pd\n    from pandas.testing import assert_frame_equal\n    df = pd.DataFrame({\n        'a': [1.0, float('nan'), 7.0, 10.0],\n        'b': [2.0, 5.0, float('nan'), 11.0],\n        'c': [3.0, 6.0, 9.0, 12.0],\n    })\n    expected = pd.DataFrame(\n        {'a': [1.0, 10.0], 'b': [2.0, 11.0], 'c': [3.0, 12.0]},\n        index=[0, 3]\n    )\n    assert_frame_equal(fn(df), expected)"
+        },
+        {
+          "name": "test_no_mutation",
+          "source": "def test_no_mutation():\n    import pandas as pd\n    df = pd.DataFrame({\n        'a': [1.0, float('nan'), 7.0],\n        'b': [2.0, 5.0, float('nan')],\n    })\n    original_shape = df.shape\n    original_na_count = df.isna().sum().sum()\n    fn(df)\n    assert df.shape == original_shape\n    assert df.isna().sum().sum() == original_na_count"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "dtypes-missing/missing-detect-fill/dropna-thresh-columns",
+      "topic": "dtypes-missing/missing-detect-fill",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given `df`, drop any column that has **fewer than 3 non-null values**, returning a new DataFrame.\n\n```\n         a     b     c     d\n       +-----+-----+-----+-----+\n  0    |  1  | NaN |  7  | NaN |\n  1    |  2  |  5  |  8  | NaN |\n  2    |  3  |  6  |  9  | NaN |\n  3    | NaN | NaN | 10  | NaN |\n```\n\nColumn `a` has 3 non-null values, `b` has 2, `c` has 4, `d` has 0 — so only `a` and `c` survive the threshold of 3.",
+      "stub": "import pandas as pd\n\ndef drop_sparse_columns(df):\n    ...",
+      "entry_point": "drop_sparse_columns",
+      "canonical_answer": "import pandas as pd\n\ndef drop_sparse_columns(df):\n    return df.dropna(axis=1, thresh=3)",
+      "hints": [
+        "Use `df.dropna()` — it accepts an `axis` argument to operate on columns instead of rows.",
+        "The `thresh` parameter of `dropna` keeps only columns (or rows) that have at least `thresh` non-null values.",
+        "Call `df.dropna(axis=1, thresh=3)` to retain every column with 3 or more non-null entries."
+      ],
+      "test_cases": [
+        {
+          "name": "test_all_columns_dropped_when_none_meet_thresh",
+          "source": "import pandas as pd\nimport numpy as np\nfrom pandas.testing import assert_frame_equal\n\ndef test_all_columns_dropped_when_none_meet_thresh():\n    df = pd.DataFrame({\n        'x': [1.0, np.nan, np.nan],\n        'y': [np.nan, np.nan, np.nan],\n    })\n    result = fn(df)\n    assert result.shape == (3, 0)"
+        },
+        {
+          "name": "test_exact_equality",
+          "source": "import pandas as pd\nimport numpy as np\nfrom pandas.testing import assert_frame_equal\n\ndef test_exact_equality():\n    df = pd.DataFrame({\n        'a': [1.0, 2.0, 3.0, np.nan],\n        'b': [np.nan, 5.0, 6.0, np.nan],\n        'c': [7.0, 8.0, 9.0, 10.0],\n        'd': [np.nan, np.nan, np.nan, np.nan],\n    })\n    expected = pd.DataFrame({\n        'a': [1.0, 2.0, 3.0, np.nan],\n        'c': [7.0, 8.0, 9.0, 10.0],\n    })\n    assert_frame_equal(fn(df), expected)"
+        },
+        {
+          "name": "test_no_mutation",
+          "source": "import pandas as pd\nimport numpy as np\n\ndef test_no_mutation():\n    df = pd.DataFrame({\n        'a': [1.0, 2.0, 3.0, np.nan],\n        'b': [np.nan, 5.0, 6.0, np.nan],\n        'c': [7.0, 8.0, 9.0, 10.0],\n        'd': [np.nan, np.nan, np.nan, np.nan],\n    })\n    original_columns = list(df.columns)\n    fn(df)\n    assert list(df.columns) == original_columns"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "dtypes-missing/missing-detect-fill/fillna-constant",
+      "topic": "dtypes-missing/missing-detect-fill",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given df, return a new DataFrame where every NaN in column 'score' is replaced with 0 (as a float).\n\n         name   score\n       +------+-------+\n  0    | Alice |   NaN |\n  1    |   Bob |   8.5 |\n  2    | Carol |   NaN |\n  3    | David |   7.0 |\n\nLeave all other columns unchanged.",
+      "stub": "import pandas as pd\n\ndef fill_score(df):\n    ...",
+      "entry_point": "fill_score",
+      "canonical_answer": "import pandas as pd\n\ndef fill_score(df):\n    out = df.copy()\n    out['score'] = df['score'].fillna(0.0)\n    return out",
+      "hints": [
+        "Use Series.fillna() on the 'score' column and assign the result into a copy of the DataFrame.",
+        "df.copy() gives you a new DataFrame; then out['score'] = df['score'].fillna(value) replaces only the NaNs.",
+        "The full solution is: out = df.copy(); out['score'] = df['score'].fillna(0.0); return out"
+      ],
+      "test_cases": [
+        {
+          "name": "test_fillna_exact",
+          "source": "def test_fillna_exact():\n    import pandas as pd\n    import numpy as np\n    from pandas.testing import assert_frame_equal\n    df = pd.DataFrame({'name': ['Alice', 'Bob', 'Carol', 'David'], 'score': [np.nan, 8.5, np.nan, 7.0]})\n    expected = pd.DataFrame({'name': ['Alice', 'Bob', 'Carol', 'David'], 'score': [0.0, 8.5, 0.0, 7.0]})\n    assert_frame_equal(fn(df), expected)"
+        },
+        {
+          "name": "test_fillna_no_mutation",
+          "source": "def test_fillna_no_mutation():\n    import pandas as pd\n    import numpy as np\n    df = pd.DataFrame({'name': ['Alice', 'Bob'], 'score': [np.nan, 5.0]})\n    _ = fn(df)\n    assert pd.isna(df.loc[0, 'score']), 'original df must not be mutated'"
+        },
+        {
+          "name": "test_fillna_no_nans_in_result",
+          "source": "def test_fillna_no_nans_in_result():\n    import pandas as pd\n    import numpy as np\n    df = pd.DataFrame({'name': ['X', 'Y', 'Z'], 'score': [np.nan, np.nan, 3.0]})\n    result = fn(df)\n    assert result['score'].isna().sum() == 0, 'no NaNs should remain in score column'"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "groupby-aggregate-window/agg-named/agg-named-multi-col",
+      "topic": "groupby-aggregate-window/agg-named",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given df with columns `dept`, `salary`, and `years`, return a new DataFrame produced by grouping on `dept` and computing three named aggregates in a single `.agg()` call: `avg_salary` = mean of `salary`, `max_salary` = max of `salary`, and `tenure` = mean of `years`. The result should have `dept` as the index.\n\n```\n   dept  salary  years\n0     A   50000      3\n1     A   60000      5\n2     B   70000      7\n3     B   80000      9\n```\n\nExpected result (index name = `dept`):\n\n```\n      avg_salary  max_salary  tenure\ndept\nA        55000.0       60000     4.0\nB        75000.0       80000     8.0\n```",
+      "stub": "import pandas as pd\n\ndef agg_multi_col(df):\n    ...",
+      "entry_point": "agg_multi_col",
+      "canonical_answer": "import pandas as pd\n\ndef agg_multi_col(df):\n    return df.groupby('dept').agg(\n        avg_salary=('salary', 'mean'),\n        max_salary=('salary', 'max'),\n        tenure=('years', 'mean')\n    )",
+      "hints": [
+        "Use df.groupby('dept').agg(...) and pass keyword arguments inside agg — each keyword defines an output column name.",
+        "Each keyword argument should be a tuple of (source_column, aggregation_function), e.g. avg_salary=('salary', 'mean').",
+        "All three named aggregates go inside a single .agg() call: agg(avg_salary=('salary','mean'), max_salary=('salary','max'), tenure=('years','mean'))."
+      ],
+      "test_cases": [
+        {
+          "name": "test_exact_values",
+          "source": "import pandas as pd\nfrom pandas.testing import assert_frame_equal\n\ndef test_exact_values():\n    df = pd.DataFrame({\n        'dept': ['A', 'A', 'B', 'B'],\n        'salary': [50000, 60000, 70000, 80000],\n        'years': [3, 5, 7, 9]\n    })\n    expected = pd.DataFrame({\n        'avg_salary': [55000.0, 75000.0],\n        'max_salary': [60000, 80000],\n        'tenure': [4.0, 8.0]\n    }, index=pd.Index(['A', 'B'], name='dept'))\n    assert_frame_equal(fn(df), expected)"
+        },
+        {
+          "name": "test_no_mutation",
+          "source": "import pandas as pd\n\ndef test_no_mutation():\n    df = pd.DataFrame({\n        'dept': ['A', 'A', 'B', 'B'],\n        'salary': [50000, 60000, 70000, 80000],\n        'years': [3, 5, 7, 9]\n    })\n    original_cols = list(df.columns)\n    original_len = len(df)\n    fn(df)\n    assert list(df.columns) == original_cols\n    assert len(df) == original_len"
+        },
+        {
+          "name": "test_single_group",
+          "source": "import pandas as pd\nfrom pandas.testing import assert_frame_equal\n\ndef test_single_group():\n    df = pd.DataFrame({\n        'dept': ['X', 'X'],\n        'salary': [40000, 60000],\n        'years': [2, 4]\n    })\n    expected = pd.DataFrame({\n        'avg_salary': [50000.0],\n        'max_salary': [60000],\n        'tenure': [3.0]\n    }, index=pd.Index(['X'], name='dept'))\n    assert_frame_equal(fn(df), expected)"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "groupby-aggregate-window/agg-named/groupby-named-agg",
+      "topic": "groupby-aggregate-window/agg-named",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given `df` with columns `dept`, `salary`, and `years`, return a new DataFrame (one row per department) with three columns computed in a single `.agg()` call using named aggregation:\n- `avg_salary`: mean of `salary`\n- `max_years`: max of `years`\n- `headcount`: count of `salary`\n\nThe result should be indexed by `dept`.\n\n      dept  salary  years\n  0     HR   50000      3\n  1     HR   60000      5\n  2    Eng   90000      7\n  3    Eng  110000     10\n  4    Eng   95000      4\n  5  Sales   45000      2\n\nExpected result (index name = 'dept'):\n\n         avg_salary  max_years  headcount\n  dept\n  Eng      98333.33         10          3\n  HR       55000.00          5          2\n  Sales    45000.00          2          1",
+      "stub": "import pandas as pd\n\ndef named_group_agg(df):\n    ...",
+      "entry_point": "named_group_agg",
+      "canonical_answer": "import pandas as pd\n\ndef named_group_agg(df):\n    return df.groupby('dept').agg(\n        avg_salary=('salary', 'mean'),\n        max_years=('years', 'max'),\n        headcount=('salary', 'count'),\n    )",
+      "hints": [
+        "Use `df.groupby('dept').agg(...)` and pass keyword arguments where each key is the new column name.",
+        "Each keyword argument in `.agg()` takes a tuple `(column_name, aggregation_function)`, e.g. `avg_salary=('salary', 'mean')`.",
+        "The full call is: `df.groupby('dept').agg(avg_salary=('salary','mean'), max_years=('years','max'), headcount=('salary','count'))`."
+      ],
+      "test_cases": [
+        {
+          "name": "test_exact_values_and_dtypes",
+          "source": "def test_exact_values_and_dtypes():\n    import pandas as pd\n    import numpy as np\n    from pandas.testing import assert_frame_equal\n    df = pd.DataFrame({\n        'dept':   ['HR', 'HR', 'Eng', 'Eng', 'Eng', 'Sales'],\n        'salary': [50000, 60000, 90000, 110000, 95000, 45000],\n        'years':  [3, 5, 7, 10, 4, 2],\n    })\n    expected = pd.DataFrame(\n        {\n            'avg_salary': pd.array([98333.333333, 55000.0, 45000.0], dtype='float64'),\n            'max_years':  pd.array([10, 5, 2], dtype='int64'),\n            'headcount':  pd.array([3, 2, 1], dtype='int64'),\n        },\n        index=pd.Index(['Eng', 'HR', 'Sales'], name='dept'),\n    )\n    result = fn(df)\n    assert_frame_equal(result, expected, check_exact=False, rtol=1e-5)"
+        },
+        {
+          "name": "test_no_mutation_of_input",
+          "source": "def test_no_mutation_of_input():\n    import pandas as pd\n    df = pd.DataFrame({\n        'dept':   ['HR', 'HR', 'Eng'],\n        'salary': [50000, 60000, 90000],\n        'years':  [3, 5, 7],\n    })\n    original_cols = list(df.columns)\n    original_shape = df.shape\n    fn(df)\n    assert list(df.columns) == original_cols\n    assert df.shape == original_shape"
+        },
+        {
+          "name": "test_single_group",
+          "source": "def test_single_group():\n    import pandas as pd\n    from pandas.testing import assert_frame_equal\n    df = pd.DataFrame({\n        'dept':   ['HR', 'HR'],\n        'salary': [40000, 60000],\n        'years':  [2, 8],\n    })\n    result = fn(df)\n    assert result.index.name == 'dept'\n    assert list(result.columns) == ['avg_salary', 'max_years', 'headcount']\n    assert result.loc['HR', 'avg_salary'] == 50000.0\n    assert result.loc['HR', 'max_years'] == 8\n    assert result.loc['HR', 'headcount'] == 2"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "groupby-aggregate-window/groupby-basics/groupby-mean-per-group",
+      "topic": "groupby-aggregate-window/groupby-basics",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given df, return a Series with the mean of `score` for each `team`, indexed by `team` and named `score`.\n\n         team  score\n       +------+------+\n  0    |   A  |  10  |\n  1    |   B  |  20  |\n  2    |   A  |  30  |\n  3    |   B  |  40  |\n  4    |   A  |  20  |\n\nExpected result (Series):\n\n  team\n  A    20.0\n  B    30.0\n  Name: score",
+      "stub": "import pandas as pd\n\ndef groupby_mean(df):\n    ...",
+      "entry_point": "groupby_mean",
+      "canonical_answer": "import pandas as pd\n\ndef groupby_mean(df):\n    return df.groupby('team')['score'].mean()",
+      "hints": [
+        "Use df.groupby() to group by the 'team' column before aggregating.",
+        "Select the 'score' column after groupby, then call .mean() on it.",
+        "df.groupby('team')['score'].mean() returns a Series indexed by 'team' with the mean score per group."
+      ],
+      "test_cases": [
+        {
+          "name": "test_exact_mean_per_group",
+          "source": "def test_exact_mean_per_group():\n    import pandas as pd\n    from pandas.testing import assert_series_equal\n    df = pd.DataFrame({'team': ['A', 'B', 'A', 'B', 'A'], 'score': [10, 20, 30, 40, 20]})\n    expected = pd.Series([20.0, 30.0], index=pd.Index(['A', 'B'], name='team'), name='score')\n    assert_series_equal(fn(df), expected)"
+        },
+        {
+          "name": "test_no_mutation_of_input",
+          "source": "def test_no_mutation_of_input():\n    import pandas as pd\n    df = pd.DataFrame({'team': ['A', 'B', 'A', 'B', 'A'], 'score': [10, 20, 30, 40, 20]})\n    original_columns = list(df.columns)\n    original_shape = df.shape\n    fn(df)\n    assert list(df.columns) == original_columns\n    assert df.shape == original_shape"
+        },
+        {
+          "name": "test_single_group",
+          "source": "def test_single_group():\n    import pandas as pd\n    from pandas.testing import assert_series_equal\n    df = pd.DataFrame({'team': ['X', 'X', 'X'], 'score': [5, 15, 25]})\n    expected = pd.Series([15.0], index=pd.Index(['X'], name='team'), name='score')\n    assert_series_equal(fn(df), expected)"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "groupby-aggregate-window/groupby-basics/groupby-size-count-rows",
+      "topic": "groupby-aggregate-window/groupby-basics",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given df, return a Series with the number of rows per 'dept' group using groupby().size().\n\n     dept  score\n  0    A     10\n  1    B     20\n  2    A     30\n  3    C     40\n  4    B     50\n  5    B     60\n\nThe result should be a Series named 'dept' (the groupby key becomes the index name) with index ['A','B','C'] and values [2, 3, 1].",
+      "stub": "import pandas as pd\n\ndef count_rows_per_group(df):\n    ...",
+      "entry_point": "count_rows_per_group",
+      "canonical_answer": "import pandas as pd\n\ndef count_rows_per_group(df):\n    return df.groupby('dept').size()",
+      "hints": [
+        "Group the DataFrame by the 'dept' column using df.groupby('dept').",
+        "After grouping, call .size() on the GroupBy object — it counts rows in each group and returns a Series.",
+        "df.groupby('dept').size() returns a Series whose index is the unique 'dept' values and whose values are the row counts."
+      ],
+      "test_cases": [
+        {
+          "name": "test_exact_counts",
+          "source": "def test_exact_counts():\n    import pandas as pd\n    from pandas.testing import assert_series_equal\n    df = pd.DataFrame({'dept': ['A','B','A','C','B','B'], 'score': [10,20,30,40,50,60]})\n    expected = pd.Series([2, 3, 1], index=pd.Index(['A','B','C'], name='dept'))\n    assert_series_equal(fn(df), expected)"
+        },
+        {
+          "name": "test_no_mutation",
+          "source": "def test_no_mutation():\n    import pandas as pd\n    df = pd.DataFrame({'dept': ['A','B','A','C','B','B'], 'score': [10,20,30,40,50,60]})\n    original_cols = list(df.columns)\n    original_shape = df.shape\n    fn(df)\n    assert list(df.columns) == original_cols\n    assert df.shape == original_shape"
+        },
+        {
+          "name": "test_single_group",
+          "source": "def test_single_group():\n    import pandas as pd\n    from pandas.testing import assert_series_equal\n    df = pd.DataFrame({'dept': ['X','X','X'], 'score': [1,2,3]})\n    expected = pd.Series([3], index=pd.Index(['X'], name='dept'))\n    assert_series_equal(fn(df), expected)"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "groupby-aggregate-window/shift-diff-pct/diff-row-to-row",
+      "topic": "groupby-aggregate-window/shift-diff-pct",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given df, return a new DataFrame with an added column `'delta'` containing the row-to-row difference of the `'price'` column (each row minus the previous row).\n\n```\n   price\n0   10.0\n1   15.0\n2   13.0\n3   20.0\n4   18.0\n```\n\nThe first row of `'delta'` should be `NaN` (no previous value).",
+      "stub": "import pandas as pd\n\ndef add_price_delta(df):\n    ...",
+      "entry_point": "add_price_delta",
+      "canonical_answer": "import pandas as pd\n\ndef add_price_delta(df):\n    out = df.copy()\n    out['delta'] = df['price'].diff()\n    return out",
+      "hints": [
+        "You need to compute each element minus the element directly above it in the same column.",
+        "pandas Series has a method that computes the difference between consecutive elements; look for `.diff()`.",
+        "Call `df['price'].diff()` and assign the result to a new column `'delta'` on a copy of the DataFrame."
+      ],
+      "test_cases": [
+        {
+          "name": "test_exact_values",
+          "source": "def test_exact_values():\n    import pandas as pd\n    import numpy as np\n    from pandas.testing import assert_frame_equal\n    df = pd.DataFrame({'price': [10.0, 15.0, 13.0, 20.0, 18.0]})\n    expected = pd.DataFrame({\n        'price': [10.0, 15.0, 13.0, 20.0, 18.0],\n        'delta': [np.nan, 5.0, -2.0, 7.0, -2.0]\n    })\n    assert_frame_equal(fn(df), expected)"
+        },
+        {
+          "name": "test_no_mutation",
+          "source": "def test_no_mutation():\n    import pandas as pd\n    df = pd.DataFrame({'price': [10.0, 15.0, 13.0]})\n    original_columns = list(df.columns)\n    fn(df)\n    assert list(df.columns) == original_columns, 'Input DataFrame was mutated'"
+        },
+        {
+          "name": "test_single_row_gives_nan_delta",
+          "source": "def test_single_row_gives_nan_delta():\n    import pandas as pd\n    import numpy as np\n    from pandas.testing import assert_frame_equal\n    df = pd.DataFrame({'price': [42.0]})\n    result = fn(df)\n    expected = pd.DataFrame({'price': [42.0], 'delta': [np.nan]})\n    assert_frame_equal(result, expected)"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "groupby-aggregate-window/shift-diff-pct/groupby-shift-prev-value",
+      "topic": "groupby-aggregate-window/shift-diff-pct",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given df with columns 'group' and 'value', return a new DataFrame with an added column 'prev_value' containing the previous row's value within each group (NaN for the first row in each group), preserving row order.\n\n  group  value\n+-------+------+\n|  A    |  10  |\n|  A    |  20  |\n|  A    |  30  |\n|  B    |  100 |\n|  B    |  200 |\n+-------+------+\n\nExpected output:\n\n  group  value  prev_value\n+-------+------+-----------+\n|  A    |  10  |   NaN     |\n|  A    |  20  |  10.0     |\n|  A    |  30  |  20.0     |\n|  B    |  100 |   NaN     |\n|  B    |  200 | 100.0     |\n+-------+------+-----------+",
+      "stub": "import pandas as pd\n\ndef add_prev_value(df):\n    ...",
+      "entry_point": "add_prev_value",
+      "canonical_answer": "import pandas as pd\n\ndef add_prev_value(df):\n    out = df.copy()\n    out['prev_value'] = df.groupby('group')['value'].shift(1)\n    return out",
+      "hints": [
+        "Within each group you need the value from the row directly above — pandas has a shift operation that can be applied per group.",
+        "Use groupby('group')['value'] to get a GroupBy object on the value column, then call .shift(1) to lag by one position.",
+        "df.groupby('group')['value'].shift(1) returns a Series aligned to the original index; assign it as a new column on a copy of df."
+      ],
+      "test_cases": [
+        {
+          "name": "test_exact_prev_value",
+          "source": "def test_exact_prev_value():\n    import pandas as pd\n    import numpy as np\n    from pandas.testing import assert_frame_equal\n    df = pd.DataFrame({\n        'group': ['A', 'A', 'A', 'B', 'B'],\n        'value': [10, 20, 30, 100, 200]\n    })\n    expected = pd.DataFrame({\n        'group': ['A', 'A', 'A', 'B', 'B'],\n        'value': [10, 20, 30, 100, 200],\n        'prev_value': [np.nan, 10.0, 20.0, np.nan, 100.0]\n    })\n    assert_frame_equal(fn(df), expected)"
+        },
+        {
+          "name": "test_no_mutation",
+          "source": "def test_no_mutation():\n    import pandas as pd\n    df = pd.DataFrame({\n        'group': ['A', 'A', 'B', 'B'],\n        'value': [1, 2, 3, 4]\n    })\n    original_cols = list(df.columns)\n    fn(df)\n    assert list(df.columns) == original_cols, 'input df should not be mutated'"
+        },
+        {
+          "name": "test_single_row_group",
+          "source": "def test_single_row_group():\n    import pandas as pd\n    import numpy as np\n    df = pd.DataFrame({\n        'group': ['X', 'Y', 'Y'],\n        'value': [5, 10, 15]\n    })\n    result = fn(df)\n    import math\n    assert math.isnan(result.loc[0, 'prev_value']), 'single-member group first row should be NaN'\n    assert math.isnan(result.loc[1, 'prev_value']), 'first row of Y group should be NaN'\n    assert result.loc[2, 'prev_value'] == 10.0"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "groupby-aggregate-window/sort-values/sort-two-cols-mixed-order",
+      "topic": "groupby-aggregate-window/sort-values",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given df, return a new DataFrame sorted by 'dept' ascending and 'salary' descending (keeping the original index).\n\n        dept  salary\n     +------+--------+\n  0  |   HR |  50000 |\n  1  |   IT |  90000 |\n  2  |   HR |  70000 |\n  3  |   IT |  80000 |\n  4  |  OPS |  60000 |",
+      "stub": "import pandas as pd\n\ndef sort_mixed(df):\n    ...",
+      "entry_point": "sort_mixed",
+      "canonical_answer": "import pandas as pd\n\ndef sort_mixed(df):\n    return df.sort_values(by=['dept', 'salary'], ascending=[True, False])",
+      "hints": [
+        "Use df.sort_values() with the by parameter set to a list of two column names.",
+        "The ascending parameter accepts a list of booleans, one per column, e.g. [True, False].",
+        "Call df.sort_values(by=['dept', 'salary'], ascending=[True, False]) to sort dept A→Z and salary high→low."
+      ],
+      "test_cases": [
+        {
+          "name": "test_sort_mixed_exact",
+          "source": "def test_sort_mixed_exact():\n    import pandas as pd\n    from pandas.testing import assert_frame_equal\n    df = pd.DataFrame({\n        'dept': ['HR', 'IT', 'HR', 'IT', 'OPS'],\n        'salary': [50000, 90000, 70000, 80000, 60000]\n    })\n    expected = pd.DataFrame({\n        'dept': ['HR', 'HR', 'IT', 'IT', 'OPS'],\n        'salary': [70000, 50000, 90000, 80000, 60000]\n    }, index=[2, 0, 1, 3, 4])\n    assert_frame_equal(fn(df), expected)"
+        },
+        {
+          "name": "test_sort_mixed_no_mutation",
+          "source": "def test_sort_mixed_no_mutation():\n    import pandas as pd\n    df = pd.DataFrame({\n        'dept': ['HR', 'IT', 'HR', 'IT', 'OPS'],\n        'salary': [50000, 90000, 70000, 80000, 60000]\n    })\n    original_index = list(df.index)\n    original_dept = list(df['dept'])\n    fn(df)\n    assert list(df.index) == original_index\n    assert list(df['dept']) == original_dept"
+        },
+        {
+          "name": "test_sort_mixed_ties_broken_by_salary_desc",
+          "source": "def test_sort_mixed_ties_broken_by_salary_desc():\n    import pandas as pd\n    df = pd.DataFrame({\n        'dept': ['A', 'A', 'A'],\n        'salary': [100, 300, 200]\n    })\n    result = fn(df)\n    assert list(result['salary']) == [300, 200, 100]"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "groupby-aggregate-window/sort-values/sort-values-descending",
+      "topic": "groupby-aggregate-window/sort-values",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given df, return a new DataFrame sorted by the 'score' column in descending order (highest first), resetting nothing — keep the original index labels.\n\n       name  score\n  0   Alice     82\n  1     Bob     95\n  2   Carol     70\n  3   David     95\n  4     Eve     88\n\nThe result should have rows ordered from highest to lowest score; rows with equal scores should appear in their original relative order (stable sort).",
+      "stub": "import pandas as pd\n\ndef sort_by_score_desc(df):\n    ...",
+      "entry_point": "sort_by_score_desc",
+      "canonical_answer": "import pandas as pd\n\ndef sort_by_score_desc(df):\n    return df.sort_values('score', ascending=False, kind='stable')",
+      "hints": [
+        "Use the pandas DataFrame method that reorders rows based on column values.",
+        "sort_values accepts an `ascending` keyword argument — set it to False for descending order.",
+        "Call df.sort_values('score', ascending=False, kind='stable') and return the result directly without resetting the index."
+      ],
+      "test_cases": [
+        {
+          "name": "test_sort_by_score_desc_exact",
+          "source": "def test_sort_by_score_desc_exact():\n    import pandas as pd\n    from pandas.testing import assert_frame_equal\n    df = pd.DataFrame({\n        'name': ['Alice', 'Bob', 'Carol', 'David', 'Eve'],\n        'score': [82, 95, 70, 95, 88]\n    })\n    expected = pd.DataFrame({\n        'name': ['Bob', 'David', 'Eve', 'Alice', 'Carol'],\n        'score': [95, 95, 88, 82, 70]\n    }, index=[1, 3, 4, 0, 2])\n    assert_frame_equal(fn(df), expected)"
+        },
+        {
+          "name": "test_sort_by_score_desc_no_mutation",
+          "source": "def test_sort_by_score_desc_no_mutation():\n    import pandas as pd\n    df = pd.DataFrame({\n        'name': ['Alice', 'Bob', 'Carol'],\n        'score': [82, 95, 70]\n    })\n    original_index = df.index.tolist()\n    original_scores = df['score'].tolist()\n    fn(df)\n    assert df.index.tolist() == original_index\n    assert df['score'].tolist() == original_scores"
+        },
+        {
+          "name": "test_sort_by_score_desc_single_row",
+          "source": "def test_sort_by_score_desc_single_row():\n    import pandas as pd\n    from pandas.testing import assert_frame_equal\n    df = pd.DataFrame({'name': ['Solo'], 'score': [42]})\n    expected = pd.DataFrame({'name': ['Solo'], 'score': [42]}, index=[0])\n    assert_frame_equal(fn(df), expected)"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "groupby-aggregate-window/transform-broadcast/groupby-transform-demean",
+      "topic": "groupby-aggregate-window/transform-broadcast",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given df, return a new DataFrame with a single column `'value_demeaned'` containing each `'value'` minus its group mean (grouped by `'group'`), preserving the original row order and index.\n\n      group  value\n    +-------+------+\n  0 |  'A'  |  10  |\n  1 |  'B'  |  20  |\n  2 |  'A'  |  30  |\n  3 |  'B'  |  40  |\n  4 |  'A'  |  50  |\n\nGroup means: A = 30.0, B = 30.0\nExpected result:\n\n     value_demeaned\n    +--------------+\n  0 |   -20.0      |\n  1 |   -10.0      |\n  2 |     0.0      |\n  3 |    10.0      |\n  4 |    20.0      |",
+      "stub": "import pandas as pd\n\ndef demean_by_group(df):\n    ...",
+      "entry_point": "demean_by_group",
+      "canonical_answer": "import pandas as pd\n\ndef demean_by_group(df):\n    demeaned = df['value'] - df.groupby('group')['value'].transform('mean')\n    return pd.DataFrame({'value_demeaned': demeaned})",
+      "hints": [
+        "Use `groupby` on the `'group'` column and select `'value'`, then call `.transform('mean')` to broadcast the group mean back to every row.",
+        "Subtract the result of `.transform('mean')` from `df['value']` element-wise — this preserves the original index and row order automatically.",
+        "`df['value'] - df.groupby('group')['value'].transform('mean')` gives the demeaned values; wrap in `pd.DataFrame({'value_demeaned': ...})` to produce the required output."
+      ],
+      "test_cases": [
+        {
+          "name": "test_demean_exact",
+          "source": "def test_demean_exact():\n    import pandas as pd\n    from pandas.testing import assert_frame_equal\n    df = pd.DataFrame({'group': ['A', 'B', 'A', 'B', 'A'], 'value': [10, 20, 30, 40, 50]})\n    expected = pd.DataFrame({'value_demeaned': pd.Series([-20.0, -10.0, 0.0, 10.0, 20.0])})\n    assert_frame_equal(fn(df), expected)"
+        },
+        {
+          "name": "test_demean_no_mutation",
+          "source": "def test_demean_no_mutation():\n    import pandas as pd\n    df = pd.DataFrame({'group': ['A', 'B', 'A', 'B', 'A'], 'value': [10, 20, 30, 40, 50]})\n    original_cols = list(df.columns)\n    _ = fn(df)\n    assert list(df.columns) == original_cols\n    assert list(df['value']) == [10, 20, 30, 40, 50]"
+        },
+        {
+          "name": "test_demean_single_group",
+          "source": "def test_demean_single_group():\n    import pandas as pd\n    from pandas.testing import assert_frame_equal\n    df = pd.DataFrame({'group': ['X', 'X', 'X'], 'value': [5, 10, 15]})\n    expected = pd.DataFrame({'value_demeaned': pd.Series([-5.0, 0.0, 5.0])})\n    assert_frame_equal(fn(df), expected)"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "groupby-aggregate-window/transform-broadcast/groupby-transform-group-mean",
+      "topic": "groupby-aggregate-window/transform-broadcast",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given `df`, return a new DataFrame with an added column `'group_mean_score'` containing each row's group mean of `'score'`, grouped by `'category'`. Use `groupby().transform`.\n\n         category  score\n       +----------+------+\n  0    |   A      |  10  |\n  1    |   B      |  20  |\n  2    |   A      |  30  |\n  3    |   B      |  40  |\n  4    |   A      |  50  |\n\nExpected output adds column `group_mean_score`: A rows get 30.0, B rows get 30.0.",
+      "stub": "import pandas as pd\n\ndef add_group_mean(df):\n    ...",
+      "entry_point": "add_group_mean",
+      "canonical_answer": "import pandas as pd\n\ndef add_group_mean(df):\n    out = df.copy()\n    out['group_mean_score'] = df.groupby('category')['score'].transform('mean')\n    return out",
+      "hints": [
+        "You need each row to carry its group's mean value — this is a broadcast operation, not a reduction.",
+        "`groupby('category')['score'].transform(...)` returns a Series aligned to the original index, suitable for assigning as a new column.",
+        "Use `.transform('mean')` (or `.transform(lambda x: x.mean())`) to compute the group mean and broadcast it back to every row in that group."
+      ],
+      "test_cases": [
+        {
+          "name": "test_exact_group_mean_values",
+          "source": "def test_exact_group_mean_values():\n    import pandas as pd\n    from pandas.testing import assert_frame_equal\n    df = pd.DataFrame({\n        'category': ['A', 'B', 'A', 'B', 'A'],\n        'score': [10, 20, 30, 40, 50]\n    })\n    expected = pd.DataFrame({\n        'category': ['A', 'B', 'A', 'B', 'A'],\n        'score': [10, 20, 30, 40, 50],\n        'group_mean_score': [30.0, 30.0, 30.0, 30.0, 30.0]\n    })\n    assert_frame_equal(fn(df), expected)"
+        },
+        {
+          "name": "test_no_mutation_of_input",
+          "source": "def test_no_mutation_of_input():\n    import pandas as pd\n    df = pd.DataFrame({\n        'category': ['A', 'B', 'A', 'B', 'A'],\n        'score': [10, 20, 30, 40, 50]\n    })\n    original_cols = list(df.columns)\n    fn(df)\n    assert list(df.columns) == original_cols, 'Input df must not be mutated'"
+        },
+        {
+          "name": "test_unequal_group_sizes",
+          "source": "def test_unequal_group_sizes():\n    import pandas as pd\n    from pandas.testing import assert_frame_equal\n    df = pd.DataFrame({\n        'category': ['X', 'X', 'X', 'Y'],\n        'score': [10, 20, 30, 100]\n    })\n    result = fn(df)\n    import numpy as np\n    assert np.isclose(result.loc[result['category'] == 'X', 'group_mean_score'], 20.0).all()\n    assert np.isclose(result.loc[result['category'] == 'Y', 'group_mean_score'], 100.0).all()"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "index/index-basics/check-column-is-unique-key",
+      "topic": "index/index-basics",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given the DataFrame `df`, return `True` if the `'id'` column contains all unique values (i.e., can serve as a unique key), and `False` otherwise. Use the pandas `is_unique` property.\n\n```\n        id   name\n      +----+-------+\n  0   |  1 | Alice |\n  1   |  2 | Bob   |\n  2   |  3 | Carol |\n```\n\nFor the frame above the answer is `True`; for a frame where `'id'` has a repeated value the answer is `False`.",
+      "stub": "import pandas as pd\n\ndef check_unique_key(df: pd.DataFrame) -> bool:\n    ...",
+      "entry_point": "check_unique_key",
+      "canonical_answer": "import pandas as pd\n\ndef check_unique_key(df: pd.DataFrame) -> bool:\n    return df['id'].is_unique",
+      "hints": [
+        "Convert the column to an Index or just call a property directly on the Series — both expose `is_unique`.",
+        "A pandas Series has an `is_unique` property that returns a single bool without needing `.nunique()` or `.duplicated()`.",
+        "Use `df['id'].is_unique` — it returns `True` when every value in the column appears exactly once."
+      ],
+      "test_cases": [
+        {
+          "name": "test_exact_not_unique",
+          "source": "def test_exact_not_unique():\n    import pandas as pd\n    df = pd.DataFrame({'id': [1, 2, 2], 'name': ['Alice', 'Bob', 'Bob2']})\n    result = fn(df)\n    assert result is False"
+        },
+        {
+          "name": "test_exact_unique",
+          "source": "def test_exact_unique():\n    import pandas as pd\n    df = pd.DataFrame({'id': [1, 2, 3], 'name': ['Alice', 'Bob', 'Carol']})\n    result = fn(df)\n    assert result is True"
+        },
+        {
+          "name": "test_no_mutation",
+          "source": "def test_no_mutation():\n    import pandas as pd\n    df = pd.DataFrame({'id': [10, 20, 30], 'name': ['X', 'Y', 'Z']})\n    original_ids = df['id'].tolist()\n    fn(df)\n    assert df['id'].tolist() == original_ids"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "index/index-basics/name-the-row-index",
+      "topic": "index/index-basics",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given `df`, return a new DataFrame whose row index has the name `\"student_id\"` (the data and columns must be unchanged).\n\n```\n        score  grade\n      +-------+------+\n  0   |    88 |  B   |\n  1   |    95 |  A   |\n  2   |    72 |  C   |\n```\n\nThe returned frame should look like:\n\n```\n               score  grade\nstudent_id\n      +-------+------+\n  0   |    88 |  B   |\n  1   |    95 |  A   |\n  2   |    72 |  C   |\n```\n\nwhere `df.index.name == \"student_id\"`.",
+      "stub": "import pandas as pd\n\ndef name_row_index(df):\n    ...",
+      "entry_point": "name_row_index",
+      "canonical_answer": "import pandas as pd\n\ndef name_row_index(df):\n    out = df.copy()\n    out.index.name = \"student_id\"\n    return out",
+      "hints": [
+        "Every pandas Index object has a `.name` attribute you can read or set.",
+        "Make a copy of `df` first, then assign to `out.index.name`.",
+        "Set `out.index.name = \"student_id\"` on the copied frame before returning it."
+      ],
+      "test_cases": [
+        {
+          "name": "test_empty_dataframe_index_name",
+          "source": "def test_empty_dataframe_index_name():\n    import pandas as pd\n    df = pd.DataFrame({'score': pd.Series([], dtype=int), 'grade': pd.Series([], dtype=str)})\n    result = fn(df)\n    assert result.index.name == 'student_id'\n    assert len(result) == 0"
+        },
+        {
+          "name": "test_exact_index_name_and_data",
+          "source": "def test_exact_index_name_and_data():\n    import pandas as pd\n    from pandas.testing import assert_frame_equal\n    df = pd.DataFrame({'score': [88, 95, 72], 'grade': ['B', 'A', 'C']})\n    expected = pd.DataFrame(\n        {'score': [88, 95, 72], 'grade': ['B', 'A', 'C']},\n        index=pd.Index([0, 1, 2], name='student_id')\n    )\n    assert_frame_equal(fn(df), expected)"
+        },
+        {
+          "name": "test_input_not_mutated",
+          "source": "def test_input_not_mutated():\n    import pandas as pd\n    df = pd.DataFrame({'score': [88, 95, 72], 'grade': ['B', 'A', 'C']})\n    _ = fn(df)\n    assert df.index.name is None, 'original df.index.name should remain None'"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "index/reindex-align/series-add-index-alignment",
+      "topic": "index/reindex-align",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given two Series with overlapping but non-identical integer indices, return a new Series that is their element-wise sum using pandas automatic index alignment (do NOT reset the index or reindex manually — let pandas align by label).\n\nSeries `a`:\n\n  index | values\n  ------+-------\n    1   |  10\n    2   |  20\n    3   |  30\n\nSeries `b`:\n\n  index | values\n  ------+-------\n    2   |  200\n    3   |  300\n    4   |  400\n\nReturn `a + b` aligned by label; labels present in only one Series become NaN.",
+      "stub": "import pandas as pd\n\ndef add_aligned(a, b):\n    ...",
+      "entry_point": "add_aligned",
+      "canonical_answer": "import pandas as pd\n\ndef add_aligned(a, b):\n    return a + b",
+      "hints": [
+        "Pandas Series addition automatically aligns on the index labels before computing the sum.",
+        "When a label exists in only one of the two Series, the result at that label is NaN — this is the expected behavior, not an error.",
+        "Simply write `return a + b`; pandas handles all index alignment internally without any extra steps."
+      ],
+      "test_cases": [
+        {
+          "name": "test_add_aligned_exact",
+          "source": "def test_add_aligned_exact():\n    import pandas as pd\n    from pandas.testing import assert_series_equal\n    a = pd.Series([10, 20, 30], index=[1, 2, 3])\n    b = pd.Series([200, 300, 400], index=[2, 3, 4])\n    expected = pd.Series([float('nan'), 220.0, 330.0, float('nan')], index=[1, 2, 3, 4])\n    result = fn(a, b)\n    assert_series_equal(result, expected, check_names=False)"
+        },
+        {
+          "name": "test_add_aligned_fully_overlapping",
+          "source": "def test_add_aligned_fully_overlapping():\n    import pandas as pd\n    from pandas.testing import assert_series_equal\n    a = pd.Series([1, 2, 3], index=[10, 20, 30])\n    b = pd.Series([4, 5, 6], index=[10, 20, 30])\n    expected = pd.Series([5, 7, 9], index=[10, 20, 30])\n    result = fn(a, b)\n    assert_series_equal(result, expected, check_names=False)"
+        },
+        {
+          "name": "test_add_aligned_no_mutation",
+          "source": "def test_add_aligned_no_mutation():\n    import pandas as pd\n    a = pd.Series([10, 20, 30], index=[1, 2, 3])\n    b = pd.Series([200, 300, 400], index=[2, 3, 4])\n    a_vals_before = a.tolist()\n    b_vals_before = b.tolist()\n    _ = fn(a, b)\n    assert a.tolist() == a_vals_before\n    assert b.tolist() == b_vals_before"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "index/reindex-align/series-reindex-new-labels",
+      "topic": "index/reindex-align",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given a Series `s`, reindex it to `new_index`, filling any absent labels with NaN. Return the resulting Series.\n\n`s`:\n\n            value   <- Series name\n          +-------+\n  alpha   |  10.0 |\n  beta    |  20.0 |\n  gamma   |  30.0 |\n    ^\n    +-- index\n\n`new_index` = ['alpha', 'gamma', 'delta', 'epsilon']\n\nExpected result:\n\n            value\n          +-------+\n  alpha   |  10.0 |\n  gamma   |  30.0 |\n  delta   |   NaN |\n  epsilon |   NaN |",
+      "stub": "import pandas as pd\n\ndef reindex_series(s, new_index):\n    ...",
+      "entry_point": "reindex_series",
+      "canonical_answer": "import pandas as pd\n\ndef reindex_series(s, new_index):\n    return s.reindex(new_index)",
+      "hints": [
+        "Look at the pandas Series method that conforms a Series to a new index.",
+        "The method is called `reindex`; absent labels are automatically filled with NaN by default.",
+        "Use `s.reindex(new_index)` — this returns a new Series aligned to `new_index` with NaN for any label not present in `s`."
+      ],
+      "test_cases": [
+        {
+          "name": "test_empty_new_index",
+          "source": "def test_empty_new_index():\n    import pandas as pd\n    from pandas.testing import assert_series_equal\n    s = pd.Series([10.0, 20.0], index=['a', 'b'], name='val')\n    new_index = []\n    expected = pd.Series([], index=pd.Index([]), dtype='float64', name='val')\n    assert_series_equal(fn(s, new_index), expected)"
+        },
+        {
+          "name": "test_exact_values_and_dtype",
+          "source": "def test_exact_values_and_dtype():\n    import pandas as pd\n    import numpy as np\n    from pandas.testing import assert_series_equal\n    s = pd.Series([10.0, 20.0, 30.0], index=['alpha', 'beta', 'gamma'], name='value')\n    new_index = ['alpha', 'gamma', 'delta', 'epsilon']\n    expected = pd.Series([10.0, 30.0, np.nan, np.nan], index=['alpha', 'gamma', 'delta', 'epsilon'], name='value')\n    assert_series_equal(fn(s, new_index), expected)"
+        },
+        {
+          "name": "test_input_not_mutated",
+          "source": "def test_input_not_mutated():\n    import pandas as pd\n    from pandas.testing import assert_series_equal\n    s = pd.Series([10.0, 20.0, 30.0], index=['alpha', 'beta', 'gamma'], name='value')\n    s_original = s.copy()\n    new_index = ['alpha', 'gamma', 'delta', 'epsilon']\n    fn(s, new_index)\n    assert_series_equal(s, s_original)"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "index/set-reset-index/reset-index-to-column",
+      "topic": "index/set-reset-index",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given `df` with a named index, return a new DataFrame with the index flattened back into a regular column (the index becomes the first column, and the resulting index is the default 0-based integer index).\n\n```\n         score\n       +-------+\nname   |       |\nAlice  |    85 |\nBob    |    92 |\nCarol  |    78 |\n  ^\n  +-- index (df.index.name = 'name')\n```\n\nExpected result:\n\n```\n    name  score\n  +------+------+\n0 | Alice|   85 |\n1 |  Bob |   92 |\n2 | Carol|   78 |\n```",
+      "stub": "def reset_named_index(df):\n    ...",
+      "entry_point": "reset_named_index",
+      "canonical_answer": "import pandas as pd\n\ndef reset_named_index(df):\n    return df.reset_index()",
+      "hints": [
+        "You need to move the index back into a column — look for a DataFrame method that is the inverse of `set_index`.",
+        "The method `reset_index()` converts the current index into a column and restores a default integer index.",
+        "Call `df.reset_index()` (no arguments needed here); it returns a new DataFrame with the named index as the first column."
+      ],
+      "test_cases": [
+        {
+          "name": "test_empty_dataframe_reset_index",
+          "source": "def test_empty_dataframe_reset_index():\n    import pandas as pd\n    from pandas.testing import assert_frame_equal\n    df = pd.DataFrame(\n        {'score': pd.Series([], dtype=int)},\n        index=pd.Index([], name='name', dtype=object)\n    )\n    result = fn(df)\n    expected = pd.DataFrame({\n        'name': pd.Series([], dtype=object),\n        'score': pd.Series([], dtype=int)\n    })\n    assert_frame_equal(result, expected)"
+        },
+        {
+          "name": "test_exact_reset_index",
+          "source": "def test_exact_reset_index():\n    import pandas as pd\n    from pandas.testing import assert_frame_equal\n    df = pd.DataFrame(\n        {'score': [85, 92, 78]},\n        index=pd.Index(['Alice', 'Bob', 'Carol'], name='name')\n    )\n    expected = pd.DataFrame({\n        'name': pd.Series(['Alice', 'Bob', 'Carol'], dtype=object),\n        'score': pd.Series([85, 92, 78], dtype=int)\n    })\n    assert_frame_equal(fn(df), expected)"
+        },
+        {
+          "name": "test_input_not_mutated",
+          "source": "def test_input_not_mutated():\n    import pandas as pd\n    df = pd.DataFrame(\n        {'score': [85, 92, 78]},\n        index=pd.Index(['Alice', 'Bob', 'Carol'], name='name')\n    )\n    original_index_name = df.index.name\n    original_columns = list(df.columns)\n    _ = fn(df)\n    assert df.index.name == original_index_name\n    assert list(df.columns) == original_columns"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "index/set-reset-index/set-index-from-column",
+      "topic": "index/set-reset-index",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given the DataFrame `df`, promote the `'city'` column to become the row index and return the resulting frame (the `'city'` column should no longer appear as a regular column).\n\n```\n        city  population  area\n     +------+----------+------+\n  0  |  NYC |   8336817 |  302 |\n  1  |   LA |   3979576 |  469 |\n  2  |  CHI |   2693976 |  227 |\n```\n\nExpected result:\n\n```\n            population  area\n         +----------+------+\n  NYC    |   8336817 |  302 |\n  LA     |   3979576 |  469 |\n  CHI    |   2693976 |  227 |\n    ^\n    +-- index.name == 'city'\n```",
+      "stub": "import pandas as pd\n\ndef promote_city_index(df):\n    ...",
+      "entry_point": "promote_city_index",
+      "canonical_answer": "import pandas as pd\n\ndef promote_city_index(df):\n    return df.set_index('city')",
+      "hints": [
+        "Think about the DataFrame method that moves a column into the index position.",
+        "pandas has a method called `set_index` that accepts a column label and promotes it.",
+        "Use `df.set_index('city')` — it returns a new DataFrame where `'city'` is the index and is removed from the columns."
+      ],
+      "test_cases": [
+        {
+          "name": "test_city_not_in_columns",
+          "source": "def test_city_not_in_columns():\n    import pandas as pd\n    df = pd.DataFrame({\n        'city': ['NYC', 'LA', 'CHI'],\n        'population': [8336817, 3979576, 2693976],\n        'area': [302, 469, 227]\n    })\n    result = fn(df)\n    assert 'city' not in result.columns, \"'city' should not remain as a column\"\n    assert result.index.name == 'city', \"index name should be 'city'\""
+        },
+        {
+          "name": "test_exact_equality",
+          "source": "def test_exact_equality():\n    import pandas as pd\n    from pandas.testing import assert_frame_equal\n    df = pd.DataFrame({\n        'city': ['NYC', 'LA', 'CHI'],\n        'population': [8336817, 3979576, 2693976],\n        'area': [302, 469, 227]\n    })\n    expected = pd.DataFrame(\n        {'population': [8336817, 3979576, 2693976], 'area': [302, 469, 227]},\n        index=pd.Index(['NYC', 'LA', 'CHI'], name='city')\n    )\n    assert_frame_equal(fn(df), expected)"
+        },
+        {
+          "name": "test_no_mutation",
+          "source": "def test_no_mutation():\n    import pandas as pd\n    df = pd.DataFrame({\n        'city': ['NYC', 'LA', 'CHI'],\n        'population': [8336817, 3979576, 2693976],\n        'area': [302, 469, 227]\n    })\n    original_columns = list(df.columns)\n    fn(df)\n    assert list(df.columns) == original_columns, 'Input df was mutated'"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "index/set-reset-index/set-multiindex-two-columns",
+      "topic": "index/set-reset-index",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given df, return a new DataFrame with a two-level MultiIndex built from columns 'dept' and 'emp_id' (in that order), keeping the remaining columns.\n\n     dept  emp_id  salary\n  0   eng    101   90000\n  1   eng    102   85000\n  2   mkt    201   75000\n  3   mkt    202   80000\n\nExpected result (dept, emp_id become the index levels):\n\n                  salary\n  dept  emp_id\n  eng   101     90000\n        102     85000\n  mkt   201     75000\n        202     80000",
+      "stub": "import pandas as pd\n\ndef set_multiindex(df):\n    ...",
+      "entry_point": "set_multiindex",
+      "canonical_answer": "import pandas as pd\n\ndef set_multiindex(df):\n    return df.set_index(['dept', 'emp_id'])",
+      "hints": [
+        "Pass a list of column names to set_index to create a MultiIndex.",
+        "df.set_index(['col_a', 'col_b']) creates a two-level MultiIndex from those two columns.",
+        "Use df.set_index(['dept', 'emp_id']) — the order in the list determines the outer and inner index levels."
+      ],
+      "test_cases": [
+        {
+          "name": "test_set_multiindex_exact",
+          "source": "def test_set_multiindex_exact():\n    import pandas as pd\n    from pandas.testing import assert_frame_equal\n    df = pd.DataFrame({\n        'dept': ['eng', 'eng', 'mkt', 'mkt'],\n        'emp_id': [101, 102, 201, 202],\n        'salary': [90000, 85000, 75000, 80000]\n    })\n    expected = pd.DataFrame(\n        {'salary': [90000, 85000, 75000, 80000]},\n        index=pd.MultiIndex.from_tuples(\n            [('eng', 101), ('eng', 102), ('mkt', 201), ('mkt', 202)],\n            names=['dept', 'emp_id']\n        )\n    )\n    assert_frame_equal(fn(df), expected)"
+        },
+        {
+          "name": "test_set_multiindex_index_names",
+          "source": "def test_set_multiindex_index_names():\n    import pandas as pd\n    df = pd.DataFrame({\n        'dept': ['eng'],\n        'emp_id': [101],\n        'salary': [90000]\n    })\n    result = fn(df)\n    assert isinstance(result.index, pd.MultiIndex)\n    assert result.index.names == ['dept', 'emp_id']\n    assert list(result.columns) == ['salary']"
+        },
+        {
+          "name": "test_set_multiindex_no_mutation",
+          "source": "def test_set_multiindex_no_mutation():\n    import pandas as pd\n    df = pd.DataFrame({\n        'dept': ['eng', 'eng', 'mkt', 'mkt'],\n        'emp_id': [101, 102, 201, 202],\n        'salary': [90000, 85000, 75000, 80000]\n    })\n    original_columns = list(df.columns)\n    fn(df)\n    assert list(df.columns) == original_columns\n    assert isinstance(df.index, pd.RangeIndex)"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "numpy-foundations/boolean-masking/replace-negatives-with-zero",
+      "topic": "numpy-foundations/boolean-masking",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given a 1-D numpy array `arr`, return a new array of the same shape where every negative value is replaced with 0 and all non-negative values are kept unchanged. Use `np.where`.\n\nExample:\n\n  arr = [ 3, -1,  0,  4, -7,  2]\n\nExpected result:\n\n  out = [ 3,  0,  0,  4,  0,  2]",
+      "stub": "import numpy as np\n\ndef replace_negatives_with_zero(arr):\n    ...",
+      "entry_point": "replace_negatives_with_zero",
+      "canonical_answer": "import numpy as np\n\ndef replace_negatives_with_zero(arr):\n    return np.where(arr < 0, 0, arr)",
+      "hints": [
+        "Think about a condition you can evaluate element-wise on `arr` that is True wherever you want 0 and False elsewhere.",
+        "`np.where(condition, x, y)` returns `x` where condition is True, otherwise `y` — map your condition to pick between 0 and the original value.",
+        "Use `np.where(arr < 0, 0, arr)` to replace every negative element with 0 while keeping the rest."
+      ],
+      "test_cases": [
+        {
+          "name": "test_all_non_negative_unchanged",
+          "source": "import numpy as np\n\ndef test_all_non_negative_unchanged():\n    arr = np.array([0, 1, 2, 100])\n    result = fn(arr)\n    np.testing.assert_array_equal(result, arr)"
+        },
+        {
+          "name": "test_exact_replace_negatives",
+          "source": "import numpy as np\n\ndef test_exact_replace_negatives():\n    arr = np.array([3, -1, 0, 4, -7, 2])\n    result = fn(arr)\n    expected = np.array([3, 0, 0, 4, 0, 2])\n    np.testing.assert_array_equal(result, expected)"
+        },
+        {
+          "name": "test_input_not_mutated",
+          "source": "import numpy as np\n\ndef test_input_not_mutated():\n    arr = np.array([-5, 3, -2, 8])\n    original = arr.copy()\n    fn(arr)\n    np.testing.assert_array_equal(arr, original)"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "numpy-foundations/boolean-masking/select-positive-elements",
+      "topic": "numpy-foundations/boolean-masking",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given a 1-D numpy array `arr`, return a new 1-D array containing only the elements that are strictly greater than zero, preserving their original order.",
+      "stub": "import numpy as np\n\ndef select_positive(arr):\n    ...",
+      "entry_point": "select_positive",
+      "canonical_answer": "import numpy as np\n\ndef select_positive(arr):\n    return arr[arr > 0]",
+      "hints": [
+        "Create a boolean array by comparing arr to 0 with the > operator.",
+        "Use the boolean array directly inside square brackets on arr to index it.",
+        "arr[arr > 0] applies the boolean mask and returns only the True-indexed elements."
+      ],
+      "test_cases": [
+        {
+          "name": "test_select_positive_all_nonpositive",
+          "source": "import numpy as np\n\ndef test_select_positive_all_nonpositive():\n    arr = np.array([-1, -2, 0, -3])\n    result = fn(arr)\n    np.testing.assert_array_equal(result, np.array([], dtype=arr.dtype))"
+        },
+        {
+          "name": "test_select_positive_exact",
+          "source": "import numpy as np\n\ndef test_select_positive_exact():\n    arr = np.array([-3, 0, 1, -1, 4, 2, 0, -5, 7])\n    expected = np.array([1, 4, 2, 7])\n    result = fn(arr)\n    np.testing.assert_array_equal(result, expected)"
+        },
+        {
+          "name": "test_select_positive_no_mutation",
+          "source": "import numpy as np\n\ndef test_select_positive_no_mutation():\n    arr = np.array([-3, 0, 1, -1, 4, 2, 0, -5, 7])\n    original = arr.copy()\n    fn(arr)\n    np.testing.assert_array_equal(arr, original)"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "numpy-foundations/boolean-masking/zero-out-even-positions",
+      "topic": "numpy-foundations/boolean-masking",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given a 1-D NumPy array `arr`, return a **new** array where every element at an even index (0, 2, 4, …) is replaced with 0 and all other elements are unchanged.\n\nExample:\n\n  arr  = [10, 21, 30, 41, 50]\n  result = [ 0, 21,  0, 41,  0]",
+      "stub": "import numpy as np\n\ndef zero_out_even_positions(arr: np.ndarray) -> np.ndarray:\n    ...",
+      "entry_point": "zero_out_even_positions",
+      "canonical_answer": "import numpy as np\n\ndef zero_out_even_positions(arr: np.ndarray) -> np.ndarray:\n    out = arr.copy()\n    mask = np.zeros(len(arr), dtype=bool)\n    mask[::2] = True\n    out[mask] = 0\n    return out",
+      "hints": [
+        "Create a copy of the array first, then build a boolean mask that is True at even indices.",
+        "You can build the mask with `mask = np.zeros(len(arr), dtype=bool); mask[::2] = True` and then assign `out[mask] = 0`.",
+        "Use slice notation `[::2]` on a boolean mask array to set every other position to True, then apply `arr[mask] = 0` on the copy."
+      ],
+      "test_cases": [
+        {
+          "name": "test_exact_even_positions_zeroed",
+          "source": "def test_exact_even_positions_zeroed():\n    import numpy as np\n    arr = np.array([10, 21, 30, 41, 50])\n    expected = np.array([0, 21, 0, 41, 0])\n    result = fn(arr)\n    np.testing.assert_array_equal(result, expected)"
+        },
+        {
+          "name": "test_input_not_mutated",
+          "source": "def test_input_not_mutated():\n    import numpy as np\n    arr = np.array([10, 21, 30, 41, 50])\n    original = arr.copy()\n    fn(arr)\n    np.testing.assert_array_equal(arr, original)"
+        },
+        {
+          "name": "test_single_element_array",
+          "source": "def test_single_element_array():\n    import numpy as np\n    arr = np.array([99])\n    expected = np.array([0])\n    result = fn(arr)\n    np.testing.assert_array_equal(result, expected)"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "numpy-foundations/vectorization/bool-array-exceeds-threshold",
+      "topic": "numpy-foundations/vectorization",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given a 1-D NumPy array `arr` and a scalar `threshold`, return a new boolean NumPy array of the same shape where each element is `True` if the corresponding element of `arr` exceeds `threshold`, and `False` otherwise.\n\nExample:\n\n  arr       = [1, 5, 3, 8, 2]\n  threshold = 4\n  result    = [False, True, False, True, False]",
+      "stub": "import numpy as np\n\ndef exceeds_threshold(arr, threshold):\n    ...",
+      "entry_point": "exceeds_threshold",
+      "canonical_answer": "import numpy as np\n\ndef exceeds_threshold(arr, threshold):\n    return arr > threshold",
+      "hints": [
+        "Think about what Python comparison operators do when applied directly to a NumPy array.",
+        "NumPy arrays support element-wise comparisons: `arr > threshold` applies the `>` operator to every element simultaneously without a Python loop.",
+        "Simply return `arr > threshold`; NumPy broadcasts the scalar and produces a boolean array of the same shape."
+      ],
+      "test_cases": [
+        {
+          "name": "test_all_below_threshold",
+          "source": "import numpy as np\n\ndef test_all_below_threshold():\n    arr = np.array([1, 2, 3])\n    result = fn(arr, 100)\n    expected = np.array([False, False, False])\n    assert result.dtype == bool\n    np.testing.assert_array_equal(result, expected)"
+        },
+        {
+          "name": "test_exact_values",
+          "source": "import numpy as np\n\ndef test_exact_values():\n    arr = np.array([1, 5, 3, 8, 2])\n    threshold = 4\n    result = fn(arr, threshold)\n    expected = np.array([False, True, False, True, False])\n    assert result.dtype == bool\n    assert result.shape == expected.shape\n    np.testing.assert_array_equal(result, expected)"
+        },
+        {
+          "name": "test_no_mutation",
+          "source": "import numpy as np\n\ndef test_no_mutation():\n    arr = np.array([10, 20, 30])\n    original = arr.copy()\n    fn(arr, 15)\n    np.testing.assert_array_equal(arr, original)"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "numpy-foundations/vectorization/elementwise-add-two-arrays",
+      "topic": "numpy-foundations/vectorization",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given two 1-D NumPy arrays `a` and `b` of the same length, return a new array whose elements are the elementwise sum of `a` and `b` — do NOT use any Python loop.",
+      "stub": "import numpy as np\n\ndef add_arrays(a, b):\n    ...",
+      "entry_point": "add_arrays",
+      "canonical_answer": "import numpy as np\n\ndef add_arrays(a, b):\n    return a + b",
+      "hints": [
+        "NumPy arrays support arithmetic operators directly on the whole array.",
+        "The `+` operator on two NumPy arrays performs elementwise addition without any explicit loop.",
+        "Simply write `a + b`; NumPy broadcasts the addition across every element automatically."
+      ],
+      "test_cases": [
+        {
+          "name": "test_empty_arrays",
+          "source": "import numpy as np\n\ndef test_empty_arrays():\n    a = np.array([], dtype=float)\n    b = np.array([], dtype=float)\n    result = fn(a, b)\n    assert isinstance(result, np.ndarray)\n    assert len(result) == 0"
+        },
+        {
+          "name": "test_exact_elementwise_sum",
+          "source": "import numpy as np\n\ndef test_exact_elementwise_sum():\n    a = np.array([1, 2, 3, 4])\n    b = np.array([10, 20, 30, 40])\n    result = fn(a, b)\n    expected = np.array([11, 22, 33, 44])\n    assert isinstance(result, np.ndarray)\n    assert result.tolist() == expected.tolist()"
+        },
+        {
+          "name": "test_no_mutation_of_inputs",
+          "source": "import numpy as np\n\ndef test_no_mutation_of_inputs():\n    a = np.array([1.0, 2.0, 3.0])\n    b = np.array([4.0, 5.0, 6.0])\n    a_orig = a.copy()\n    b_orig = b.copy()\n    fn(a, b)\n    assert a.tolist() == a_orig.tolist()\n    assert b.tolist() == b_orig.tolist()"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "numpy-foundations/vectorization/scale-array-by-scalar",
+      "topic": "numpy-foundations/vectorization",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given a 1-D NumPy array `arr` and a scalar `factor`, return a **new** array where every element has been multiplied by `factor` using NumPy broadcasting (no Python loops).\n\nExample:\n\n    arr    = [1, 2, 3, 4, 5]\n    factor = 3\n    result = [3, 6, 9, 12, 15]",
+      "stub": "import numpy as np\n\ndef scale_array(arr, factor):\n    ...",
+      "entry_point": "scale_array",
+      "canonical_answer": "import numpy as np\n\ndef scale_array(arr, factor):\n    return arr * factor",
+      "hints": [
+        "NumPy overloads the `*` operator so that multiplying an array by a scalar applies the operation to every element automatically.",
+        "The expression `arr * factor` returns a brand-new array; the original `arr` is left unchanged.",
+        "Broadcasting means NumPy 'stretches' the scalar to match the shape of the array, so `arr * factor` is all you need — no loops required."
+      ],
+      "test_cases": [
+        {
+          "name": "test_scale_array_exact",
+          "source": "import numpy as np\n\ndef test_scale_array_exact():\n    arr = np.array([1, 2, 3, 4, 5])\n    result = fn(arr, 3)\n    expected = np.array([3, 6, 9, 12, 15])\n    assert np.array_equal(result, expected), f'Expected {expected}, got {result}'"
+        },
+        {
+          "name": "test_scale_array_float_factor",
+          "source": "import numpy as np\n\ndef test_scale_array_float_factor():\n    arr = np.array([2.0, 4.0, 6.0])\n    result = fn(arr, 0.5)\n    expected = np.array([1.0, 2.0, 3.0])\n    assert np.allclose(result, expected), f'Expected {expected}, got {result}'"
+        },
+        {
+          "name": "test_scale_array_no_mutation",
+          "source": "import numpy as np\n\ndef test_scale_array_no_mutation():\n    arr = np.array([10, 20, 30])\n    original = arr.copy()\n    fn(arr, 5)\n    assert np.array_equal(arr, original), 'Input array was mutated'"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "reshaping/melt/melt-subset-value-vars",
+      "topic": "reshaping/melt",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given `df` with columns `id`, `name`, `q1`, `q2`, `q3`, melt **only** the `q1` and `q2` columns into long form (keeping `id` and `name` as identifier columns), naming the new indicator column `'quarter'` and the new value column `'score'`. Return the resulting DataFrame with the default integer index.\n\n```\n   id  name   q1   q2   q3\n+----+------+----+----+----+\n0|  1 | Ada  | 10 | 20 | 30 |\n1|  2 | Bob  | 40 | 50 | 60 |\n```\n\nExpected result (row order matches pandas default melt order — id vars repeated, value_vars cycled):\n\n```\n   id  name quarter  score\n+----+------+-------+------+\n0|  1 | Ada  |  q1   |  10  |\n1|  2 | Bob  |  q1   |  40  |\n2|  1 | Ada  |  q2   |  20  |\n3|  2 | Bob  |  q2   |  50  |\n```\n\nNote: `q3` must **not** appear in the output.",
+      "stub": "import pandas as pd\n\ndef melt_subset(df: pd.DataFrame) -> pd.DataFrame:\n    ...",
+      "entry_point": "melt_subset",
+      "canonical_answer": "import pandas as pd\n\ndef melt_subset(df: pd.DataFrame) -> pd.DataFrame:\n    return df.melt(\n        id_vars=['id', 'name'],\n        value_vars=['q1', 'q2'],\n        var_name='quarter',\n        value_name='score'\n    ).reset_index(drop=True)",
+      "hints": [
+        "Use `pd.DataFrame.melt` with both `id_vars` and `value_vars` keyword arguments.",
+        "Pass `var_name='quarter'` and `value_name='score'` to name the new indicator and value columns; only list `['q1', 'q2']` in `value_vars`.",
+        "`df.melt(id_vars=['id', 'name'], value_vars=['q1', 'q2'], var_name='quarter', value_name='score')` gives the answer; call `.reset_index(drop=True)` to get a clean 0-based index."
+      ],
+      "test_cases": [
+        {
+          "name": "test_exact_melt_subset",
+          "source": "def test_exact_melt_subset():\n    import pandas as pd\n    from pandas.testing import assert_frame_equal\n    df = pd.DataFrame({\n        'id': [1, 2],\n        'name': ['Ada', 'Bob'],\n        'q1': [10, 40],\n        'q2': [20, 50],\n        'q3': [30, 60]\n    })\n    expected = pd.DataFrame({\n        'id': pd.array([1, 2, 1, 2], dtype='int64'),\n        'name': ['Ada', 'Bob', 'Ada', 'Bob'],\n        'quarter': ['q1', 'q1', 'q2', 'q2'],\n        'score': pd.array([10, 40, 20, 50], dtype='int64')\n    })\n    assert_frame_equal(fn(df), expected, check_like=False)"
+        },
+        {
+          "name": "test_input_not_mutated",
+          "source": "def test_input_not_mutated():\n    import pandas as pd\n    df = pd.DataFrame({\n        'id': [1, 2],\n        'name': ['Ada', 'Bob'],\n        'q1': [10, 40],\n        'q2': [20, 50],\n        'q3': [30, 60]\n    })\n    original_cols = list(df.columns)\n    original_shape = df.shape\n    fn(df)\n    assert list(df.columns) == original_cols\n    assert df.shape == original_shape"
+        },
+        {
+          "name": "test_q3_absent_from_output",
+          "source": "def test_q3_absent_from_output():\n    import pandas as pd\n    df = pd.DataFrame({\n        'id': [1, 2],\n        'name': ['Ada', 'Bob'],\n        'q1': [10, 40],\n        'q2': [20, 50],\n        'q3': [30, 60]\n    })\n    result = fn(df)\n    assert 'q3' not in result['quarter'].values, 'q3 should not appear in quarter column'\n    assert 'q3' not in result.columns, 'q3 should not be a column'"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "reshaping/melt/melt-wide-to-long",
+      "topic": "reshaping/melt",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given df, reshape it from wide to long form by melting the measure columns `q1`, `q2`, `q3` into two columns `quarter` and `score`, keeping `student` as the identifier.\n\n        student   q1   q2   q3   <- columns\n       +--------+----+----+----+\n  0    | Alice  | 85 | 90 | 78 |\n  1    | Bob    | 72 | 68 | 95 |\n    ^\n    +-- index (default RangeIndex)\n\nReturn a new DataFrame with columns `student`, `quarter`, `score` (in that order), reset to a default RangeIndex.",
+      "stub": "import pandas as pd\n\ndef melt_scores(df):\n    ...",
+      "entry_point": "melt_scores",
+      "canonical_answer": "import pandas as pd\n\ndef melt_scores(df):\n    return df.melt(\n        id_vars='student',\n        value_vars=['q1', 'q2', 'q3'],\n        var_name='quarter',\n        value_name='score'\n    ).reset_index(drop=True)",
+      "hints": [
+        "Use pd.DataFrame.melt() with id_vars='student' and value_vars=['q1','q2','q3'] to unpivot the frame.",
+        "Pass var_name='quarter' and value_name='score' to name the new indicator and value columns correctly.",
+        "Call .reset_index(drop=True) on the result so the returned frame has a clean default RangeIndex."
+      ],
+      "test_cases": [
+        {
+          "name": "test_melt_exact_equality",
+          "source": "import pandas as pd\nfrom pandas.testing import assert_frame_equal\n\ndef test_melt_exact_equality():\n    df = pd.DataFrame({\n        'student': ['Alice', 'Bob'],\n        'q1': [85, 72],\n        'q2': [90, 68],\n        'q3': [78, 95]\n    })\n    expected = pd.DataFrame({\n        'student': ['Alice', 'Bob', 'Alice', 'Bob', 'Alice', 'Bob'],\n        'quarter': ['q1', 'q1', 'q2', 'q2', 'q3', 'q3'],\n        'score': [85, 72, 90, 68, 78, 95]\n    })\n    expected['student'] = expected['student'].astype('object')\n    expected['quarter'] = expected['quarter'].astype('object')\n    expected['score'] = expected['score'].astype('int64')\n    result = fn(df)\n    assert_frame_equal(result.reset_index(drop=True), expected.reset_index(drop=True), check_like=False)"
+        },
+        {
+          "name": "test_melt_no_mutation",
+          "source": "import pandas as pd\n\ndef test_melt_no_mutation():\n    df = pd.DataFrame({\n        'student': ['Alice', 'Bob'],\n        'q1': [85, 72],\n        'q2': [90, 68],\n        'q3': [78, 95]\n    })\n    original_cols = list(df.columns)\n    fn(df)\n    assert list(df.columns) == original_cols, 'Input df should not be mutated'\n    assert len(df) == 2, 'Input df row count should be unchanged'"
+        },
+        {
+          "name": "test_melt_output_shape_and_columns",
+          "source": "import pandas as pd\n\ndef test_melt_output_shape_and_columns():\n    df = pd.DataFrame({\n        'student': ['Alice', 'Bob'],\n        'q1': [85, 72],\n        'q2': [90, 68],\n        'q3': [78, 95]\n    })\n    result = fn(df)\n    assert list(result.columns) == ['student', 'quarter', 'score'], 'Columns must be student, quarter, score in order'\n    assert len(result) == 6, 'Melting 2 students x 3 quarters should give 6 rows'\n    assert set(result['quarter'].unique()) == {'q1', 'q2', 'q3'}, 'quarter column must contain q1, q2, q3'"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "selection/boolean-mask/filter-rows-boolean-mask",
+      "topic": "selection/boolean-mask",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given `df`, return a new DataFrame containing only the rows where the `score` column is strictly greater than `threshold`.\n\n             name  score\n           +------+------+\n  0        | Alice|   82 |\n  1        |  Bob |   55 |\n  2        | Carol|   91 |\n  3        | Dave |   70 |\n           ^\n           +-- index (df.index)\n\nFor example, with threshold=70 the result keeps rows 0 and 2 (scores 82 and 91).",
+      "stub": "import pandas as pd\n\ndef filter_above_threshold(df, threshold):\n    ...",
+      "entry_point": "filter_above_threshold",
+      "canonical_answer": "import pandas as pd\n\ndef filter_above_threshold(df, threshold):\n    return df[df['score'] > threshold].reset_index(drop=True)",
+      "hints": [
+        "Build a boolean Series by comparing df['score'] to the threshold, then use it to index into df.",
+        "Use df[df['score'] > threshold] to select matching rows; call .reset_index(drop=True) so the returned frame has a clean 0-based index.",
+        "The one-liner is: return df[df['score'] > threshold].reset_index(drop=True)"
+      ],
+      "test_cases": [
+        {
+          "name": "test_empty_result_when_threshold_high",
+          "source": "def test_empty_result_when_threshold_high():\n    import pandas as pd\n    df = pd.DataFrame({'name': ['Alice', 'Bob'], 'score': [50, 60]})\n    result = fn(df, 100)\n    assert len(result) == 0\n    assert list(result.columns) == ['name', 'score']"
+        },
+        {
+          "name": "test_exact_filter_above_threshold",
+          "source": "def test_exact_filter_above_threshold():\n    import pandas as pd\n    from pandas.testing import assert_frame_equal\n    df = pd.DataFrame({'name': ['Alice', 'Bob', 'Carol', 'Dave'], 'score': [82, 55, 91, 70]})\n    expected = pd.DataFrame({'name': ['Alice', 'Carol'], 'score': [82, 91]}, index=[0, 1])\n    expected['score'] = expected['score'].astype('int64')\n    result = fn(df, 70)\n    assert_frame_equal(result, expected)"
+        },
+        {
+          "name": "test_no_mutation",
+          "source": "def test_no_mutation():\n    import pandas as pd\n    df = pd.DataFrame({'name': ['Alice', 'Bob', 'Carol', 'Dave'], 'score': [82, 55, 91, 70]})\n    original_len = len(df)\n    original_cols = list(df.columns)\n    fn(df, 70)\n    assert len(df) == original_len\n    assert list(df.columns) == original_cols"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "selection/boolean-mask/filter-two-conditions-and-or",
+      "topic": "selection/boolean-mask",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given df, return a new DataFrame containing only the rows where `score >= 80` AND `grade == 'A'`, OR where `score >= 95` (regardless of grade). Use `&` and `|` with each condition parenthesized.\n\n         score  grade\n       +------+------+\n  0    |   72 |  'B' |\n  1    |   85 |  'A' |\n  2    |   90 |  'B' |\n  3    |   96 |  'A' |\n  4    |   78 |  'A' |\n  5    |   97 |  'C' |",
+      "stub": "import pandas as pd\n\ndef filter_two_conditions(df):\n    ...",
+      "entry_point": "filter_two_conditions",
+      "canonical_answer": "import pandas as pd\n\ndef filter_two_conditions(df):\n    mask = ((df['score'] >= 80) & (df['grade'] == 'A')) | (df['score'] >= 95)\n    return df[mask].reset_index(drop=True)",
+      "hints": [
+        "Wrap each individual condition in parentheses before combining them with `&` or `|`.",
+        "Build two sub-expressions: `(df['score'] >= 80) & (df['grade'] == 'A')` and `(df['score'] >= 95)`, then join them with `|`.",
+        "Use `df[mask].reset_index(drop=True)` so the returned DataFrame has a clean 0-based index matching the expected output."
+      ],
+      "test_cases": [
+        {
+          "name": "test_all_qualify",
+          "source": "def test_all_qualify():\n    import pandas as pd\n    df = pd.DataFrame({\n        'score': [96, 97, 98],\n        'grade': ['B', 'C', 'A']\n    })\n    result = fn(df)\n    assert len(result) == 3"
+        },
+        {
+          "name": "test_exact_equality",
+          "source": "def test_exact_equality():\n    import pandas as pd\n    from pandas.testing import assert_frame_equal\n    df = pd.DataFrame({\n        'score': [72, 85, 90, 96, 78, 97],\n        'grade': ['B', 'A', 'B', 'A', 'A', 'C']\n    })\n    expected = pd.DataFrame({\n        'score': [85, 96, 97],\n        'grade': ['A', 'A', 'C']\n    }, index=[0, 1, 2])\n    result = fn(df)\n    assert_frame_equal(result.reset_index(drop=True), expected.reset_index(drop=True))"
+        },
+        {
+          "name": "test_no_mutation",
+          "source": "def test_no_mutation():\n    import pandas as pd\n    df = pd.DataFrame({\n        'score': [72, 85, 90, 96, 78, 97],\n        'grade': ['B', 'A', 'B', 'A', 'A', 'C']\n    })\n    original_index = df.index.tolist()\n    original_len = len(df)\n    fn(df)\n    assert len(df) == original_len\n    assert df.index.tolist() == original_index"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "selection/chained-assignment/copy-before-modify-fillna",
+      "topic": "selection/chained-assignment",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given df, return a new DataFrame where the 'score' column has all NaN values replaced with 0, leaving the original frame untouched.\n\n         name  score\n       +------+------+\n  0    | 'Alice' | NaN  |\n  1    | 'Bob'   | 88.0 |\n  2    | 'Carol' | NaN  |\n  3    | 'Dave'  | 95.0 |",
+      "stub": "import pandas as pd\n\ndef fill_score(df):\n    ...",
+      "entry_point": "fill_score",
+      "canonical_answer": "import pandas as pd\n\ndef fill_score(df):\n    out = df.copy()\n    out['score'] = out['score'].fillna(0)\n    return out",
+      "hints": [
+        "Make a defensive copy of the DataFrame before modifying any column to avoid mutating the caller's object.",
+        "Call df.copy() first, then assign to the copied frame's 'score' column using Series.fillna(0).",
+        "out = df.copy(); out['score'] = out['score'].fillna(0); return out — this pattern is the standard idiom for safe in-place-style edits."
+      ],
+      "test_cases": [
+        {
+          "name": "test_fill_score_all_nan",
+          "source": "def test_fill_score_all_nan():\n    import pandas as pd\n    import numpy as np\n    from pandas.testing import assert_frame_equal\n    df = pd.DataFrame({'name': ['X', 'Y'], 'score': [np.nan, np.nan]})\n    expected = pd.DataFrame({'name': ['X', 'Y'], 'score': [0.0, 0.0]})\n    assert_frame_equal(fn(df), expected)"
+        },
+        {
+          "name": "test_fill_score_exact",
+          "source": "def test_fill_score_exact():\n    import pandas as pd\n    import numpy as np\n    from pandas.testing import assert_frame_equal\n    df = pd.DataFrame({'name': ['Alice', 'Bob', 'Carol', 'Dave'], 'score': [np.nan, 88.0, np.nan, 95.0]})\n    expected = pd.DataFrame({'name': ['Alice', 'Bob', 'Carol', 'Dave'], 'score': [0.0, 88.0, 0.0, 95.0]})\n    assert_frame_equal(fn(df), expected)"
+        },
+        {
+          "name": "test_fill_score_no_mutation",
+          "source": "def test_fill_score_no_mutation():\n    import pandas as pd\n    import numpy as np\n    df = pd.DataFrame({'name': ['Alice', 'Bob'], 'score': [np.nan, 55.0]})\n    original_score = df['score'].copy()\n    fn(df)\n    import pandas.testing as tm\n    tm.assert_series_equal(df['score'], original_score)"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "selection/chained-assignment/loc-mask-col-assign",
+      "topic": "selection/chained-assignment",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given `df`, return a **new** DataFrame where the `'status'` column is set to `'senior'` for every row where `'age'` is 65 or older, leaving all other values unchanged.\n\n```\n        age  status\n     +-----+--------+\n  0  |  23 | junior |\n  1  |  67 | junior |\n  2  |  65 | junior |\n  3  |  41 | junior |\n  4  |  70 | junior |\n```\n\nExpected result:\n\n```\n        age  status\n     +-----+--------+\n  0  |  23 | junior |\n  1  |  67 | senior |\n  2  |  65 | senior |\n  3  |  41 | junior |\n  4  |  70 | senior |\n```",
+      "stub": "import pandas as pd\n\ndef promote_seniors(df):\n    ...",
+      "entry_point": "promote_seniors",
+      "canonical_answer": "import pandas as pd\n\ndef promote_seniors(df):\n    out = df.copy()\n    out.loc[out['age'] >= 65, 'status'] = 'senior'\n    return out",
+      "hints": [
+        "Make a copy of `df` first so the original is not mutated, then work on the copy.",
+        "Use `.loc[mask, col] = value` where `mask` is a boolean Series — this is the idiomatic single-step filtered assignment.",
+        "Build the mask as `out['age'] >= 65`, then write `out.loc[mask, 'status'] = 'senior'` on the copy before returning it."
+      ],
+      "test_cases": [
+        {
+          "name": "test_exact_values_and_dtypes",
+          "source": "def test_exact_values_and_dtypes():\n    import pandas as pd\n    from pandas.testing import assert_frame_equal\n    df = pd.DataFrame({\n        'age': [23, 67, 65, 41, 70],\n        'status': ['junior', 'junior', 'junior', 'junior', 'junior']\n    })\n    expected = pd.DataFrame({\n        'age': [23, 67, 65, 41, 70],\n        'status': ['junior', 'senior', 'senior', 'junior', 'senior']\n    })\n    assert_frame_equal(fn(df), expected)"
+        },
+        {
+          "name": "test_input_not_mutated",
+          "source": "def test_input_not_mutated():\n    import pandas as pd\n    df = pd.DataFrame({\n        'age': [23, 67, 65, 41, 70],\n        'status': ['junior', 'junior', 'junior', 'junior', 'junior']\n    })\n    original_status = df['status'].tolist()\n    fn(df)\n    assert df['status'].tolist() == original_status"
+        },
+        {
+          "name": "test_no_seniors_unchanged",
+          "source": "def test_no_seniors_unchanged():\n    import pandas as pd\n    from pandas.testing import assert_frame_equal\n    df = pd.DataFrame({\n        'age': [10, 20, 30],\n        'status': ['junior', 'junior', 'junior']\n    })\n    expected = pd.DataFrame({\n        'age': [10, 20, 30],\n        'status': ['junior', 'junior', 'junior']\n    })\n    assert_frame_equal(fn(df), expected)"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "selection/isin-between/drop-rows-between-range",
+      "topic": "selection/isin-between",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given `df`, return a new DataFrame containing only the rows where `score` does NOT fall in the closed interval [40, 70] (i.e. drop every row where 40 ≤ score ≤ 70).\n\n```\n        score\n      +-------+\n  0   |   25  |\n  1   |   55  |\n  2   |   40  |\n  3   |   85  |\n  4   |   70  |\n  5   |   10  |\n  6   |   60  |\n```\n\nExpected result keeps rows 0, 3, 5 (scores 25, 85, 10).",
+      "stub": "import pandas as pd\n\ndef drop_between(df):\n    ...",
+      "entry_point": "drop_between",
+      "canonical_answer": "import pandas as pd\n\ndef drop_between(df):\n    return df[~df['score'].between(40, 70)].reset_index(drop=True)",
+      "hints": [
+        "Use pandas Series.between(low, high) to create a boolean mask of rows inside the range.",
+        "Negate the mask with ~ to select rows OUTSIDE the range, then filter df with df[mask].",
+        "Chain everything: df[~df['score'].between(40, 70)].reset_index(drop=True)"
+      ],
+      "test_cases": [
+        {
+          "name": "test_boundary_inclusive",
+          "source": "def test_boundary_inclusive():\n    import pandas as pd\n    import types\n    fn_src = \"\"\"\nimport pandas as pd\ndef drop_between(df):\n    return df[~df['score'].between(40, 70)].reset_index(drop=True)\n\"\"\"\n    mod = types.ModuleType('sol')\n    exec(fn_src, mod.__dict__)\n    fn = mod.drop_between\n    df = pd.DataFrame({'score': [40, 70, 39, 71]})\n    result = fn(df)\n    assert set(result['score'].tolist()) == {39, 71}"
+        },
+        {
+          "name": "test_exact_equality",
+          "source": "def test_exact_equality():\n    import pandas as pd\n    from pandas.testing import assert_frame_equal\n    import importlib, types\n    fn_src = \"\"\"\nimport pandas as pd\ndef drop_between(df):\n    return df[~df['score'].between(40, 70)].reset_index(drop=True)\n\"\"\"\n    mod = types.ModuleType('sol')\n    exec(fn_src, mod.__dict__)\n    fn = mod.drop_between\n    df = pd.DataFrame({'score': [25, 55, 40, 85, 70, 10, 60]})\n    expected = pd.DataFrame({'score': [25, 85, 10]}).reset_index(drop=True)\n    result = fn(df)\n    assert_frame_equal(result, expected)"
+        },
+        {
+          "name": "test_no_mutation",
+          "source": "def test_no_mutation():\n    import pandas as pd\n    import types\n    fn_src = \"\"\"\nimport pandas as pd\ndef drop_between(df):\n    return df[~df['score'].between(40, 70)].reset_index(drop=True)\n\"\"\"\n    mod = types.ModuleType('sol')\n    exec(fn_src, mod.__dict__)\n    fn = mod.drop_between\n    df = pd.DataFrame({'score': [25, 55, 40, 85, 70, 10, 60]})\n    original_len = len(df)\n    original_values = df['score'].tolist()\n    fn(df)\n    assert len(df) == original_len\n    assert df['score'].tolist() == original_values"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "selection/isin-between/filter-rows-isin",
+      "topic": "selection/isin-between",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given df, return a new DataFrame containing only the rows where the 'category' column is one of the allowed values `{'B', 'D'}`.\n\n```\n   category  value\n0         A     10\n1         B     20\n2         C     30\n3         D     40\n4         B     50\n5         A     60\n```\n\nExpected result:\n\n```\n   category  value\n1         B     20\n3         D     40\n4         B     50\n```",
+      "stub": "import pandas as pd\n\ndef filter_rows_isin(df):\n    ...",
+      "entry_point": "filter_rows_isin",
+      "canonical_answer": "import pandas as pd\n\ndef filter_rows_isin(df):\n    return df[df['category'].isin({'B', 'D'})].copy()",
+      "hints": [
+        "Boolean-index df with a condition on the 'category' column.",
+        "Series.isin() accepts any iterable of allowed values and returns a boolean mask.",
+        "Use `df[df['category'].isin({'B', 'D'})]` to keep only rows whose category is B or D."
+      ],
+      "test_cases": [
+        {
+          "name": "test_empty_match",
+          "source": "def test_empty_match():\n    import pandas as pd\n    df = pd.DataFrame({'category': ['A', 'C', 'E'], 'value': [1, 2, 3]})\n    result = fn(df)\n    assert len(result) == 0\n    assert list(result.columns) == ['category', 'value']"
+        },
+        {
+          "name": "test_exact_equality",
+          "source": "def test_exact_equality():\n    import pandas as pd\n    from pandas.testing import assert_frame_equal\n    df = pd.DataFrame({'category': ['A', 'B', 'C', 'D', 'B', 'A'], 'value': [10, 20, 30, 40, 50, 60]})\n    expected = pd.DataFrame({'category': ['B', 'D', 'B'], 'value': [20, 40, 50]}, index=[1, 3, 4])\n    assert_frame_equal(fn(df).reset_index(drop=False), expected.reset_index(drop=False))"
+        },
+        {
+          "name": "test_no_mutation",
+          "source": "def test_no_mutation():\n    import pandas as pd\n    df = pd.DataFrame({'category': ['A', 'B', 'C', 'D', 'B', 'A'], 'value': [10, 20, 30, 40, 50, 60]})\n    original_len = len(df)\n    original_cats = df['category'].tolist()\n    fn(df)\n    assert len(df) == original_len\n    assert df['category'].tolist() == original_cats"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "selection/loc-vs-iloc/loc-label-row-col-selection",
+      "topic": "selection/loc-vs-iloc",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given `df`, use `.loc` to select rows with labels `'b'` and `'d'`, keeping only columns `'x'` and `'z'`, and return the result as a new DataFrame.\n\n```\n        x    y    z      <- columns\n      +----+----+----+\n  a   |  1 |  2 |  3 |\n  b   |  4 |  5 |  6 |\n  c   |  7 |  8 |  9 |\n  d   | 10 | 11 | 12 |\n  ^\n  +-- index\n```",
+      "stub": "import pandas as pd\n\ndef select_rows_cols(df):\n    ...",
+      "entry_point": "select_rows_cols",
+      "canonical_answer": "import pandas as pd\n\ndef select_rows_cols(df):\n    return df.loc[['b', 'd'], ['x', 'z']]",
+      "hints": [
+        "Use `.loc[row_labels, col_labels]` to select by label on both axes simultaneously.",
+        "Pass a list of row labels as the first argument and a list of column labels as the second argument to `.loc`.",
+        "The exact call is `df.loc[['b', 'd'], ['x', 'z']]`."
+      ],
+      "test_cases": [
+        {
+          "name": "test_exact_equality",
+          "source": "def test_exact_equality():\n    import pandas as pd\n    from pandas.testing import assert_frame_equal\n    df = pd.DataFrame(\n        {'x': [1, 4, 7, 10], 'y': [2, 5, 8, 11], 'z': [3, 6, 9, 12]},\n        index=['a', 'b', 'c', 'd']\n    )\n    expected = pd.DataFrame(\n        {'x': [4, 10], 'z': [6, 12]},\n        index=['b', 'd']\n    )\n    assert_frame_equal(fn(df), expected)"
+        },
+        {
+          "name": "test_no_mutation",
+          "source": "def test_no_mutation():\n    import pandas as pd\n    df = pd.DataFrame(\n        {'x': [1, 4, 7, 10], 'y': [2, 5, 8, 11], 'z': [3, 6, 9, 12]},\n        index=['a', 'b', 'c', 'd']\n    )\n    original_shape = df.shape\n    original_cols = list(df.columns)\n    original_index = list(df.index)\n    fn(df)\n    assert df.shape == original_shape\n    assert list(df.columns) == original_cols\n    assert list(df.index) == original_index"
+        },
+        {
+          "name": "test_shape_and_index",
+          "source": "def test_shape_and_index():\n    import pandas as pd\n    df = pd.DataFrame(\n        {'x': [1, 4, 7, 10], 'y': [2, 5, 8, 11], 'z': [3, 6, 9, 12]},\n        index=['a', 'b', 'c', 'd']\n    )\n    result = fn(df)\n    assert result.shape == (2, 2)\n    assert list(result.index) == ['b', 'd']\n    assert list(result.columns) == ['x', 'z']"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "selection/loc-vs-iloc/loc-vs-iloc-label-range",
+      "topic": "selection/loc-vs-iloc",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given `df` below, select rows whose **index labels** are `'b'` through `'d'` (inclusive) using `.loc`, then select the first two rows using `.iloc` (positions 0 and 1, endpoint exclusive), and return a tuple `(loc_result, iloc_result)` — both as new DataFrames.\n\n```\n        value\n      +-------+\n  a   |   10  |\n  b   |   20  |\n  c   |   30  |\n  d   |   40  |\n  e   |   50  |\n```\n\n`loc_result` should contain rows `b`, `c`, `d`; `iloc_result` should contain rows `a`, `b`.",
+      "stub": "def select_loc_iloc(df):\n    ...",
+      "entry_point": "select_loc_iloc",
+      "canonical_answer": "import pandas as pd\n\ndef select_loc_iloc(df):\n    loc_result = df.loc['b':'d']\n    iloc_result = df.iloc[0:2]\n    return (loc_result, iloc_result)",
+      "hints": [
+        "`.loc` uses label-based indexing and its stop label is **inclusive**; `.iloc` uses integer positions and its stop is **exclusive**.",
+        "For `.loc`, write `df.loc['b':'d']`; for `.iloc`, write `df.iloc[0:2]` to get positions 0 and 1.",
+        "Return a plain Python tuple: `return (df.loc['b':'d'], df.iloc[0:2])`."
+      ],
+      "test_cases": [
+        {
+          "name": "test_loc_iloc_exact_values",
+          "source": "def test_loc_iloc_exact_values():\n    import pandas as pd\n    from pandas.testing import assert_frame_equal\n    df = pd.DataFrame({'value': [10, 20, 30, 40, 50]}, index=list('abcde'))\n    loc_res, iloc_res = fn(df)\n    expected_loc = pd.DataFrame({'value': [20, 30, 40]}, index=list('bcd'))\n    expected_iloc = pd.DataFrame({'value': [10, 20]}, index=list('ab'))\n    assert_frame_equal(loc_res, expected_loc)\n    assert_frame_equal(iloc_res, expected_iloc)"
+        },
+        {
+          "name": "test_loc_inclusive_iloc_exclusive",
+          "source": "def test_loc_inclusive_iloc_exclusive():\n    import pandas as pd\n    df = pd.DataFrame({'value': [10, 20, 30, 40, 50]}, index=list('abcde'))\n    loc_res, iloc_res = fn(df)\n    assert list(loc_res.index) == ['b', 'c', 'd'], f'loc should include b,c,d but got {list(loc_res.index)}'\n    assert list(iloc_res.index) == ['a', 'b'], f'iloc[0:2] should return rows at positions 0,1 but got {list(iloc_res.index)}'"
+        },
+        {
+          "name": "test_no_mutation_of_input",
+          "source": "def test_no_mutation_of_input():\n    import pandas as pd\n    df = pd.DataFrame({'value': [10, 20, 30, 40, 50]}, index=list('abcde'))\n    original_index = df.index.tolist()\n    original_values = df['value'].tolist()\n    fn(df)\n    assert df.index.tolist() == original_index\n    assert df['value'].tolist() == original_values"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "test-data-synthesis/date-ranges/daily-date-range-as-index",
+      "topic": "test-data-synthesis/date-ranges",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given a start date string `start` (e.g. `'2024-01-01'`) and an integer `n`, create a DataFrame with a daily `DatetimeIndex` of length `n` starting at `start` (index name `'date'`) and a single column `'value'` filled with integers `0` through `n-1`.\n\nExample — `start='2024-01-01'`, `n=3`:\n\n              value   <- columns\n            +-------+\n  date      |       |\n  2024-01-01|     0 |\n  2024-01-02|     1 |\n  2024-01-03|     2 |\n    ^\n    +-- DatetimeIndex named 'date', freq='D'",
+      "stub": "import pandas as pd\nimport numpy as np\n\ndef make_daily_frame(start: str, n: int) -> pd.DataFrame:\n    ...",
+      "entry_point": "make_daily_frame",
+      "canonical_answer": "import pandas as pd\nimport numpy as np\n\ndef make_daily_frame(start: str, n: int) -> pd.DataFrame:\n    idx = pd.date_range(start=start, periods=n, freq='D', name='date')\n    return pd.DataFrame({'value': range(n)}, index=idx)",
+      "hints": [
+        "Use `pd.date_range(start=..., periods=n, freq='D')` to generate n daily timestamps.",
+        "Pass `name='date'` to `pd.date_range` so the resulting index already carries the correct name.",
+        "Build the DataFrame with `pd.DataFrame({'value': range(n)}, index=idx)` where `idx` is the DatetimeIndex."
+      ],
+      "test_cases": [
+        {
+          "name": "test_exact_equality_basic",
+          "source": "def test_exact_equality_basic():\n    import pandas as pd\n    import numpy as np\n    from pandas.testing import assert_frame_equal\n\n    result = fn('2024-01-01', 3)\n\n    idx = pd.date_range(start='2024-01-01', periods=3, freq='D', name='date')\n    expected = pd.DataFrame({'value': [0, 1, 2]}, index=idx)\n\n    assert_frame_equal(result, expected)"
+        },
+        {
+          "name": "test_index_properties",
+          "source": "def test_index_properties():\n    import pandas as pd\n\n    result = fn('2023-06-15', 5)\n\n    assert isinstance(result.index, pd.DatetimeIndex)\n    assert result.index.name == 'date'\n    assert result.index.freq == 'D' or str(result.index.freq) == 'D'\n    assert len(result) == 5\n    assert result.index[0] == pd.Timestamp('2023-06-15')\n    assert result.index[-1] == pd.Timestamp('2023-06-19')"
+        },
+        {
+          "name": "test_single_row_edge",
+          "source": "def test_single_row_edge():\n    import pandas as pd\n    from pandas.testing import assert_frame_equal\n\n    result = fn('2020-03-01', 1)\n\n    idx = pd.date_range(start='2020-03-01', periods=1, freq='D', name='date')\n    expected = pd.DataFrame({'value': [0]}, index=idx)\n\n    assert_frame_equal(result, expected)"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "test-data-synthesis/date-ranges/month-start-period-range",
+      "topic": "test-data-synthesis/date-ranges",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given a start string `'2023-01'`, an end string `'2023-06'`, and a frequency `'MS'`... wait — use `pd.period_range` with `freq='M'` to generate a PeriodIndex of month-start periods.\n\nReturn a `pd.PeriodIndex` covering every month from `start` to `end` (inclusive) at monthly (`'M'`) frequency.\n\nExample: `generate_month_periods('2023-01', '2023-06')` should return a PeriodIndex like:\n\n```\nPeriodIndex(['2023-01', '2023-02', '2023-03', '2023-04', '2023-05', '2023-06'], dtype='period[M]')\n```",
+      "stub": "import pandas as pd\n\ndef generate_month_periods(start: str, end: str) -> pd.PeriodIndex:\n    ...",
+      "entry_point": "generate_month_periods",
+      "canonical_answer": "import pandas as pd\n\ndef generate_month_periods(start: str, end: str) -> pd.PeriodIndex:\n    return pd.period_range(start=start, end=end, freq='M')",
+      "hints": [
+        "pandas has a dedicated function for creating ranges of Period objects — look for something analogous to `date_range` but for periods.",
+        "`pd.period_range(start=..., end=..., freq=...)` builds a PeriodIndex; the monthly frequency string for periods is `'M'`.",
+        "The exact call is `pd.period_range(start=start, end=end, freq='M')` — both endpoints are included automatically."
+      ],
+      "test_cases": [
+        {
+          "name": "test_exact_monthly_period_range",
+          "source": "def test_exact_monthly_period_range():\n    import pandas as pd\n    from pandas.testing import assert_index_equal\n    expected = pd.PeriodIndex(['2023-01', '2023-02', '2023-03', '2023-04', '2023-05', '2023-06'], dtype='period[M]')\n    result = fn('2023-01', '2023-06')\n    assert_index_equal(result, expected)"
+        },
+        {
+          "name": "test_period_range_dtype_and_length",
+          "source": "def test_period_range_dtype_and_length():\n    import pandas as pd\n    result = fn('2020-01', '2020-12')\n    assert len(result) == 12\n    assert result.dtype == 'period[M]'\n    assert result[0] == pd.Period('2020-01', freq='M')\n    assert result[-1] == pd.Period('2020-12', freq='M')"
+        },
+        {
+          "name": "test_single_month_period_range",
+          "source": "def test_single_month_period_range():\n    import pandas as pd\n    from pandas.testing import assert_index_equal\n    result = fn('2024-03', '2024-03')\n    expected = pd.PeriodIndex(['2024-03'], dtype='period[M]')\n    assert_index_equal(result, expected)"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "test-data-synthesis/rng-columns/rng-columns-seeded-normals-and-integers",
+      "topic": "test-data-synthesis/rng-columns",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Using `numpy.random.default_rng(seed=42)`, build a DataFrame with 5 rows and two columns:\n- `'score'`: 5 standard-normal floats drawn with `rng.standard_normal(5)`\n- `'count'`: 5 integers drawn uniformly from [0, 10) with `rng.integers(0, 10, size=5)`\n\nReturn the resulting DataFrame (int column dtype must be `int64`).\n\nExpected result (values come from seed=42):\n\n       score  count\n     +-------+------+\n  0  |  ...  |  ... |\n  1  |  ...  |  ... |\n  2  |  ...  |  ... |\n  3  |  ...  |  ... |\n  4  |  ...  |  ... |\n\nWrite a function `build_rng_df()` that takes no arguments and returns this DataFrame.",
+      "stub": "def build_rng_df():\n    ...",
+      "entry_point": "build_rng_df",
+      "canonical_answer": "import pandas as pd\nimport numpy as np\n\ndef build_rng_df():\n    rng = np.random.default_rng(seed=42)\n    scores = rng.standard_normal(5)\n    counts = rng.integers(0, 10, size=5)\n    return pd.DataFrame({'score': scores, 'count': counts})",
+      "hints": [
+        "Use `np.random.default_rng(seed=42)` to create the generator, then call its `.standard_normal()` and `.integers()` methods in that order.",
+        "Call `rng.standard_normal(5)` first to get the score column, then `rng.integers(0, 10, size=5)` for the count column — order matters because the RNG state advances with each call.",
+        "Build the DataFrame as `pd.DataFrame({'score': rng.standard_normal(5), 'count': rng.integers(0, 10, size=5)})` using the same `rng` object; `.integers()` returns `int64` by default on most platforms, but cast with `.astype('int64')` if needed."
+      ],
+      "test_cases": [
+        {
+          "name": "test_dtypes",
+          "source": "def test_dtypes():\n    import numpy as np\n    result = fn()\n    assert result['score'].dtype == np.float64, f\"'score' dtype should be float64, got {result['score'].dtype}\"\n    assert result['count'].dtype == np.int64, f\"'count' dtype should be int64, got {result['count'].dtype}\""
+        },
+        {
+          "name": "test_exact_values_and_dtypes",
+          "source": "def test_exact_values_and_dtypes():\n    import pandas as pd\n    import numpy as np\n    from pandas.testing import assert_frame_equal\n    rng = np.random.default_rng(seed=42)\n    expected = pd.DataFrame({\n        'score': rng.standard_normal(5),\n        'count': rng.integers(0, 10, size=5).astype('int64')\n    })\n    result = fn()\n    assert_frame_equal(result, expected, check_exact=False, rtol=1e-12)"
+        },
+        {
+          "name": "test_shape_and_columns",
+          "source": "def test_shape_and_columns():\n    result = fn()\n    assert result.shape == (5, 2), f'Expected shape (5, 2), got {result.shape}'\n    assert list(result.columns) == ['score', 'count'], f'Unexpected columns: {list(result.columns)}'"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "transform-compute/assign-columns/assign-columns-uppercase-string-column",
+      "topic": "transform-compute/assign-columns",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given `df`, return a new DataFrame with the `'name'` column replaced by its uppercased version (all strings converted to upper case). Leave all other columns unchanged.\n\n```\n        name   score\n      +------+-------+\n  0   | alice |    85 |\n  1   | bob   |    92 |\n  2   | carol |    78 |\n```\n\nExpected result:\n\n```\n        name   score\n      +-------+-------+\n  0   | ALICE |    85 |\n  1   | BOB   |    92 |\n  2   | CAROL |    78 |\n```",
+      "stub": "def uppercase_name_column(df):\n    ...",
+      "entry_point": "uppercase_name_column",
+      "canonical_answer": "import pandas as pd\n\ndef uppercase_name_column(df):\n    out = df.copy()\n    out['name'] = df['name'].str.upper()\n    return out",
+      "hints": [
+        "Use `.str` accessor methods to apply string operations element-wise on a Series.",
+        "pandas Series has a `.str.upper()` method that uppercases every element.",
+        "Copy the DataFrame first, then assign `out['name'] = df['name'].str.upper()` and return `out`."
+      ],
+      "test_cases": [
+        {
+          "name": "test_uppercase_name_empty",
+          "source": "def test_uppercase_name_empty():\n    import pandas as pd\n    from pandas.testing import assert_frame_equal\n    df = pd.DataFrame({'name': pd.Series([], dtype='object'), 'score': pd.Series([], dtype='int64')})\n    expected = pd.DataFrame({'name': pd.Series([], dtype='object'), 'score': pd.Series([], dtype='int64')})\n    result = fn(df)\n    assert_frame_equal(result, expected)\n    assert len(result) == 0"
+        },
+        {
+          "name": "test_uppercase_name_exact",
+          "source": "def test_uppercase_name_exact():\n    import pandas as pd\n    from pandas.testing import assert_frame_equal\n    df = pd.DataFrame({'name': ['alice', 'bob', 'carol'], 'score': [85, 92, 78]})\n    expected = pd.DataFrame({'name': ['ALICE', 'BOB', 'CAROL'], 'score': [85, 92, 78]})\n    assert_frame_equal(fn(df), expected)"
+        },
+        {
+          "name": "test_uppercase_name_no_mutation",
+          "source": "def test_uppercase_name_no_mutation():\n    import pandas as pd\n    df = pd.DataFrame({'name': ['alice', 'bob', 'carol'], 'score': [85, 92, 78]})\n    original_names = df['name'].tolist()\n    fn(df)\n    assert df['name'].tolist() == original_names, 'Input df should not be mutated'"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "transform-compute/assign-columns/assign-price-with-tax",
+      "topic": "transform-compute/assign-columns",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given `df` with columns `price` (float) and `tax_rate` (float), return a **new** DataFrame with an added column `price_with_tax` = `price * (1 + tax_rate)`, computed inside a single `.assign()` call.\n\n```\n      price  tax_rate\n   +-------+---------+\n 0 |  10.0 |    0.05 |\n 1 |  20.0 |    0.10 |\n 2 |  50.0 |    0.20 |\n```\n\nExpected result:\n\n```\n      price  tax_rate  price_with_tax\n   +-------+---------+---------------+\n 0 |  10.0 |    0.05 |         10.50 |\n 1 |  20.0 |    0.10 |         22.00 |\n 2 |  50.0 |    0.20 |         60.00 |\n```",
+      "stub": "import pandas as pd\n\ndef add_price_with_tax(df):\n    ...",
+      "entry_point": "add_price_with_tax",
+      "canonical_answer": "import pandas as pd\n\ndef add_price_with_tax(df):\n    return df.assign(price_with_tax=lambda d: d['price'] * (1 + d['tax_rate']))",
+      "hints": [
+        "Use `df.assign(new_col=...)` to add a column without mutating the original DataFrame.",
+        "Inside `.assign()`, pass a callable (lambda) that receives the intermediate DataFrame so you can reference its columns: `df.assign(price_with_tax=lambda d: d['price'] * (1 + d['tax_rate']))`.",
+        "The full solution is: `return df.assign(price_with_tax=lambda d: d['price'] * (1 + d['tax_rate']))`."
+      ],
+      "test_cases": [
+        {
+          "name": "test_empty_dataframe",
+          "source": "def test_empty_dataframe():\n    import pandas as pd\n    from pandas.testing import assert_frame_equal\n    df = pd.DataFrame({'price': pd.Series([], dtype='float64'), 'tax_rate': pd.Series([], dtype='float64')})\n    result = fn(df)\n    expected = pd.DataFrame({'price': pd.Series([], dtype='float64'), 'tax_rate': pd.Series([], dtype='float64'), 'price_with_tax': pd.Series([], dtype='float64')})\n    assert_frame_equal(result, expected)"
+        },
+        {
+          "name": "test_exact_values_and_dtypes",
+          "source": "def test_exact_values_and_dtypes():\n    import pandas as pd\n    from pandas.testing import assert_frame_equal\n    df = pd.DataFrame({'price': [10.0, 20.0, 50.0], 'tax_rate': [0.05, 0.10, 0.20]})\n    expected = pd.DataFrame({\n        'price': [10.0, 20.0, 50.0],\n        'tax_rate': [0.05, 0.10, 0.20],\n        'price_with_tax': [10.50, 22.00, 60.00]\n    })\n    assert_frame_equal(fn(df), expected)"
+        },
+        {
+          "name": "test_no_mutation_of_input",
+          "source": "def test_no_mutation_of_input():\n    import pandas as pd\n    df = pd.DataFrame({'price': [10.0, 20.0], 'tax_rate': [0.05, 0.10]})\n    original_columns = list(df.columns)\n    fn(df)\n    assert list(df.columns) == original_columns, 'input df should not be mutated'"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "transform-compute/str-accessor/extract-area-code",
+      "topic": "transform-compute/str-accessor",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given df, return a new DataFrame with a single column `'area_code'` containing the three-digit area code extracted from the `'phone'` column (format `'(NNN) NNN-NNNN'`). The result must be a string (object) dtype column.\n\n```\n         phone\n      +--------------+\n  0   | (212) 555-1234 |\n  1   | (415) 867-5309 |\n  2   | (312) 999-0000 |\n```\n\nExpected output:\n\n```\n   area_code\n+-----------+\n|   212     |\n|   415     |\n|   312     |\n```",
+      "stub": "import pandas as pd\n\ndef extract_area_code(df):\n    ...",
+      "entry_point": "extract_area_code",
+      "canonical_answer": "import pandas as pd\n\ndef extract_area_code(df):\n    return df['phone'].str.extract(r'\\((?P<area_code>\\d{3})\\)')",
+      "hints": [
+        "Use the `.str` accessor on the `'phone'` Series to work with string methods.",
+        "`.str.extract(pattern)` returns a DataFrame of captured groups — use a single capturing group `(...)` around the three digits inside the parentheses.",
+        "The pattern `r'\\((\\d{3})\\)'` matches a literal `(`, captures three digits, then matches a literal `)`. `.str.extract` returns a one-column DataFrame whose column is `0` by default — use a named group `(?P<area_code>\\d{3})` or rename afterwards to get `'area_code'`."
+      ],
+      "test_cases": [
+        {
+          "name": "test_exact_equality",
+          "source": "import pandas as pd\nfrom pandas.testing import assert_frame_equal\n\ndef test_exact_equality():\n    df = pd.DataFrame({'phone': ['(212) 555-1234', '(415) 867-5309', '(312) 999-0000']})\n    expected = pd.DataFrame({'area_code': ['212', '415', '312']})\n    assert_frame_equal(fn(df), expected)"
+        },
+        {
+          "name": "test_no_mutation",
+          "source": "import pandas as pd\n\ndef test_no_mutation():\n    df = pd.DataFrame({'phone': ['(212) 555-1234', '(415) 867-5309']})\n    original_columns = list(df.columns)\n    original_values = df['phone'].tolist()\n    fn(df)\n    assert list(df.columns) == original_columns\n    assert df['phone'].tolist() == original_values"
+        },
+        {
+          "name": "test_result_dtype_is_object",
+          "source": "import pandas as pd\n\ndef test_result_dtype_is_object():\n    df = pd.DataFrame({'phone': ['(800) 123-4567']})\n    result = fn(df)\n    assert result['area_code'].dtype == object\n    assert result['area_code'].iloc[0] == '800'"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "transform-compute/str-accessor/str-contains-filter",
+      "topic": "transform-compute/str-accessor",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given `df`, return a new DataFrame containing only the rows where the `message` column contains the substring `'error'` (case-insensitive), preserving the original index.\n\n```\n          message\n       +-----------------------------+\n  0    |  'System started normally'  |\n  1    |  'ERROR: disk full'         |\n  2    |  'warning: low memory'      |\n  3    |  'error code 404 returned'  |\n  4    |  'All systems operational'  |\n       +-----------------------------+\n           ^\n           +-- index (df.index)\n```\n\nReturn only the rows at index 1 and 3.",
+      "stub": "import pandas as pd\n\ndef filter_error_rows(df):\n    ...",
+      "entry_point": "filter_error_rows",
+      "canonical_answer": "import pandas as pd\n\ndef filter_error_rows(df):\n    mask = df['message'].str.contains('error', case=False, na=False)\n    return df[mask]",
+      "hints": [
+        "Use the `.str` accessor on the Series to call string methods element-wise.",
+        "`.str.contains(pattern)` accepts a `case` keyword argument to control case sensitivity.",
+        "Pass `case=False` to `.str.contains('error', case=False, na=False)` and use the resulting boolean mask to index into `df`."
+      ],
+      "test_cases": [
+        {
+          "name": "test_empty_input",
+          "source": "def test_empty_input():\n    import pandas as pd\n    from pandas.testing import assert_frame_equal\n    df = pd.DataFrame({'message': pd.Series([], dtype='object')})\n    result = fn(df)\n    assert len(result) == 0\n    assert list(result.columns) == ['message']"
+        },
+        {
+          "name": "test_exact_filter_error_rows",
+          "source": "def test_exact_filter_error_rows():\n    import pandas as pd\n    from pandas.testing import assert_frame_equal\n    df = pd.DataFrame({\n        'message': [\n            'System started normally',\n            'ERROR: disk full',\n            'warning: low memory',\n            'error code 404 returned',\n            'All systems operational'\n        ]\n    })\n    expected = pd.DataFrame(\n        {'message': ['ERROR: disk full', 'error code 404 returned']},\n        index=[1, 3]\n    )\n    assert_frame_equal(fn(df), expected)"
+        },
+        {
+          "name": "test_no_mutation",
+          "source": "def test_no_mutation():\n    import pandas as pd\n    df = pd.DataFrame({\n        'message': [\n            'System started normally',\n            'ERROR: disk full',\n            'warning: low memory',\n            'error code 404 returned',\n            'All systems operational'\n        ]\n    })\n    original_len = len(df)\n    fn(df)\n    assert len(df) == original_len, 'Input DataFrame was mutated'"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "transform-compute/str-accessor/str-split-delimiter",
+      "topic": "transform-compute/str-accessor",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given df with a 'full_name' column, return a new DataFrame with two columns 'first' and 'last' created by splitting 'full_name' on a single space.\n\n  full_name (df.columns)\n+-----------+\n| Alice Bob |\n| Carol Dee |\n| Eve Fox   |\n\nExpected result:\n\n  first  last\n+-------+-----+\n| Alice | Bob |\n| Carol | Dee |\n| Eve   | Fox |",
+      "stub": "import pandas as pd\n\ndef split_full_name(df):\n    ...",
+      "entry_point": "split_full_name",
+      "canonical_answer": "import pandas as pd\n\ndef split_full_name(df):\n    split = df['full_name'].str.split(' ', expand=True)\n    out = pd.DataFrame({'first': split[0], 'last': split[1]})\n    return out",
+      "hints": [
+        "Use the .str accessor on the 'full_name' Series to access string methods.",
+        "Call .str.split(' ', expand=True) to get a DataFrame of split pieces instead of a Series of lists.",
+        "Index into the resulting DataFrame with [0] and [1] to get the first and last name columns, then assemble a new DataFrame with keys 'first' and 'last'."
+      ],
+      "test_cases": [
+        {
+          "name": "test_split_full_name_exact",
+          "source": "import pandas as pd\nfrom pandas.testing import assert_frame_equal\n\ndef test_split_full_name_exact():\n    df = pd.DataFrame({'full_name': ['Alice Bob', 'Carol Dee', 'Eve Fox']})\n    expected = pd.DataFrame({'first': ['Alice', 'Carol', 'Eve'], 'last': ['Bob', 'Dee', 'Fox']})\n    assert_frame_equal(fn(df), expected)"
+        },
+        {
+          "name": "test_split_full_name_no_mutation",
+          "source": "import pandas as pd\n\ndef test_split_full_name_no_mutation():\n    df = pd.DataFrame({'full_name': ['Alice Bob', 'Carol Dee']})\n    original_cols = list(df.columns)\n    fn(df)\n    assert list(df.columns) == original_cols"
+        },
+        {
+          "name": "test_split_full_name_single_row",
+          "source": "import pandas as pd\nfrom pandas.testing import assert_frame_equal\n\ndef test_split_full_name_single_row():\n    df = pd.DataFrame({'full_name': ['Jane Doe']})\n    expected = pd.DataFrame({'first': ['Jane'], 'last': ['Doe']})\n    assert_frame_equal(fn(df), expected)"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "transform-compute/vectorized-ops/add-total-vectorized",
+      "topic": "transform-compute/vectorized-ops",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given a DataFrame `df` with integer columns `a` and `b`, return a NEW DataFrame with an added column `total` equal to the elementwise sum `a + b`. Use a vectorized Series addition — no `apply`, no `iterrows`, no Python loop. Do not mutate the input.",
+      "stub": "import pandas as pd\n\n\ndef add_total(df):\n    ...",
+      "entry_point": "add_total",
+      "canonical_answer": "import pandas as pd\n\n\ndef add_total(df):\n    out = df.copy()\n    out[\"total\"] = df[\"a\"] + df[\"b\"]\n    return out",
+      "hints": [
+        "Column arithmetic is vectorized: `df[\"a\"] + df[\"b\"]` returns a Series aligned on the index.",
+        "Copy first so you never mutate the caller's frame: `out = df.copy()`.",
+        "`out = df.copy(); out[\"total\"] = df[\"a\"] + df[\"b\"]; return out`."
+      ],
+      "test_cases": [
+        {
+          "name": "test_case_0",
+          "source": "import pandas as pd\nfrom pandas.testing import assert_frame_equal\n\n\ndef test_case_0():\n    df = pd.DataFrame({\"a\": [1, 2, 3], \"b\": [10, 20, 30]})\n    expected = pd.DataFrame({\"a\": [1, 2, 3], \"b\": [10, 20, 30], \"total\": [11, 22, 33]})\n    assert_frame_equal(fn(df), expected)"
+        },
+        {
+          "name": "test_case_1",
+          "source": "import pandas as pd\n\n\ndef test_case_1():\n    df = pd.DataFrame({\"a\": [5], \"b\": [7]})\n    _ = fn(df)\n    # input must not be mutated\n    assert list(df.columns) == [\"a\", \"b\"]"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "transform-compute/where-mask-select/np-select-label-assignment",
+      "topic": "transform-compute/where-mask-select",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given df, return a new DataFrame with an additional column `'grade'` assigned by these conditions (in order):\n- score >= 90  → `'A'`\n- score >= 75  → `'B'`\n- score >= 60  → `'C'`\n- otherwise    → `'F'`\n\nUse `np.select` to compute the labels.\n\n        score\n      +-------+\n  0   |   95  |\n  1   |   82  |\n  2   |   67  |\n  3   |   55  |\n  4   |   90  |",
+      "stub": "import pandas as pd\nimport numpy as np\n\ndef assign_grade(df):\n    ...",
+      "entry_point": "assign_grade",
+      "canonical_answer": "import pandas as pd\nimport numpy as np\n\ndef assign_grade(df):\n    conditions = [\n        df['score'] >= 90,\n        df['score'] >= 75,\n        df['score'] >= 60,\n    ]\n    choices = ['A', 'B', 'C']\n    out = df.copy()\n    out['grade'] = np.select(conditions, choices, default='F')\n    return out",
+      "hints": [
+        "Build a list of boolean conditions and a matching list of choice labels, then pass them to np.select along with a default.",
+        "np.select(conditions, choices, default='F') evaluates conditions in order and returns the first matching choice; assign the result to a new column on a copy of df.",
+        "conditions = [df['score'] >= 90, df['score'] >= 75, df['score'] >= 60]; choices = ['A', 'B', 'C']; out['grade'] = np.select(conditions, choices, default='F')"
+      ],
+      "test_cases": [
+        {
+          "name": "test_boundary_and_default",
+          "source": "def test_boundary_and_default():\n    import pandas as pd\n    df = pd.DataFrame({'score': [90, 75, 60, 59]})\n    result = fn(df)\n    assert list(result['grade']) == ['A', 'B', 'C', 'F'], f\"got {list(result['grade'])}\""
+        },
+        {
+          "name": "test_exact_grade_assignment",
+          "source": "def test_exact_grade_assignment():\n    import pandas as pd\n    import numpy as np\n    from pandas.testing import assert_frame_equal\n    df = pd.DataFrame({'score': [95, 82, 67, 55, 90]})\n    expected = pd.DataFrame({\n        'score': [95, 82, 67, 55, 90],\n        'grade': pd.array(['A', 'B', 'C', 'F', 'A'], dtype=object)\n    })\n    assert_frame_equal(fn(df), expected)"
+        },
+        {
+          "name": "test_no_mutation_of_input",
+          "source": "def test_no_mutation_of_input():\n    import pandas as pd\n    df = pd.DataFrame({'score': [95, 82, 67, 55, 90]})\n    original_cols = list(df.columns)\n    fn(df)\n    assert list(df.columns) == original_cols, 'input df should not gain a grade column'"
+        }
+      ],
+      "corpus": "pandas"
+    },
+    {
+      "external_id": "transform-compute/where-mask-select/series-where-clamp-negatives",
+      "topic": "transform-compute/where-mask-select",
+      "grader": "python",
+      "modality": "code",
+      "prompt": "Given a Series `s` of integers, return a new Series where every negative value is replaced with `0`, leaving non-negative values unchanged. Use `Series.where`.\n\n    s\n    -------\n  0    3\n  1   -1\n  2    7\n  3   -4\n  4    0",
+      "stub": "def clamp_negatives(s):\n    ...",
+      "entry_point": "clamp_negatives",
+      "canonical_answer": "import pandas as pd\n\ndef clamp_negatives(s):\n    return s.where(s >= 0, other=0)",
+      "hints": [
+        "Think about what condition should be TRUE for values you want to KEEP.",
+        "`Series.where(cond, other=...)` keeps values where `cond` is True and replaces them with `other` where it is False.",
+        "Use `s.where(s >= 0, other=0)` — values satisfying `s >= 0` are kept; all others become 0."
+      ],
+      "test_cases": [
+        {
+          "name": "test_clamp_negatives_all_nonnegative",
+          "source": "def test_clamp_negatives_all_nonnegative():\n    import pandas as pd\n    from pandas.testing import assert_series_equal\n    s = pd.Series([0, 5, 10], dtype='int64')\n    expected = pd.Series([0, 5, 10], dtype='int64')\n    assert_series_equal(fn(s), expected)"
+        },
+        {
+          "name": "test_clamp_negatives_exact",
+          "source": "def test_clamp_negatives_exact():\n    import pandas as pd\n    from pandas.testing import assert_series_equal\n    s = pd.Series([3, -1, 7, -4, 0], dtype='int64')\n    expected = pd.Series([3, 0, 7, 0, 0], dtype='int64')\n    assert_series_equal(fn(s), expected)"
+        },
+        {
+          "name": "test_clamp_negatives_no_mutation",
+          "source": "def test_clamp_negatives_no_mutation():\n    import pandas as pd\n    s = pd.Series([3, -1, 7, -4, 0], dtype='int64')\n    original_values = s.tolist()\n    fn(s)\n    assert s.tolist() == original_values"
+        }
+      ],
+      "corpus": "pandas"
+    }
+  ]
+}

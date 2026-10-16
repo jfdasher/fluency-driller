@@ -1,0 +1,3 @@
+class MathUtils:
+    def add(a, b):
+        ...

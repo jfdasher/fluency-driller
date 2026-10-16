@@ -1,0 +1,645 @@
+# Topic seeds for the content generator (Phase A, Opus-authored).
+#
+# slug -> list of { topic, kind, note? }
+#   topic : terse drill-sized seed phrase, the generation focus
+#   kind  : idiom | recall  (idiom = there's an idiomatic-vs-naive fork the
+#           judge can discriminate; recall = pure "do you remember the syntax")
+#   note  : optional disambiguation for the generator
+#
+# Slug taxonomy + per-slug scope/tiers live in drill/data/topics_python.json;
+# see the generating-drill-questions skill (.claude/skills/) for how this is used.
+# Deferred chapters (concurrency/async/subprocess/socket/sqlite3/packaging/
+# performance) are intentionally omitted per the taxonomy's v2->v3 list.
+
+syntax/f-strings:
+  - topic: "format a float to two decimal places with an f-string"
+    kind: recall
+  - topic: "use the f-string = debug specifier to print expr and its value"
+    kind: recall
+  - topic: "right-align a value in a fixed field width via an f-string spec"
+    kind: recall
+  - topic: "use the !r conversion to embed repr() in an f-string"
+    kind: recall
+  - topic: "nest an expression in an f-string format spec for a dynamic width"
+    kind: recall
+
+syntax/string-literals:
+  - topic: "write a Windows file path as a raw string to avoid escaping backslashes"
+    kind: recall
+  - topic: "build a long message with implicit adjacent string concatenation"
+    kind: recall
+  - topic: "write a multi-line block with a triple-quoted string"
+    kind: recall
+
+syntax/numeric-literals:
+  - topic: "write a large integer using underscore digit grouping"
+    kind: recall
+  - topic: "write hex, binary, and octal integer literals"
+    kind: recall
+
+syntax/annotations:
+  - topic: "annotate a function's parameters and return type"
+    kind: recall
+  - topic: "annotate a module-level variable with its type"
+    kind: recall
+
+types/str-methods:
+  - topic: "split a comma-separated line and strip whitespace from each field"
+    kind: idiom
+  - topic: "join a list of words with a separator string"
+    kind: idiom
+  - topic: "split on the first delimiter only with str.partition"
+    kind: recall
+  - topic: "locate a substring with find (returns -1) vs index (raises)"
+    kind: idiom
+  - topic: "filter names by prefix with str.startswith"
+    kind: idiom
+  - topic: "case-normalize and strip a string before comparing"
+    kind: idiom
+
+types/list:
+  - topic: "reverse a list with slicing [::-1]"
+    kind: recall
+  - topic: "drop the first or last element with slicing"
+    kind: recall
+  - topic: "copy a list with [:] instead of aliasing it"
+    kind: idiom
+  - topic: "sort in place with .sort() vs returning a new list with sorted()"
+    kind: idiom
+  - topic: "extend a list with another vs append it as one element"
+    kind: idiom
+  - topic: "build a fixed-size list of zeros"
+    kind: recall
+
+types/dict:
+  - topic: "count occurrences with counts.get(key, 0) + 1"
+    kind: idiom
+  - topic: "group values into lists with dict.setdefault"
+    kind: idiom
+  - topic: "invert a dict, swapping keys and values"
+    kind: idiom
+  - topic: "merge two dicts with the | operator or {**a, **b}"
+    kind: idiom
+  - topic: "iterate keys, values, and items via dict views"
+    kind: recall
+  - topic: "remove a key safely with dict.pop and a default"
+    kind: recall
+  - topic: "build a value-to-index lookup map from a list"
+    kind: idiom
+
+types/set:
+  - topic: "deduplicate a list while keeping only distinct elements via a set"
+    kind: idiom
+  - topic: "count distinct elements with len(set(...))"
+    kind: idiom
+  - topic: "test membership in O(1) with a set instead of a list scan"
+    kind: idiom
+  - topic: "compute intersection, union, and difference with set operators"
+    kind: recall
+  - topic: "use a frozenset as a dict key"
+    kind: recall
+
+types/tuple:
+  - topic: "swap two variables with tuple unpacking"
+    kind: idiom
+  - topic: "unpack a coordinate tuple into named variables"
+    kind: recall
+  - topic: "write a single-element tuple with a trailing comma"
+    kind: recall
+  - topic: "compare tuples lexicographically"
+    kind: recall
+  - topic: "use a namedtuple for readable field access"
+    kind: idiom
+
+types/numeric:
+  - topic: "get quotient and remainder together with divmod"
+    kind: idiom
+  - topic: "predict floor division and modulo with negative operands"
+    kind: recall
+  - topic: "observe round()'s half-to-even (banker's) rounding"
+    kind: recall
+
+types/bytes:
+  - topic: "encode a str to bytes and decode back with utf-8"
+    kind: recall
+  - topic: "convert between bytes and str at an I/O boundary"
+    kind: idiom
+
+operators/comparison:
+  - topic: "test a range with a chained comparison (a < x < b)"
+    kind: idiom
+  - topic: "choose 'is' for identity vs '==' for equality"
+    kind: idiom
+
+operators/boolean:
+  - topic: "supply a fallback value with 'or'"
+    kind: idiom
+  - topic: "guard an expression with short-circuit 'and'"
+    kind: idiom
+
+operators/walrus:
+  - topic: "read until sentinel in a while loop using the walrus operator"
+    kind: idiom
+  - topic: "filter and reuse a computed value in a comprehension with walrus"
+    kind: idiom
+
+operators/unpacking:
+  - topic: "split a list into first and rest with star unpacking"
+    kind: idiom
+  - topic: "merge lists or dicts inside a literal with * / **"
+    kind: idiom
+  - topic: "forward *args and **kwargs through a wrapper call"
+    kind: recall
+
+operators/ternary:
+  - topic: "pick a value with a conditional expression"
+    kind: recall
+  - topic: "place a value-ternary vs a comprehension if-clause correctly"
+    kind: idiom
+
+operators/bitwise:
+  - topic: "clear the lowest set bit with n & (n - 1)"
+    kind: idiom
+  - topic: "find the single unique number by XOR-accumulating the list"
+    kind: idiom
+  - topic: "test and set a specific bit with shifts and masks"
+    kind: recall
+
+operators/precedence:
+  - topic: "fix a precedence surprise with parentheses (e.g. -x**2)"
+    kind: recall
+  - topic: "negate membership with 'not in'"
+    kind: recall
+
+control-flow/for:
+  - topic: "detect a no-break loop completion with for-else"
+    kind: idiom
+  - topic: "iterate with enumerate instead of range(len(x))"
+    kind: idiom
+    note: "anti-idiom target: range(len(x)) indexing"
+  - topic: "count down with range(n - 1, -1, -1)"
+    kind: recall
+  - topic: "walk two sequences together with zip"
+    kind: idiom
+
+control-flow/while:
+  - topic: "converge two pointers with a while-loop condition"
+    kind: idiom
+  - topic: "use a while-else clause"
+    kind: recall
+
+control-flow/with:
+  - topic: "open and read a file using a with-statement context manager"
+    kind: idiom
+  - topic: "enter multiple context managers in a single with-statement"
+    kind: recall
+
+control-flow/match:
+  - topic: "branch on the shape of a tuple with structural match"
+    kind: recall
+  - topic: "add a guard condition to a match case"
+    kind: recall
+
+control-flow/loop-control:
+  - topic: "search with break and report not-found with the for-else clause"
+    kind: idiom
+  - topic: "skip unwanted iterations with continue"
+    kind: recall
+
+comprehensions/basic:
+  - topic: "return squares of the even numbers with a list comprehension"
+    kind: idiom
+  - topic: "build a dict with a dict comprehension"
+    kind: idiom
+  - topic: "build a set with a set comprehension"
+    kind: idiom
+  - topic: "rewrite a map/filter chain as a comprehension"
+    kind: idiom
+
+comprehensions/multi-clause:
+  - topic: "flatten a list of lists with a multi-clause comprehension"
+    kind: idiom
+  - topic: "produce all pairs from two lists with two for-clauses"
+    kind: idiom
+
+comprehensions/filtering:
+  # Centre the if-clause-vs-ternary CONTRAST (see next-slugs.md): a trailing
+  # if-clause SELECTS/drops items (no transform); a ternary in the value position
+  # TRANSFORMS every item. NB: the combined filter+map form (e.g. [x*x for x in xs
+  # if cond]) already lives in comprehensions/basic (even-squares, upper-long-words)
+  # — do NOT reseed it here. Keep this slug on the pure select-vs-transform contrast.
+  - topic: "select a subset with a trailing if-clause, dropping non-matching items (not transforming them)"
+    kind: idiom
+  - topic: "transform every item with a conditional ternary in the comprehension's value position, keeping all items (not dropping any)"
+    kind: idiom
+
+comprehensions/generator-exprs:
+  - topic: "sum a generator expression without materializing a list"
+    kind: idiom
+  - topic: "test a condition over a sequence with any/all and a genexp"
+    kind: idiom
+
+comprehensions/nested:
+  - topic: "transpose a matrix with a nested comprehension"
+    kind: idiom
+  - topic: "initialize an m-by-n grid with [[0]*n for _ in range(m)]"
+    kind: idiom
+    note: "must avoid the [[0]*n]*m aliasing trap"
+
+functions/signatures:
+  - topic: "accept arbitrary positional and keyword args with *args/**kwargs"
+    kind: recall
+  - topic: "force a parameter to be keyword-only with a bare *"
+    kind: recall
+
+functions/defaults:
+  # NOTE: the mutable-default trap (the None-sentinel fix) lives in
+  # gotchas/mutable-defaults. Seed this slug with default-VALUE mechanics ONLY
+  # (binding, overriding, skipping) — NOT the trap, or it just regenerates
+  # gotchas/mutable-defaults content (happened 2026-06-24).
+  - topic: "define a function with a default parameter and call it both with and without that argument"
+    kind: recall
+  - topic: "override a single keyword-defaulted parameter by name, leaving the other defaults unchanged"
+    kind: recall
+  - topic: "give a function several default parameters and supply only the first positionally"
+    kind: recall
+
+functions/lambda:
+  # NOTE: lambda-as-sort-key lives in iteration/sorting (8 questions already).
+  # Seed this slug ONLY with non-sorting lambda idioms to avoid duplication.
+  - topic: "pick the element with the largest computed value using max(..., key=lambda ...)"
+    kind: idiom
+  - topic: "find the element with the smallest computed value using min(..., key=lambda ...)"
+    kind: idiom
+  - topic: "transform each item with map and a lambda"
+    kind: recall
+  - topic: "keep only matching items with filter and a lambda"
+    kind: recall
+
+functions/closures:
+  - topic: "define a nested dfs() helper that mutates a nonlocal accumulator"
+    kind: idiom
+  - topic: "build a multiplier factory that returns a closure"
+    kind: idiom
+
+functions/decorators-use:
+  - topic: "apply a single decorator to a function"
+    kind: recall
+  - topic: "stack two decorators on one function"
+    kind: recall
+
+functions/decorators-write:
+  - topic: "write a logging decorator that preserves metadata with functools.wraps"
+    kind: idiom
+  - topic: "write a decorator that takes an argument (decorator factory)"
+    kind: idiom
+
+functions/generators:
+  - topic: "produce values lazily with a yield-based generator"
+    kind: recall
+  - topic: "delegate to a subgenerator with yield from"
+    kind: recall
+
+functions/first-class:
+  - topic: "dispatch on a dict mapping names to functions"
+    kind: idiom
+  - topic: "pass a function as an argument to another function"
+    kind: recall
+
+classes/basics:
+  - topic: "define a class with __init__ and instance attributes"
+    kind: recall
+  - topic: "add an alternate constructor with @classmethod"
+    kind: idiom
+  - topic: "share state across instances with a class attribute"
+    kind: idiom
+
+classes/dunder-repr-eq:
+  - topic: "implement a useful __repr__ for debugging"
+    kind: idiom
+  - topic: "implement __eq__ and __hash__ consistently"
+    kind: idiom
+
+classes/dunder-container:
+  - topic: "support len() and indexing with __len__ and __getitem__"
+    kind: recall
+  - topic: "make an object iterable with __iter__"
+    kind: recall
+
+classes/dunder-operators:
+  - topic: "overload __add__ for a 2-D vector class"
+    kind: recall
+  - topic: "support int + vector with a reflected __radd__"
+    kind: recall
+
+classes/properties:
+  - topic: "expose a computed read-only attribute with @property"
+    kind: idiom
+  - topic: "validate an assignment with a property setter"
+    kind: recall
+
+classes/dataclasses:
+  - topic: "define a dataclass with typed fields and defaults"
+    kind: idiom
+  - topic: "give a dataclass a mutable default with field(default_factory=...)"
+    kind: idiom
+  - topic: "make an immutable dataclass with frozen=True"
+    kind: recall
+
+classes/inheritance:
+  - topic: "call super().__init__ from a subclass"
+    kind: idiom
+  - topic: "define an abstract base class with abc.ABC and abstractmethod"
+    kind: recall
+
+classes/slots:
+  - topic: "restrict instance attributes with __slots__"
+    kind: recall
+
+classes/descriptors:
+  - topic: "write a descriptor implementing __get__ and __set__"
+    kind: recall
+
+classes/metaclasses:
+  - topic: "register subclasses automatically with __init_subclass__"
+    kind: recall
+
+errors/handling:
+  - topic: "catch several exception types with one except (A, B) tuple"
+    kind: idiom
+  - topic: "narrow the protected block using try/except/else"
+    kind: idiom
+  - topic: "guarantee cleanup with a finally clause"
+    kind: recall
+
+errors/raising:
+  - topic: "chain a new exception from the cause with 'raise ... from'"
+    kind: idiom
+  - topic: "define and raise a custom exception class"
+    kind: recall
+
+errors/eafp:
+  - topic: "look up a value the EAFP way (try/except KeyError) over LBYL checks"
+    kind: idiom
+
+errors/builtin-hierarchy:
+  - topic: "catch LookupError to handle both KeyError and IndexError"
+    kind: recall
+
+iteration/protocol:
+  - topic: "implement the iterator protocol with __iter__ and __next__"
+    kind: recall
+  - topic: "signal the end of iteration by raising StopIteration"
+    kind: recall
+
+iteration/builtins:
+  - topic: "number items from one with enumerate(seq, start=1)"
+    kind: idiom
+  - topic: "pair two lists element-wise with zip"
+    kind: idiom
+  - topic: "iterate a sequence backwards with reversed()"
+    kind: recall
+  - topic: "step through a range with a stride using 3-arg range"
+    kind: recall
+
+iteration/sorting:
+  - topic: "double sort with a lambda as the key"
+    kind: idiom
+  - topic: "sort words by length, breaking ties alphabetically"
+    kind: idiom
+  - topic: "sort numbers by absolute value with key=abs"
+    kind: idiom
+  - topic: "sort dict keys by their associated values"
+    kind: idiom
+  - topic: "stable two-pass sort with mixed ascending/descending keys"
+    kind: idiom
+  - topic: "sort then scan greedily as an algorithm opener"
+    kind: idiom
+
+iteration/exhaustion:
+  - topic: "recognize that a generator/zip is exhausted after one pass"
+    kind: idiom
+
+gotchas/mutable-defaults:
+  - topic: "fix a function whose default [] accumulates across calls"
+    kind: idiom
+
+gotchas/late-binding:
+  - topic: "fix loop-built lambdas that all capture the same final value"
+    kind: idiom
+
+gotchas/identity:
+  - topic: "test for None with 'is None' rather than '== None'"
+    kind: idiom
+    note: "anti-idiom target: == None"
+
+gotchas/copy:
+  # A copy only matters under mutation AFTER copying. Snapshot-in-a-loop
+  # discriminates because the accumulator keeps changing; deep-vs-shallow needs
+  # an inner-cell mutation to reveal the shared sublist. Bake both in. Keep
+  # atomic — NO backtracking/search puzzles (off-altitude).
+  - topic: "append a running snapshot cur[:] each loop step so captured states stay independent (without [:] they all alias the final list)"
+    kind: idiom
+  - topic: "deep-copy a nested list, mutate one inner cell, and leave the original unchanged (a shallow copy shares the inner sublists)"
+    kind: idiom
+
+gotchas/scoping:
+  - topic: "mutate an enclosing-scope variable with nonlocal"
+    kind: idiom
+  - topic: "rebind a module-level variable from inside a function with global"
+    kind: recall
+
+gotchas/truthiness:
+  - topic: "use 'if x is not None' when 0 or '' are valid values"
+    kind: idiom
+  - topic: "replace 'True if cond else False' with the boolean directly"
+    kind: idiom
+    note: "anti-idiom target: redundant ternary"
+
+gotchas/aliasing:
+  # The [[0]*n]*m trap only shows under MUTATION (all-zero grids compare equal
+  # either way). Seeds bake in a cell-set / append so the test discriminates.
+  - topic: "build an m×n grid of zeros, set one cell, and return it — the [[0]*n]*m trap corrupts the whole column"
+    kind: idiom
+  - topic: "create n independent buckets then append to one — the [[]]*n trap shares a single list"
+    kind: idiom
+  - topic: "replicate a given row m times then change one copy — the [row]*m trap mutates every copy"
+    kind: idiom
+
+gotchas/evaluation-order:
+  - topic: "rotate three values in one simultaneous tuple assignment"
+    kind: idiom
+  - topic: "roll the Fibonacci pair forward with a, b = b, a + b in one assignment"
+    kind: idiom
+
+builtins/any-all:
+  - topic: "check that all elements satisfy a predicate with all()"
+    kind: idiom
+  - topic: "check that any element matches with any()"
+    kind: idiom
+
+builtins/map-filter:
+  - topic: "apply a function across a list with map"
+    kind: recall
+  - topic: "select matching elements with filter"
+    kind: recall
+
+builtins/introspection:
+  - topic: "type-check an argument with isinstance"
+    kind: idiom
+  - topic: "read an attribute dynamically with getattr and a default"
+    kind: idiom
+
+builtins/conversion:
+  - topic: "convert an int to its binary string with bin()"
+    kind: recall
+  - topic: "convert between a character and its code point with ord and chr"
+    kind: recall
+  - topic: "convert an int to hex or octal strings"
+    kind: recall
+  - topic: "build a dict from a list of pairs with the dict() constructor"
+    kind: recall
+
+builtins/io:
+  - topic: "print items with a custom separator and no trailing newline"
+    kind: recall
+  - topic: "read and parse a line of input"
+    kind: recall
+
+builtins/misc:
+  - topic: "find the element with the largest computed key using max(key=...)"
+    kind: idiom
+  - topic: "sum numbers with a non-zero start value"
+    kind: recall
+  - topic: "initialize a running minimum with float('inf') as a sentinel"
+    kind: idiom
+
+stdlib/collections:
+  - topic: "tally items with collections.Counter instead of a manual loop"
+    kind: idiom
+    note: "anti-idiom target: manual count dict"
+  - topic: "group items with defaultdict(list)"
+    kind: idiom
+  - topic: "use collections.deque.popleft() as an O(1) queue"
+    kind: idiom
+    note: "anti-idiom target: list.pop(0)"
+  - topic: "get the n most common items with Counter.most_common"
+    kind: idiom
+
+stdlib/itertools:
+  - topic: "concatenate iterables with itertools.chain"
+    kind: recall
+  - topic: "collapse consecutive runs with itertools.groupby on sorted input"
+    kind: idiom
+  - topic: "enumerate the cartesian product with itertools.product"
+    kind: recall
+  - topic: "scan overlapping adjacent pairs with itertools.pairwise"
+    kind: idiom
+
+stdlib/functools:
+  - topic: "memoize a recursive function with @functools.lru_cache"
+    kind: idiom
+  - topic: "pre-bind an argument with functools.partial"
+    kind: idiom
+  - topic: "fold a sequence to one value with functools.reduce"
+    kind: recall
+
+stdlib/re:
+  - topic: "extract all matches with re.findall"
+    kind: recall
+  - topic: "replace matches using a function with re.sub"
+    kind: idiom
+  - topic: "pull named/numbered groups from a regex match"
+    kind: recall
+
+stdlib/pathlib:
+  - topic: "build a path and read its contents with Path.read_text"
+    kind: idiom
+  - topic: "list matching files with Path.glob"
+    kind: recall
+  - topic: "get a file's stem and suffix from a Path"
+    kind: recall
+
+stdlib/json:
+  - topic: "round-trip a structure with json.dumps and json.loads"
+    kind: recall
+  - topic: "serialize an unsupported type with a default= hook"
+    kind: idiom
+
+stdlib/datetime:
+  - topic: "add a duration to a date with timedelta"
+    kind: recall
+  - topic: "parse and reformat a date string with strptime/strftime"
+    kind: recall
+
+stdlib/contextlib:
+  - topic: "ignore a specific exception with contextlib.suppress"
+    kind: idiom
+  - topic: "write a context manager with @contextlib.contextmanager"
+    kind: idiom
+
+stdlib/os-sys:
+  - topic: "read an environment variable with a fallback default"
+    kind: recall
+  - topic: "join path components portably with os.path.join"
+    kind: recall
+
+stdlib/logging:
+  - topic: "obtain a module logger with logging.getLogger(__name__)"
+    kind: idiom
+  - topic: "log with lazy %-style arguments rather than an f-string"
+    kind: idiom
+
+stdlib/string-tools:
+  - topic: "wrap a long string to a fixed width with textwrap.fill"
+    kind: recall
+  - topic: "use the string.ascii_lowercase constant"
+    kind: recall
+
+stdlib/heapq:
+  - topic: "push and pop the smallest element from a min-heap"
+    kind: recall
+  - topic: "simulate a max-heap by negating values"
+    kind: idiom
+  - topic: "find the k largest items with heapq.nlargest and a key"
+    kind: idiom
+  - topic: "order a heap by a tuple priority key"
+    kind: idiom
+
+stdlib/bisect:
+  - topic: "find a sorted insertion point with bisect_left"
+    kind: idiom
+  - topic: "keep a list sorted on insert with bisect.insort"
+    kind: idiom
+
+stdlib/math:
+  - topic: "compute ceiling division without imports using -(-a // b)"
+    kind: idiom
+  - topic: "use math.inf as a sentinel bound"
+    kind: idiom
+
+typing/basics:
+  - topic: "annotate an optional value as X | None"
+    kind: recall
+  - topic: "annotate a parameter that is a Callable"
+    kind: recall
+
+typing/structural:
+  - topic: "describe a fixed-shape dict with TypedDict"
+    kind: recall
+  - topic: "restrict a value to fixed choices with Literal"
+    kind: recall
+
+typing/generics:
+  - topic: "write a generic identity function with a TypeVar"
+    kind: recall
+
+modules/imports:
+  - topic: "import a module under an alias"
+    kind: recall
+  - topic: "import a specific name with a from-import"
+    kind: recall
+
+modules/main:
+  - topic: "guard script entry code with if __name__ == '__main__'"
+    kind: idiom

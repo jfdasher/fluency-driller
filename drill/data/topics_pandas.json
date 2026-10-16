@@ -1,0 +1,578 @@
+[
+  {
+    "slug": "numpy-foundations/vectorization",
+    "corpus": "pandas",
+    "chapter": "numpy-foundations",
+    "description": "elementwise ops, no python loops, broadcasting basics",
+    "tier": 1,
+    "grader": "python"
+  },
+  {
+    "slug": "numpy-foundations/boolean-masking",
+    "corpus": "pandas",
+    "chapter": "numpy-foundations",
+    "description": "mask arrays, np.where, np.select",
+    "tier": 1,
+    "grader": "python"
+  },
+  {
+    "slug": "numpy-foundations/dtypes",
+    "corpus": "pandas",
+    "chapter": "numpy-foundations",
+    "description": "NaN-is-a-float, astype, why arrays go object",
+    "tier": 2,
+    "grader": "python"
+  },
+  {
+    "slug": "numpy-foundations/axis-semantics",
+    "corpus": "pandas",
+    "chapter": "numpy-foundations",
+    "description": "axis=0 vs 1 reductions, keepdims",
+    "tier": 2,
+    "grader": "python"
+  },
+  {
+    "slug": "numpy-foundations/nan-handling",
+    "corpus": "pandas",
+    "chapter": "numpy-foundations",
+    "description": "np.nan, isnan, nanmean/nansum",
+    "tier": 2,
+    "grader": "python"
+  },
+  {
+    "slug": "numpy-foundations/random-generator",
+    "corpus": "pandas",
+    "chapter": "numpy-foundations",
+    "description": "default_rng, integers/normal/choice/seed",
+    "tier": 2,
+    "grader": "python"
+  },
+  {
+    "slug": "numpy-foundations/ndarray-basics",
+    "corpus": "pandas",
+    "chapter": "numpy-foundations",
+    "description": "array/arange/zeros/reshape, shape/ndim",
+    "tier": 2,
+    "grader": "python"
+  },
+  {
+    "slug": "construction-inspection/dataframe-construct",
+    "corpus": "pandas",
+    "chapter": "construction-inspection",
+    "description": "from dict/records/arrays; columns/index/dtype args",
+    "tier": 1,
+    "grader": "python"
+  },
+  {
+    "slug": "construction-inspection/inspect",
+    "corpus": "pandas",
+    "chapter": "construction-inspection",
+    "description": "head/sample/info/describe/dtypes/shape",
+    "tier": 1,
+    "grader": "python"
+  },
+  {
+    "slug": "construction-inspection/value-counts",
+    "corpus": "pandas",
+    "chapter": "construction-inspection",
+    "description": "value_counts(normalize, dropna), nunique",
+    "tier": 1,
+    "grader": "python"
+  },
+  {
+    "slug": "construction-inspection/series-construct",
+    "corpus": "pandas",
+    "chapter": "construction-inspection",
+    "description": "from list/dict/scalar; name/index",
+    "tier": 2,
+    "grader": "python"
+  },
+  {
+    "slug": "construction-inspection/rename-columns",
+    "corpus": "pandas",
+    "chapter": "construction-inspection",
+    "description": "rename, .columns=, add_prefix",
+    "tier": 2,
+    "grader": "python"
+  },
+  {
+    "slug": "dtypes-missing/astype-coercion",
+    "corpus": "pandas",
+    "chapter": "dtypes-missing",
+    "description": "astype, to_numeric(errors=), downcast",
+    "tier": 1,
+    "grader": "python"
+  },
+  {
+    "slug": "dtypes-missing/missing-detect-fill",
+    "corpus": "pandas",
+    "chapter": "dtypes-missing",
+    "description": "isna/notna/fillna/dropna(how, thresh, subset)",
+    "tier": 1,
+    "grader": "python"
+  },
+  {
+    "slug": "dtypes-missing/duplicates",
+    "corpus": "pandas",
+    "chapter": "dtypes-missing",
+    "description": "duplicated / drop_duplicates(subset, keep)",
+    "tier": 1,
+    "grader": "python"
+  },
+  {
+    "slug": "dtypes-missing/to-datetime",
+    "corpus": "pandas",
+    "chapter": "dtypes-missing",
+    "description": "format=, errors=, unit",
+    "tier": 2,
+    "grader": "python"
+  },
+  {
+    "slug": "dtypes-missing/ffill-bfill-interp",
+    "corpus": "pandas",
+    "chapter": "dtypes-missing",
+    "description": "ffill/bfill/interpolate(limit)",
+    "tier": 2,
+    "grader": "python"
+  },
+  {
+    "slug": "dtypes-missing/nullable-dtypes",
+    "corpus": "pandas",
+    "chapter": "dtypes-missing",
+    "description": "Int64/boolean/string, pd.NA vs NaN (2.x opt-in)",
+    "tier": 2,
+    "grader": "python"
+  },
+  {
+    "slug": "dtypes-missing/categoricals",
+    "corpus": "pandas",
+    "chapter": "dtypes-missing",
+    "description": "category dtype, ordered, memory, why",
+    "tier": 2,
+    "grader": "python"
+  },
+  {
+    "slug": "index/index-basics",
+    "corpus": "pandas",
+    "chapter": "index",
+    "description": "what the Index is, is_unique, name (clustered PK analogue)",
+    "tier": 1,
+    "grader": "python"
+  },
+  {
+    "slug": "index/set-reset-index",
+    "corpus": "pandas",
+    "chapter": "index",
+    "description": "set_index/reset_index, drop=",
+    "tier": 1,
+    "grader": "python"
+  },
+  {
+    "slug": "index/reindex-align",
+    "corpus": "pandas",
+    "chapter": "index",
+    "description": "reindex + auto-alignment in arithmetic (the all-NaN surprise SQL never does)",
+    "tier": 1,
+    "grader": "python"
+  },
+  {
+    "slug": "index/sort-index",
+    "corpus": "pandas",
+    "chapter": "index",
+    "description": "sort_index; lexsort requirement for MultiIndex slicing",
+    "tier": 2,
+    "grader": "python"
+  },
+  {
+    "slug": "index/multiindex-construct",
+    "corpus": "pandas",
+    "chapter": "index",
+    "description": "from_tuples/from_product, names",
+    "tier": 2,
+    "grader": "python"
+  },
+  {
+    "slug": "index/multiindex-select",
+    "corpus": "pandas",
+    "chapter": "index",
+    "description": "xs, IndexSlice, .loc tuples, droplevel/swaplevel",
+    "tier": 2,
+    "grader": "python"
+  },
+  {
+    "slug": "index/index-set-ops",
+    "corpus": "pandas",
+    "chapter": "index",
+    "description": "union/intersection/difference, get_indexer",
+    "tier": 3,
+    "grader": "python"
+  },
+  {
+    "slug": "selection/loc-vs-iloc",
+    "corpus": "pandas",
+    "chapter": "selection",
+    "description": "label vs position, the inclusive-slice trap",
+    "tier": 1,
+    "grader": "python"
+  },
+  {
+    "slug": "selection/boolean-mask",
+    "corpus": "pandas",
+    "chapter": "selection",
+    "description": "df[mask], & | ~ + parentheses",
+    "tier": 1,
+    "grader": "python"
+  },
+  {
+    "slug": "selection/isin-between",
+    "corpus": "pandas",
+    "chapter": "selection",
+    "description": "isin, between, ~isin",
+    "tier": 1,
+    "grader": "python"
+  },
+  {
+    "slug": "selection/chained-assignment",
+    "corpus": "pandas",
+    "chapter": "selection",
+    "description": "SettingWithCopyWarning, .loc assign, copy-vs-view",
+    "tier": 1,
+    "grader": "python"
+  },
+  {
+    "slug": "selection/query-eval",
+    "corpus": "pandas",
+    "chapter": "selection",
+    "description": "query(), @var, backtick columns",
+    "tier": 2,
+    "grader": "python"
+  },
+  {
+    "slug": "selection/at-iat-scalar",
+    "corpus": "pandas",
+    "chapter": "selection",
+    "description": "fast scalar access",
+    "tier": 3,
+    "grader": "python"
+  },
+  {
+    "slug": "transform-compute/assign-columns",
+    "corpus": "pandas",
+    "chapter": "transform-compute",
+    "description": "create/overwrite cols, .assign chaining",
+    "tier": 1,
+    "grader": "python"
+  },
+  {
+    "slug": "transform-compute/vectorized-ops",
+    "corpus": "pandas",
+    "chapter": "transform-compute",
+    "description": "arithmetic across columns, don't apply",
+    "tier": 1,
+    "grader": "python"
+  },
+  {
+    "slug": "transform-compute/str-accessor",
+    "corpus": "pandas",
+    "chapter": "transform-compute",
+    "description": ".str.contains/extract/split/replace/strip",
+    "tier": 1,
+    "grader": "python"
+  },
+  {
+    "slug": "transform-compute/where-mask-select",
+    "corpus": "pandas",
+    "chapter": "transform-compute",
+    "description": "Series.where/mask, np.select multi-condition",
+    "tier": 1,
+    "grader": "python"
+  },
+  {
+    "slug": "transform-compute/map-replace",
+    "corpus": "pandas",
+    "chapter": "transform-compute",
+    "description": "Series.map(dict), replace, map vs apply",
+    "tier": 2,
+    "grader": "python"
+  },
+  {
+    "slug": "transform-compute/dt-accessor",
+    "corpus": "pandas",
+    "chapter": "transform-compute",
+    "description": ".dt.year/floor/dayofweek, tz",
+    "tier": 2,
+    "grader": "python"
+  },
+  {
+    "slug": "transform-compute/apply-when",
+    "corpus": "pandas",
+    "chapter": "transform-compute",
+    "description": "when apply(axis=1) is unavoidable; itertuples > iterrows",
+    "tier": 2,
+    "grader": "python"
+  },
+  {
+    "slug": "combining/merge-basics",
+    "corpus": "pandas",
+    "chapter": "combining",
+    "description": "on/left_on/right_on, how= (SQL JOIN)",
+    "tier": 1,
+    "grader": "python"
+  },
+  {
+    "slug": "combining/merge-pitfalls",
+    "corpus": "pandas",
+    "chapter": "combining",
+    "description": "validate=, indicator=, suffixes, key-dtype mismatch (FK cardinality)",
+    "tier": 1,
+    "grader": "python"
+  },
+  {
+    "slug": "combining/concat",
+    "corpus": "pandas",
+    "chapter": "combining",
+    "description": "axis 0/1, keys, ignore_index, alignment",
+    "tier": 1,
+    "grader": "python"
+  },
+  {
+    "slug": "combining/map-lookup-vs-merge",
+    "corpus": "pandas",
+    "chapter": "combining",
+    "description": "enrich via map from a lookup vs merge",
+    "tier": 2,
+    "grader": "python"
+  },
+  {
+    "slug": "combining/join-on-index",
+    "corpus": "pandas",
+    "chapter": "combining",
+    "description": "DataFrame.join, index-aligned",
+    "tier": 2,
+    "grader": "python"
+  },
+  {
+    "slug": "combining/combine-first-update",
+    "corpus": "pandas",
+    "chapter": "combining",
+    "description": "fill from another frame",
+    "tier": 3,
+    "grader": "python"
+  },
+  {
+    "slug": "groupby-aggregate-window/groupby-basics",
+    "corpus": "pandas",
+    "chapter": "groupby-aggregate-window",
+    "description": "groupby(key), as_index, iteration",
+    "tier": 1,
+    "grader": "python"
+  },
+  {
+    "slug": "groupby-aggregate-window/agg-named",
+    "corpus": "pandas",
+    "chapter": "groupby-aggregate-window",
+    "description": "named aggregation, multi-func / multi-col",
+    "tier": 1,
+    "grader": "python"
+  },
+  {
+    "slug": "groupby-aggregate-window/transform-broadcast",
+    "corpus": "pandas",
+    "chapter": "groupby-aggregate-window",
+    "description": "groupby.transform = OVER (PARTITION BY ...)",
+    "tier": 1,
+    "grader": "python"
+  },
+  {
+    "slug": "groupby-aggregate-window/shift-diff-pct",
+    "corpus": "pandas",
+    "chapter": "groupby-aggregate-window",
+    "description": "shift/diff/pct_change (LAG/LEAD)",
+    "tier": 1,
+    "grader": "python"
+  },
+  {
+    "slug": "groupby-aggregate-window/sort-values",
+    "corpus": "pandas",
+    "chapter": "groupby-aggregate-window",
+    "description": "sort_values(by, ascending, na_position)",
+    "tier": 1,
+    "grader": "python"
+  },
+  {
+    "slug": "groupby-aggregate-window/multi-key-observed",
+    "corpus": "pandas",
+    "chapter": "groupby-aggregate-window",
+    "description": "multiple keys, observed= with categoricals",
+    "tier": 2,
+    "grader": "python"
+  },
+  {
+    "slug": "groupby-aggregate-window/pivottable-crosstab",
+    "corpus": "pandas",
+    "chapter": "groupby-aggregate-window",
+    "description": "pivot_table(aggfunc, margins), crosstab",
+    "tier": 2,
+    "grader": "python"
+  },
+  {
+    "slug": "groupby-aggregate-window/groupby-filter-apply",
+    "corpus": "pandas",
+    "chapter": "groupby-aggregate-window",
+    "description": "filter, first/last/nth",
+    "tier": 2,
+    "grader": "python"
+  },
+  {
+    "slug": "groupby-aggregate-window/rank",
+    "corpus": "pandas",
+    "chapter": "groupby-aggregate-window",
+    "description": "rank(method=), nlargest/nsmallest (RANK/DENSE_RANK)",
+    "tier": 2,
+    "grader": "python"
+  },
+  {
+    "slug": "groupby-aggregate-window/rolling-expanding",
+    "corpus": "pandas",
+    "chapter": "groupby-aggregate-window",
+    "description": "rolling(window).agg, min_periods (window frames)",
+    "tier": 2,
+    "grader": "python"
+  },
+  {
+    "slug": "groupby-aggregate-window/cumulative",
+    "corpus": "pandas",
+    "chapter": "groupby-aggregate-window",
+    "description": "cumsum/cummax/cumcount",
+    "tier": 2,
+    "grader": "python"
+  },
+  {
+    "slug": "reshaping/melt",
+    "corpus": "pandas",
+    "chapter": "reshaping",
+    "description": "melt(id_vars, value_vars), wide->long",
+    "tier": 1,
+    "grader": "python"
+  },
+  {
+    "slug": "reshaping/pivot-vs-pivottable",
+    "corpus": "pandas",
+    "chapter": "reshaping",
+    "description": "pivot (no agg) vs pivot_table",
+    "tier": 2,
+    "grader": "python"
+  },
+  {
+    "slug": "reshaping/stack-unstack",
+    "corpus": "pandas",
+    "chapter": "reshaping",
+    "description": "stack/unstack, MultiIndex interplay",
+    "tier": 2,
+    "grader": "python"
+  },
+  {
+    "slug": "reshaping/explode",
+    "corpus": "pandas",
+    "chapter": "reshaping",
+    "description": "list-column -> rows",
+    "tier": 2,
+    "grader": "python"
+  },
+  {
+    "slug": "reshaping/get-dummies",
+    "corpus": "pandas",
+    "chapter": "reshaping",
+    "description": "one-hot encode",
+    "tier": 2,
+    "grader": "python"
+  },
+  {
+    "slug": "binning/cut",
+    "corpus": "pandas",
+    "chapter": "binning",
+    "description": "cut(bins, labels, right) -> categorical",
+    "tier": 1,
+    "grader": "python"
+  },
+  {
+    "slug": "binning/qcut",
+    "corpus": "pandas",
+    "chapter": "binning",
+    "description": "quantile bins",
+    "tier": 2,
+    "grader": "python"
+  },
+  {
+    "slug": "binning/unbin-map",
+    "corpus": "pandas",
+    "chapter": "binning",
+    "description": "map bin -> representative; reverse via categories",
+    "tier": 2,
+    "grader": "python"
+  },
+  {
+    "slug": "test-data-synthesis/rng-columns",
+    "corpus": "pandas",
+    "chapter": "test-data-synthesis",
+    "description": "default_rng -> normal/integers/choice into a frame",
+    "tier": 1,
+    "grader": "python"
+  },
+  {
+    "slug": "test-data-synthesis/date-ranges",
+    "corpus": "pandas",
+    "chapter": "test-data-synthesis",
+    "description": "date_range(freq=), period_range",
+    "tier": 1,
+    "grader": "python"
+  },
+  {
+    "slug": "test-data-synthesis/sample-shuffle",
+    "corpus": "pandas",
+    "chapter": "test-data-synthesis",
+    "description": "DataFrame.sample(frac, replace, weights, random_state)",
+    "tier": 2,
+    "grader": "python"
+  },
+  {
+    "slug": "test-data-synthesis/cartesian-grid",
+    "corpus": "pandas",
+    "chapter": "test-data-synthesis",
+    "description": "MultiIndex.from_product / merge(how=cross)",
+    "tier": 2,
+    "grader": "python"
+  },
+  {
+    "slug": "test-data-synthesis/repeat-tile-fixtures",
+    "corpus": "pandas",
+    "chapter": "test-data-synthesis",
+    "description": "np.repeat/np.tile, Series.repeat",
+    "tier": 3,
+    "grader": "python"
+  },
+  {
+    "slug": "io-lite/read-csv-options",
+    "corpus": "pandas",
+    "chapter": "io-lite",
+    "description": "parse_dates/dtype/usecols/index_col/na_values via StringIO",
+    "tier": 2,
+    "grader": "python"
+  },
+  {
+    "slug": "io-lite/read-sql-lite",
+    "corpus": "pandas",
+    "chapter": "io-lite",
+    "description": "read_sql against in-memory sqlite, index_col",
+    "tier": 3,
+    "grader": "python"
+  },
+  {
+    "slug": "io-lite/roundtrip-awareness",
+    "corpus": "pandas",
+    "chapter": "io-lite",
+    "description": "to_parquet keeps dtypes, to_csv doesn't",
+    "tier": 3,
+    "grader": "python"
+  }
+]

@@ -1,0 +1,39 @@
+# Windows/WSL alternate data streams
+*:Zone.Identifier
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# Virtual environments
+.venv/
+venv/
+
+# uv
+.uv/
+
+# Environment / secrets
+.env
+.env.*
+
+# SQLite databases
+*.db
+*.db-wal
+*.db-shm
+
+# drill-server runtime (pidfile + log)
+.run/
+
+# Git worktrees
+.worktrees/
+
+# Test / tooling caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/

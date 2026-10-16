@@ -1,0 +1,2 @@
+def test_case_0():
+    assert equal(sort_items_by_category_asc_price_desc(**{'items': [{'name': 'Widget', 'category': 'B', 'price': 10}, {'name': 'Gadget', 'category': 'A', 'price': 30}, {'name': 'Doohickey', 'category': 'B', 'price': 20}, {'name': 'Thingamajig', 'category': 'A', 'price': 15}]}), [{'name': 'Gadget', 'category': 'A', 'price': 30}, {'name': 'Thingamajig', 'category': 'A', 'price': 15}, {'name': 'Doohickey', 'category': 'B', 'price': 20}, {'name': 'Widget', 'category': 'B', 'price': 10}])

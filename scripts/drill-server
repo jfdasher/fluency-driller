@@ -1,0 +1,182 @@
+#!/usr/bin/env bash
+#
+# drill-server — start/stop/restart/status the Fluency Driller proctor.
+#
+#   scripts/drill-server up        # launch the uvicorn proctor in the background
+#   scripts/drill-server down      # stop it (process group + port-scoped sweep)
+#   scripts/drill-server restart   # down, then up
+#   scripts/drill-server status    # is it running? where? reachable?
+#
+# Honors the usual env vars (set them before `up`):
+#   DRILL_DB_PATH   (default: drill.db)
+#   DRILL_JUDGE     anthropic | deterministic   (deterministic needs no API key)
+#   ANTHROPIC_API_KEY                            (for real idiom judging)
+#   DRILL_HOST      (default: 127.0.0.1)
+#   DRILL_PORT      (default: 8000)
+#
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT="$(dirname "$SCRIPT_DIR")"
+RUN_DIR="$ROOT/.run"
+
+HOST="${DRILL_HOST:-127.0.0.1}"
+PORT="${DRILL_PORT:-8000}"
+export DRILL_DB_PATH="${DRILL_DB_PATH:-drill.db}"
+
+# Pidfile/log are per-port: a second instance on another DRILL_PORT must not
+# clobber the first's bookkeeping (which would orphan it beyond `down`'s reach).
+PIDFILE="$RUN_DIR/server-$PORT.pid"
+LOG="$RUN_DIR/server-$PORT.log"
+
+# Identifies a drill uvicorn for THIS port by its command line — the safety net
+# for when the pidfile is missing, stale, or points at a recycled PID.
+PROC_PATTERN="uvicorn --factory drill.server.app:create_app .*--port $PORT( |\$)"
+
+# --- helpers ---------------------------------------------------------------
+
+# Echo the running PID (group leader) if the server is up, else nothing.
+running_pid() {
+  [ -f "$PIDFILE" ] || return 1
+  local pid
+  pid="$(cat "$PIDFILE" 2>/dev/null || true)"
+  case "$pid" in
+    ''|*[!0-9]*) return 1 ;;            # missing or non-numeric -> stale
+  esac
+  if kill -0 "$pid" 2>/dev/null; then
+    echo "$pid"
+    return 0
+  fi
+  return 1                              # stale pidfile; process gone
+}
+
+# True if anything is listening on $PORT (independent of our pidfile).
+port_busy() {
+  command -v ss >/dev/null 2>&1 || return 1
+  ss -ltn 2>/dev/null | grep -qE "[:.]$PORT[[:space:]]"
+}
+
+# Kill any drill uvicorn matching this port that the pidfile lost track of.
+# Returns 0 if it reaped something, 1 if there was nothing to reap.
+sweep_orphans() {
+  command -v pkill >/dev/null 2>&1 || return 1
+  pkill -f "$PROC_PATTERN" 2>/dev/null || return 1   # nothing matched
+  for _ in $(seq 1 20); do
+    pgrep -f "$PROC_PATTERN" >/dev/null 2>&1 || return 0
+    sleep 0.5
+  done
+  pkill -KILL -f "$PROC_PATTERN" 2>/dev/null || true
+  return 0
+}
+
+# --- commands --------------------------------------------------------------
+
+up() {
+  if pid="$(running_pid)"; then
+    echo "already running (pid $pid) at http://$HOST:$PORT"
+    return 0
+  fi
+  # Pidfile says we're down, but something may still hold the port (lost pidfile,
+  # crash, prior manual kill). Clear it so the launch below can actually bind.
+  if port_busy; then
+    echo "port $PORT busy with no valid pidfile — sweeping orphan(s) first" >&2
+    sweep_orphans || true
+  fi
+  mkdir -p "$RUN_DIR"
+  cd "$ROOT"
+
+  # setsid: give the uv->uvicorn tree its own session/process group so `down`
+  # can signal the whole group by the recorded leader PID. Falls back to a
+  # plain background launch where setsid is unavailable.
+  local launcher=()
+  command -v setsid >/dev/null 2>&1 && launcher=(setsid)
+
+  "${launcher[@]}" uv run uvicorn --factory drill.server.app:create_app \
+      --host "$HOST" --port "$PORT" >"$LOG" 2>&1 </dev/null &
+  local pid=$!
+  echo "$pid" >"$PIDFILE"
+
+  # Give it a moment, then confirm it didn't die on startup.
+  sleep 1.5
+  if kill -0 "$pid" 2>/dev/null; then
+    echo "started (pid $pid) at http://$HOST:$PORT"
+    echo "logs: $LOG"
+  else
+    echo "FAILED to start — last lines of $LOG:" >&2
+    tail -n 20 "$LOG" >&2 || true
+    rm -f "$PIDFILE"
+    return 1
+  fi
+}
+
+down() {
+  local pid
+  if pid="$(running_pid)"; then
+    # Try to signal the whole process group (leader PID negated); fall back to
+    # the single PID if it isn't a group leader (non-setsid launch).
+    if ! kill -TERM "-$pid" 2>/dev/null; then
+      kill -TERM "$pid" 2>/dev/null || true
+    fi
+
+    # Wait up to ~10s for a graceful exit, then escalate to KILL.
+    for _ in $(seq 1 20); do
+      kill -0 "$pid" 2>/dev/null || break
+      sleep 0.5
+    done
+    if kill -0 "$pid" 2>/dev/null; then
+      kill -KILL "-$pid" 2>/dev/null || kill -KILL "$pid" 2>/dev/null || true
+      sleep 0.5
+    fi
+    rm -f "$PIDFILE"
+    echo "stopped (pid $pid)"
+  fi
+
+  # Safety net, run whether or not the pidfile was valid: reap any drill uvicorn
+  # still bound to this port that the pidfile lost track of. This is what makes
+  # `down`/`restart` reliable even after a lost pidfile or a manual kill.
+  if sweep_orphans; then
+    [ -n "${pid:-}" ] || echo "stopped orphan(s) on port $PORT (no valid pidfile)"
+  elif [ -z "${pid:-}" ]; then
+    echo "not running"
+  fi
+  rm -f "$PIDFILE"
+}
+
+restart() {
+  down
+  up
+}
+
+status() {
+  local pid
+  if pid="$(running_pid)"; then
+    echo "running (pid $pid) at http://$HOST:$PORT"
+    if command -v curl >/dev/null 2>&1; then
+      local code
+      code="$(curl -s -o /dev/null -w '%{http_code}' --max-time 2 \
+              "http://$HOST:$PORT/openapi.json" 2>/dev/null || echo '000')"
+      if [ "$code" = "200" ]; then
+        echo "reachable: yes (HTTP $code on /openapi.json)"
+      else
+        echo "reachable: no (HTTP $code) — process up but not answering yet"
+      fi
+    fi
+    echo "logs: $LOG"
+    return 0
+  fi
+  echo "not running"
+  return 1
+}
+
+# --- dispatch --------------------------------------------------------------
+
+case "${1:-}" in
+  up|start)        up ;;
+  down|stop)       down ;;
+  restart)         restart ;;
+  status)          status ;;
+  *)
+    echo "usage: $(basename "$0") {up|down|restart|status}" >&2
+    exit 2
+    ;;
+esac
